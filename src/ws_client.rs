@@ -1,4 +1,4 @@
-use tokio::net::TcpStream;
+use tokio::{net::TcpStream, sync::oneshot};
 
 use futures_util::{
     SinkExt, StreamExt,
@@ -15,14 +15,18 @@ type WsStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
 type WsWrite = SplitSink<WsStream, Message>;
 type WsRead = SplitStream<WsStream>;
 type Callback = Box<dyn FnMut(String) + Send + 'static>;
+type ResponseSender = oneshot::Sender<String>;
 
 pub struct WsClient {
     url: String,
     write: Arc<Mutex<Option<WsWrite>>>,
     read: Arc<Mutex<Option<WsRead>>>,
     callbacks: Arc<Mutex<HashMap<String, Callback>>>,
+    pending_requests: Arc<Mutex<HashMap<u64, ResponseSender>>>,
+    next_id: Arc<Mutex<u64>>,
 }
 const URL: &str = "wss://thalex.com/ws/api/v2";
+use log::{info, warn};
 
 impl Default for WsClient {
     fn default() -> Self {
@@ -37,12 +41,14 @@ impl WsClient {
             write: Arc::new(Mutex::new(None)),
             read: Arc::new(Mutex::new(None)),
             callbacks: Arc::new(Mutex::new(HashMap::new())),
+            pending_requests: Arc::new(Mutex::new(HashMap::new())),
+            next_id: Arc::new(Mutex::new(1)),
         }
     }
 
     pub async fn connect(&self) -> Result<(), Box<dyn std::error::Error>> {
         let (ws_stream, _) = connect_async(&self.url).await?;
-        println!("WebSocket connected to {}", &self.url);
+        info!("WebSocket connected to {}", &self.url);
 
         let (write, read) = ws_stream.split();
         *self.write.lock().await = Some(write);
@@ -104,7 +110,7 @@ impl WsClient {
 
         // Remove callback for this channel
         self.callbacks.lock().await.remove(channel);
-        println!("Unsubscribed from channel: {channel}");
+        info!("Unsubscribed from channel: {channel}");
 
         Ok(())
     }
@@ -113,7 +119,7 @@ impl WsClient {
         let mut write_guard = self.write.lock().await;
         if let Some(write) = write_guard.as_mut() {
             write.send(Message::Close(None)).await?;
-            println!("WebSocket disconnected from {}", &self.url);
+            warn!("WebSocket disconnected from {}", &self.url);
         }
 
         *write_guard = None;
@@ -147,7 +153,7 @@ impl WsClient {
                     }
                 }
                 Message::Close(_) => {
-                    println!("WebSocket connection closed");
+                    warn!("WebSocket connection closed");
                     break;
                 }
                 _ => {}
@@ -160,25 +166,61 @@ impl WsClient {
     async fn handle_message(&self, text: String) {
         // Try to extract channel name from message
         if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&text) {
-            if let Some(channel_name) = parsed.get("channel_name").and_then(|v| v.as_str()) {
-                // Call the specific callback for this channel
+            // Check if this is an RPC response (has "id" field)
+            if let Some(id) = parsed.get("id").and_then(|v| v.as_u64()) {
+                let mut pending = self.pending_requests.lock().await;
+                if let Some(sender) = pending.remove(&id) {
+                    let _ = sender.send(text);
+                }
+            } else if let Some(channel_name) = parsed.get("channel_name").and_then(|v| v.as_str()) {
+                // Check if this is a subscription notification (has "channel_name")
                 let mut callbacks = self.callbacks.lock().await;
                 if let Some(callback) = callbacks.get_mut(channel_name) {
                     // we should really do something clever here with the bytes... :)
                     let string_data = text.to_string();
                     callback(string_data);
                 }
+            } else {
+                warn!("Received unhandled message: {text}");
             }
         }
     }
-
-    pub async fn send_raw(&self, msg: &str) -> Result<(), Box<dyn std::error::Error>> {
+    pub async fn call_rpc(
+        &self,
+        method: &str,
+        params: serde_json::Value,
+    ) -> Result<String, Box<dyn std::error::Error>> {
         let mut write_guard = self.write.lock().await;
         let write = write_guard
             .as_mut()
             .ok_or("Not connected - call connect() first")?;
 
-        write.send(Message::Text(msg.to_string().into())).await?;
-        Ok(())
+        // Generate unique request ID
+        let mut id_guard = self.next_id.lock().await;
+        let id = *id_guard;
+        *id_guard += 1;
+        drop(id_guard);
+
+        // Create channel for response
+        let (tx, rx) = oneshot::channel();
+        self.pending_requests.lock().await.insert(id, tx);
+
+        // Send RPC request
+        let request = serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": id,
+            "method": method,
+            "params": params
+        });
+
+        write
+            .send(Message::Text(request.to_string().into()))
+            .await?;
+        drop(write_guard);
+
+        // Wait for response with timeout
+        let response = tokio::time::timeout(std::time::Duration::from_secs(30), rx).await??;
+
+        Ok(response)
     }
 }

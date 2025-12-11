@@ -65,7 +65,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/RpcResponse'
       - $ref: '#/components/schemas/ErrorResponse'
-    'Null':
+    Nothingness:
       type: 'null'
       description: Represents a null value.
       example: null
@@ -3391,6 +3391,77 @@ paths:
                     result: *id007
                 - title: Error
                   $ref: '#/components/schemas/ErrorResponse'
+  /private/cancel_conditional_order:
+    post:
+      operationId: rest_private/cancel_conditional_order
+      tags:
+      - Conditional orders
+      summary: Cancel conditional order
+      description: 'Exchange: `https://thalex.com/api/v2/private/cancel_conditional_order`
+
+
+        Testnet: `https://testnet.thalex.com/api/v2/private/cancel_conditional_order`
+
+
+        Cancel conditional order'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - order_id
+              properties:
+                order_id:
+                  type: string
+              example:
+                order_id: 00011E570000004B
+      responses:
+        '200':
+          description: Successful HTTP call
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - title: Success
+                  type: object
+                  properties:
+                    result:
+                      $ref: '#/components/schemas/Nothingness'
+                - title: Error
+                  $ref: '#/components/schemas/ErrorResponse'
+  /private/cancel_all_conditional_orders:
+    post:
+      operationId: rest_private/cancel_all_conditional_orders
+      tags:
+      - Conditional orders
+      summary: Bulk cancel conditional orders
+      description: 'Exchange: `https://thalex.com/api/v2/private/cancel_all_conditional_orders`
+
+
+        Testnet: `https://testnet.thalex.com/api/v2/private/cancel_all_conditional_orders`
+
+
+        Cancel all conditional orders of this subaccount'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmptyObject'
+      responses:
+        '200':
+          description: Successful HTTP call
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - title: Success
+                  type: object
+                  properties:
+                    result:
+                      $ref: '#/components/schemas/Nothingness'
+                - title: Error
+                  $ref: '#/components/schemas/ErrorResponse'
   /private/bots:
     get:
       operationId: rest_private/bots
@@ -4083,6 +4154,81 @@ paths:
                   properties:
                     result:
                       $ref: '#/components/schemas/Bot'
+                - title: Error
+                  $ref: '#/components/schemas/ErrorResponse'
+  /private/cancel_bot:
+    post:
+      operationId: rest_private/cancel_bot
+      tags:
+      - Bot management
+      summary: Cancel a bot
+      description: 'Exchange: `https://thalex.com/api/v2/private/cancel_bot`
+
+
+        Testnet: `https://testnet.thalex.com/api/v2/private/cancel_bot`
+
+
+        Cancel a specific bot instance.
+
+        '
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - bot_id
+              properties:
+                bot_id:
+                  type: string
+                  description: The `bot_id` returned when creating the bot, or calling
+                    `private/bots`.
+      responses:
+        '200':
+          description: Successful HTTP call
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - title: Success
+                  type: object
+                  properties:
+                    result:
+                      $ref: '#/components/schemas/Nothingness'
+                - title: Error
+                  $ref: '#/components/schemas/ErrorResponse'
+  /private/cancel_all_bots:
+    post:
+      operationId: rest_private/cancel_all_bots
+      tags:
+      - Bot management
+      summary: Cancel all bots
+      description: 'Exchange: `https://thalex.com/api/v2/private/cancel_all_bots`
+
+
+        Testnet: `https://testnet.thalex.com/api/v2/private/cancel_all_bots`
+
+
+        Cancel all bots of this subaccount
+
+        '
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Nothingness'
+      responses:
+        '200':
+          description: Successful HTTP call
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - title: Success
+                  type: object
+                  properties:
+                    result:
+                      $ref: '#/components/schemas/Nothingness'
                 - title: Error
                   $ref: '#/components/schemas/ErrorResponse'
   /private/portfolio:
@@ -5101,6 +5247,51 @@ paths:
           description: Max results to return.
           default: 1000
         required: false
+  /private/mark_inbox_notification_as_read:
+    post:
+      operationId: rest_private/mark_inbox_notification_as_read
+      tags:
+      - Notifications
+      summary: Marking notification as read
+      description: 'Exchange: `https://thalex.com/api/v2/private/mark_inbox_notification_as_read`
+
+
+        Testnet: `https://testnet.thalex.com/api/v2/private/mark_inbox_notification_as_read`
+
+
+        Mark a notification as read'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - notification_id
+              properties:
+                notification_id:
+                  type: string
+                  description: ID of the notification to mark.
+                read:
+                  type: boolean
+                  description: Set to `true` to mark as read, `false` to mark as not
+                    read.
+                  default: true
+              example:
+                notification_id: 00000000000000A3
+      responses:
+        '200':
+          description: Successful HTTP call
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - title: Success
+                  type: object
+                  properties:
+                    result:
+                      $ref: '#/components/schemas/Nothingness'
+                - title: Error
+                  $ref: '#/components/schemas/ErrorResponse'
   /private/create_rfq:
     post:
       operationId: rest_private/create_rfq
@@ -5167,6 +5358,44 @@ paths:
                   properties:
                     result:
                       $ref: '#/components/schemas/Rfq'
+                - title: Error
+                  $ref: '#/components/schemas/ErrorResponse'
+  /private/cancel_rfq:
+    post:
+      operationId: rest_private/cancel_rfq
+      tags:
+      - Request for Quote
+      summary: Cancel an RFQ
+      description: 'Exchange: `https://thalex.com/api/v2/private/cancel_rfq`
+
+
+        Testnet: `https://testnet.thalex.com/api/v2/private/cancel_rfq`
+
+
+        Cancels the indicated RFQ.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - rfq_id
+              properties:
+                rfq_id:
+                  type: string
+                  description: The ID of the RFQ to be cancelled
+      responses:
+        '200':
+          description: Successful HTTP call
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - title: Success
+                  type: object
+                  properties:
+                    result:
+                      $ref: '#/components/schemas/Nothingness'
                 - title: Error
                   $ref: '#/components/schemas/ErrorResponse'
   /private/trade_rfq:
@@ -5470,6 +5699,49 @@ paths:
                   properties:
                     result:
                       $ref: '#/components/schemas/RfqOrder'
+                - title: Error
+                  $ref: '#/components/schemas/ErrorResponse'
+  /private/mm_rfq_delete_quote:
+    post:
+      operationId: rest_private/mm_rfq_delete_quote
+      tags:
+      - Request for Quote (MM)
+      summary: Delete quote
+      description: 'Exchange: `https://thalex.com/api/v2/private/mm_rfq_delete_quote`
+
+
+        Testnet: `https://testnet.thalex.com/api/v2/private/mm_rfq_delete_quote`
+
+
+        Deletes the indicated RFQ quote.
+
+        '
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                client_order_id:
+                  type: integer
+                  description: Exactly one of `client_order_id` or `order_id` must
+                    be specified.
+                order_id:
+                  type: string
+                  description: Exactly one of `client_order_id` or `order_id` must
+                    be specified.
+      responses:
+        '200':
+          description: Successful HTTP call
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - title: Success
+                  type: object
+                  properties:
+                    result:
+                      $ref: '#/components/schemas/Nothingness'
                 - title: Error
                   $ref: '#/components/schemas/ErrorResponse'
   /private/mm_rfq_quotes:
@@ -5871,6 +6143,60 @@ paths:
           type: string
           description: Target address.
         required: true
+  /private/withdraw:
+    post:
+      operationId: rest_private/withdraw
+      tags:
+      - Wallet
+      summary: Withdraw assets
+      description: 'Exchange: `https://thalex.com/api/v2/private/withdraw`
+
+
+        Testnet: `https://testnet.thalex.com/api/v2/private/withdraw`
+
+
+        This method is subject to withdrawal permissions.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - asset_name
+              - amount
+              - target_address
+              properties:
+                asset_name:
+                  type: string
+                  description: Asset name.
+                amount:
+                  type: number
+                  description: Amount to withdraw.
+                target_address:
+                  type: string
+                  description: Target address.
+                label:
+                  type: string
+                  description: Optional label to attach to the withdrawal request.
+              example:
+                asset_name: USDT
+                amount: 100
+                target_address: 1234xy2kgdygjrsqtzq2n0yrf2493p83kkfjhx01234
+                label: For my new yacht
+      responses:
+        '200':
+          description: Successful HTTP call
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - title: Success
+                  type: object
+                  properties:
+                    result:
+                      $ref: '#/components/schemas/Nothingness'
+                - title: Error
+                  $ref: '#/components/schemas/ErrorResponse'
   /private/crypto_withdrawals:
     get:
       operationId: rest_private/crypto_withdrawals
@@ -6248,6 +6574,91 @@ paths:
                           message: 'asset ''BTC'': insufficient funds for operation'
                   example:
                     result: *id017
+                - title: Error
+                  $ref: '#/components/schemas/ErrorResponse'
+  /private/internal_transfer:
+    post:
+      operationId: rest_private/internal_transfer
+      tags:
+      - Wallet
+      summary: Internal transfer
+      description: 'Exchange: `https://thalex.com/api/v2/private/internal_transfer`
+
+
+        Testnet: `https://testnet.thalex.com/api/v2/private/internal_transfer`
+
+
+        Transfer assets and/or positions from source (currently selected) to destination
+        account.
+
+
+        Transfers are subject to margin checks. Please see `private/verify_internal_transfer`
+        method
+
+        description for more information.
+
+        '
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - destination_account_number
+              properties:
+                destination_account_number:
+                  type: string
+                  description: Destination account number.
+                assets:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - asset_name
+                    - amount
+                    properties:
+                      asset_name:
+                        type: string
+                        description: Asset name
+                      amount:
+                        type: number
+                        description: Amount to transfer. Use a negative value to transfer
+                          in reverse direction.
+                positions:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - instrument_name
+                    - amount
+                    properties:
+                      instrument_name:
+                        type: string
+                        description: Instrument feedcode.
+                      amount:
+                        type: number
+                        description: Amount to transfer. Use a negative value to transfer
+                          in reverse direction.
+                label:
+                  type: string
+                  description: Optional label attached to the transfer.
+              example:
+                destination_account_number: A123456789
+                assets:
+                - asset_name: BTC
+                  amount: '1'
+      responses:
+        '200':
+          description: Successful HTTP call
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - title: Success
+                  type: object
+                  properties:
+                    result:
+                      $ref: '#/components/schemas/Nothingness'
                 - title: Error
                   $ref: '#/components/schemas/ErrorResponse'
   /public/system_info:
