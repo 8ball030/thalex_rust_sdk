@@ -3296,71 +3296,6 @@
           }
         }
       },
-      "PrivateMmRfqAmendQuoteResult": {
-        "type": "object",
-        "required": [
-          "rfq_id",
-          "order_id",
-          "direction",
-          "price",
-          "amount"
-        ],
-        "properties": {
-          "rfq_id": {
-            "type": "string"
-          },
-          "order_id": {
-            "type": "string"
-          },
-          "client_order_id": {
-            "type": "number"
-          },
-          "direction": {
-            "type": "string",
-            "enum": [
-              "buy",
-              "sell"
-            ]
-          },
-          "price": {
-            "type": "number"
-          },
-          "amount": {
-            "type": "number"
-          },
-          "label": {
-            "type": "string"
-          },
-          "trade_price": {
-            "type": "number"
-          },
-          "trade_amount": {
-            "type": "number"
-          },
-          "delete_reason": {
-            "type": "string",
-            "enum": [
-              "client_cancel",
-              "session_end",
-              "instrument_deactivated",
-              "mm_protection",
-              "failover",
-              "margin_breach",
-              "filled"
-            ]
-          },
-          "event": {
-            "type": "string",
-            "enum": [
-              "Inserted",
-              "Amended",
-              "Cancelled",
-              "Filled",
-              "Existing"
-            ]
-          }
-        }
-      },
       "PrivateMmRfqInsertQuoteResult": {
         "type": "object",
         "required": [
@@ -3429,7 +3364,7 @@
       "PrivateMmRfqQuotesResult": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/RfqOrder"
+          "$ref": "#/components/schemas/OrderStatus"
         }
       },
       "PrivateNotificationsInboxResult": {
@@ -3475,19 +3410,107 @@
           "$ref": "#/components/schemas/PortfolioEntry"
         }
       },
-      "PrivateRequiredMarginBreakdownResult": {
+      "PrivateRequiredMarginForOrderResult": {
         "type": "object",
         "properties": {
-          "portfolio": {
+          "current": {
             "type": "object",
             "properties": {
               "required_margin": {
                 "type": "number"
               },
-              "underlyings": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/PrivateRequiredMarginBreakdownInlinePropertiesPortfolioPropertiesUnderlyingsItems"
+              "underlying": {
+                "type": "object",
+                "properties": {
+                  "underlying": {
+                    "type": "string"
+                  },
+                  "required_margin": {
+                    "type": "number"
+                  },
+                  "loss_margin": {
+                    "type": "number"
+                  },
+                  "roll_contingency_margin": {
+                    "type": "number"
+                  },
+                  "d1_roll_contingency_margin": {
+                    "type": "number"
+                  },
+                  "options_roll_contingency_margin": {
+                    "type": "number"
+                  },
+                  "options_contingency_margin": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "with_buy": {
+            "type": "object",
+            "properties": {
+              "required_margin": {
+                "type": "number"
+              },
+              "underlying": {
+                "type": "object",
+                "properties": {
+                  "underlying": {
+                    "type": "string"
+                  },
+                  "required_margin": {
+                    "type": "number"
+                  },
+                  "loss_margin": {
+                    "type": "number"
+                  },
+                  "roll_contingency_margin": {
+                    "type": "number"
+                  },
+                  "d1_roll_contingency_margin": {
+                    "type": "number"
+                  },
+                  "options_roll_contingency_margin": {
+                    "type": "number"
+                  },
+                  "options_contingency_margin": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "with_sell": {
+            "type": "object",
+            "properties": {
+              "required_margin": {
+                "type": "number"
+              },
+              "underlying": {
+                "type": "object",
+                "properties": {
+                  "underlying": {
+                    "type": "string"
+                  },
+                  "required_margin": {
+                    "type": "number"
+                  },
+                  "loss_margin": {
+                    "type": "number"
+                  },
+                  "roll_contingency_margin": {
+                    "type": "number"
+                  },
+                  "d1_roll_contingency_margin": {
+                    "type": "number"
+                  },
+                  "options_roll_contingency_margin": {
+                    "type": "number"
+                  },
+                  "options_contingency_margin": {
+                    "type": "number"
+                  }
                 }
               }
             }
@@ -3537,25 +3560,8 @@
           "legs": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/PrivateRequiredMarginBreakdownInlinePropertiesPortfolioPropertiesUnderlyingsItemsPropertiesScenariosItemsPro"
+              "$ref": "#/components/schemas/PrivateTradeRfqInlinePropertiesLegsItems"
             }
-          }
-        }
-      },
-      "PrivateTransactionHistoryResult": {
-        "type": "object",
-        "required": [
-          "transactions"
-        ],
-        "properties": {
-          "transactions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OrderFill"
-            }
-          },
-          "bookmark": {
-            "type": "string"
           }
         }
       },
@@ -3627,6 +3633,12 @@
               }
             }
           }
+        }
+      },
+      "PublicAllInstrumentsResult": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/RfqOrder"
         }
       },
       "PublicIndexResult": {
@@ -3713,7 +3725,7 @@
           "legs": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/PublicInstrumentInlinePropertiesLegsItems"
+              "$ref": "#/components/schemas/PublicAllInstrumentsInlineItemsPropertiesLegsItems"
             }
           },
           "create_time": {
@@ -3725,12 +3737,6 @@
           "settlement_index_price": {
             "type": "number"
           }
-        }
-      },
-      "PublicInstrumentsResult": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/Instrument"
         }
       },
       "PublicMarkPriceHistoricalDataResult": {
@@ -4105,6 +4111,29 @@
           }
         }
       },
+      "PrivateOpenOrdersInlineItemsPropertiesLegsItems": {
+        "type": "object",
+        "required": [
+          "instrument_name",
+          "quantity",
+          "filled_amount",
+          "remaining_amount"
+        ],
+        "properties": {
+          "instrument_name": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "filled_amount": {
+            "type": "number"
+          },
+          "remaining_amount": {
+            "type": "number"
+          }
+        }
+      },
       "PrivateOrderHistoryInlinePropertiesOrdersItems": {
         "type": "object",
         "required": [
@@ -4265,21 +4294,44 @@
           }
         }
       },
-      "PrivateRfqHistoryInlinePropertiesRfqsItemsPropertiesLegsItems": {
+      "PrivateTransactionHistoryInlinePropertiesTransactionsItems": {
         "type": "object",
         "required": [
-          "instrument_name",
-          "quantity",
-          "fee_quantity"
+          "asset",
+          "time",
+          "amount",
+          "description"
         ],
         "properties": {
+          "time": {
+            "type": "number"
+          },
+          "asset": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
           "instrument_name": {
             "type": "string"
           },
-          "quantity": {
-            "type": "number"
+          "transaction_type": {
+            "type": "string",
+            "enum": [
+              "deposit",
+              "withdrawal",
+              "withdrawal fee",
+              "session settlement",
+              "perpetual funding",
+              "internal transfer",
+              "asset swap",
+              "referral program payment",
+              "market velocity program payment",
+              "market quality program payment",
+              "daily interest"
+            ]
           },
-          "fee_quantity": {
+          "balance_after": {
             "type": "number"
           }
         }
@@ -4774,29 +4826,68 @@
           }
         }
       },
-      "PublicInstrumentsInlineItemsPropertiesLegsItems": {
+      "PrivateCreateRfqInlinePropertiesLegsItems": {
         "type": "object",
+        "required": [
+          "instrument_name",
+          "quantity",
+          "fee_quantity"
+        ],
         "properties": {
           "instrument_name": {
             "type": "string"
           },
           "quantity": {
-            "type": "integer"
+            "type": "number"
+          },
+          "fee_quantity": {
+            "type": "number"
+          }
+        }
+      },
+      "PrivateTradeRfqInlinePropertiesLegsItems": {
+        "type": "object",
+        "required": [
+          "instrument_name",
+          "direction",
+          "amount"
+        ],
+        "properties": {
+          "instrument_name": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "buy",
+              "sell"
+            ]
+          },
+          "amount": {
+            "type": "number"
+          }
+        }
+      },
+      "PrivateMmRfqsInlineItemsPropertiesLegsItems": {
+        "type": "object",
+        "required": [
+          "instrument_name",
+          "quantity",
+          "fee_quantity"
+        ],
+        "properties": {
+          "instrument_name": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "fee_quantity": {
+            "type": "number"
           }
         }
       },
       "PublicAllInstrumentsInlineItemsPropertiesLegsItems": {
-        "type": "object",
-        "properties": {
-          "instrument_name": {
-            "type": "string"
-          },
-          "quantity": {
-            "type": "integer"
-          }
-        }
-      },
-      "PublicInstrumentInlinePropertiesLegsItems": {
         "type": "object",
         "properties": {
           "instrument_name": {
@@ -6591,7 +6682,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateCancelConditionalOrderResult"
+                      "$ref": "#/components/schemas/PrivateCancelAllResult"
                     },
                     {
                       "$ref": "#/components/schemas/PrivateBotsInlineItemsOneof3"
@@ -6760,7 +6851,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateTransactionHistoryResult"
+                      "$ref": "#/components/schemas/PrivateConditionalOrdersResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -6832,7 +6923,7 @@
                       "$ref": "#/components/schemas/PrivateRfqHistoryResult"
                     },
                     {
-                      "$ref": "#/components/schemas/PrivateOrderHistoryResult"
+                      "$ref": "#/components/schemas/OrderFill"
                     }
                   ]
                 }
@@ -6958,7 +7049,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateRequiredMarginBreakdownResult"
+                      "$ref": "#/components/schemas/PrivateCreateBotResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -6988,7 +7079,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateOrderHistoryResult"
+                      "$ref": "#/components/schemas/PrivateRequiredMarginForOrderResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -7206,7 +7297,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateTransactionHistoryResult"
+                      "$ref": "#/components/schemas/PrivateCreateBotResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -7253,10 +7344,10 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateRfqHistoryResult"
+                      "$ref": "#/components/schemas/PrivateCancelConditionalOrderResult"
                     },
                     {
-                      "$ref": "#/components/schemas/PrivateTransactionHistoryResult"
+                      "$ref": "#/components/schemas/ErrorResponse"
                     }
                   ]
                 }
@@ -7508,7 +7599,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateMmRfqAmendQuoteResult"
+                      "$ref": "#/components/schemas/PrivatePortfolioResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -7556,7 +7647,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateCancelConditionalOrderResult"
+                      "$ref": "#/components/schemas/PrivateCancelAllResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -7588,7 +7679,7 @@
                       "$ref": "#/components/schemas/PrivateMmRfqQuotesResult"
                     },
                     {
-                      "$ref": "#/components/schemas/ErrorResponse"
+                      "$ref": "#/components/schemas/DailyMark"
                     }
                   ]
                 }
@@ -7615,7 +7706,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PublicInstrumentsResult"
+                      "$ref": "#/components/schemas/PrivateOpenRfqsResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -7645,10 +7736,10 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateNotificationsInboxResult"
+                      "$ref": "#/components/schemas/PublicAllInstrumentsResult"
                     },
                     {
-                      "$ref": "#/components/schemas/ErrorResponse"
+                      "$ref": "#/components/schemas/PrivateDailyMarkHistoryResult"
                     }
                   ]
                 }
@@ -7697,7 +7788,7 @@
                       "$ref": "#/components/schemas/PublicInstrumentResult"
                     },
                     {
-                      "$ref": "#/components/schemas/ErrorResponse"
+                      "$ref": "#/components/schemas/RfqOrder"
                     }
                   ]
                 }
@@ -7950,10 +8041,10 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateCancelAllResult"
+                      "$ref": "#/components/schemas/PrivateCancelConditionalOrderResult"
                     },
                     {
-                      "$ref": "#/components/schemas/PublicInstrumentsResult"
+                      "$ref": "#/components/schemas/ErrorResponse"
                     }
                   ]
                 }
@@ -7982,7 +8073,7 @@
                       "$ref": "#/components/schemas/PrivateCancelAllResult"
                     },
                     {
-                      "$ref": "#/components/schemas/PrivateBotsInlineItemsOneof1"
+                      "$ref": "#/components/schemas/ErrorResponse"
                     }
                   ]
                 }
@@ -8072,7 +8163,7 @@
                       "$ref": "#/components/schemas/PrivateEthDepositAddressResult"
                     },
                     {
-                      "$ref": "#/components/schemas/ErrorResponse"
+                      "$ref": "#/components/schemas/PrivateBotsInlineItemsOneof1"
                     }
                   ]
                 }
@@ -8266,10 +8357,10 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PublicInstrumentResult"
+                      "$ref": "#/components/schemas/PrivateCancelConditionalOrderResult"
                     },
                     {
-                      "$ref": "#/components/schemas/Ticker"
+                      "$ref": "#/components/schemas/ErrorResponse"
                     }
                   ]
                 }

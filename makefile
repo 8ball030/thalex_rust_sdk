@@ -12,7 +12,8 @@ run:
 
 codegen:
 	curl https://testnet.thalex.com/docs/thalex_api.yaml | yq '.' > openapi.json
-	python pre-process.py openapi.json openapi_updated.json
+
+	python build_scripts/pre-process.py
 
 	openapi-generator-cli generate \
 	  -i openapi_updated.json \
@@ -49,6 +50,6 @@ codegen:
 		echo "pub mod $$name;" >> ./src/models/mod.rs; \
 		echo "pub use $$name::$$camel;" >> ./src/models/mod.rs; \
 	done
-	python post-process.py
+	python build_scripts/post-process.py
 
 all: codegen fmt lint build test
