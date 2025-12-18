@@ -13,13 +13,13 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PrivateWithdraw {
-    PrivateCancelAllResult(f64),
-    PublicInstrumentsResult(Vec<models::Instrument>),
+pub enum PublicBook {
+    PublicBookResult(Box<models::PublicBookResult>),
+    ErrorResponse(Box<models::ErrorResponse>),
 }
 
-impl Default for PrivateWithdraw {
+impl Default for PublicBook {
     fn default() -> Self {
-        Self::PrivateCancelAllResult(Default::default())
+        Self::PublicBookResult(Default::default())
     }
 }

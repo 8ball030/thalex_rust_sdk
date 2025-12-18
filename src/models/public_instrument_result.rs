@@ -41,7 +41,7 @@ pub struct PublicInstrumentResult {
     #[serde(rename = "base_currency", skip_serializing_if = "Option::is_none")]
     pub base_currency: Option<String>,
     #[serde(rename = "legs", skip_serializing_if = "Option::is_none")]
-    pub legs: Option<Vec<models::PublicInstrumentInlinePropertiesLegsItems>>,
+    pub legs: Option<Vec<models::PublicInstrumentsInlineItemsPropertiesLegsItems>>,
     #[serde(rename = "create_time", skip_serializing_if = "Option::is_none")]
     pub create_time: Option<f64>,
     #[serde(rename = "settlement_price", skip_serializing_if = "Option::is_none")]

@@ -16,7 +16,7 @@ Name | Type | Description | Notes
 **expiration_timestamp** | Option<**i32**> |  | [optional]
 **strike_price** | Option<**f64**> |  | [optional]
 **base_currency** | Option<**String**> |  | [optional]
-**legs** | Option<[**Vec<models::PublicInstrumentInlinePropertiesLegsItems>**](PublicInstrumentInlinePropertiesLegsItems.md)> |  | [optional]
+**legs** | Option<[**Vec<models::PublicInstrumentsInlineItemsPropertiesLegsItems>**](PublicInstrumentsInlineItemsPropertiesLegsItems.md)> |  | [optional]
 **create_time** | Option<**f64**> |  | [optional]
 **settlement_price** | Option<**f64**> |  | [optional]
 **settlement_index_price** | Option<**f64**> |  | [optional]

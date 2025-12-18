@@ -20,7 +20,7 @@ Method | HTTP request | Description
 
 ## rest_private_slash_account_breakdown
 
-> models::RestPrivateAccountBreakdown200Response rest_private_slash_account_breakdown()
+> models::RestPrivateRfqHistory200Response rest_private_slash_account_breakdown()
 Account breakdown
 
 Exchange: `https://thalex.com/api/v2/private/account_breakdown`  Testnet: `https://testnet.thalex.com/api/v2/private/account_breakdown`  Get account breakdown
@@ -31,7 +31,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**models::RestPrivateAccountBreakdown200Response**](rest_private_account_breakdown_200_response.md)
+[**models::RestPrivateRfqHistory200Response**](rest_private_rfq_history_200_response.md)
 
 ### Authorization
 
@@ -224,7 +224,7 @@ No authorization required
 
 ## rest_private_slash_required_margin_for_order
 
-> models::RestPrivateOrderHistory200Response rest_private_slash_required_margin_for_order(price, amount, instrument_name, legs)
+> models::RestPrivateRequiredMarginForOrder200Response rest_private_slash_required_margin_for_order(price, amount, instrument_name, legs)
 Margin breakdown with order
 
 Exchange: `https://thalex.com/api/v2/private/required_margin_for_order`  Testnet: `https://testnet.thalex.com/api/v2/private/required_margin_for_order`  This method returns a lightweight breakdown of the account as it is, and also as if a hypothetical order of a given price and amount would be inserted on either side of the book.
@@ -241,7 +241,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::RestPrivateOrderHistory200Response**](rest_private_order_history_200_response.md)
+[**models::RestPrivateRequiredMarginForOrder200Response**](rest_private_required_margin_for_order_200_response.md)
 
 ### Authorization
 
@@ -290,7 +290,7 @@ No authorization required
 
 ## rest_private_slash_trade_history
 
-> models::PrivateBotsInlineItemsOneof3 rest_private_slash_trade_history(limit, time_low, time_high, bookmark, sort, instrument_names, bot_ids)
+> models::RestPrivateTradeHistory200Response rest_private_slash_trade_history(limit, time_low, time_high, bookmark, sort, instrument_names, bot_ids)
 Trade history
 
 Exchange: `https://thalex.com/api/v2/private/trade_history`  Testnet: `https://testnet.thalex.com/api/v2/private/trade_history`  Retrieves trades for the last 90 days. Allows sorting and filtering by instrument name. Note that it is not real-time, trades might appear with a slight delay.
@@ -310,7 +310,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::PrivateBotsInlineItemsOneof3**](PrivateBotsInlineItemsOneof3.md)
+[**models::RestPrivateTradeHistory200Response**](rest_private_trade_history_200_response.md)
 
 ### Authorization
 

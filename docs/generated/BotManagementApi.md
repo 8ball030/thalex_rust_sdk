@@ -70,7 +70,7 @@ No authorization required
 
 ## rest_private_slash_cancel_bot
 
-> models::RestPrivateCancelAll200Response rest_private_slash_cancel_bot(rest_private_cancel_bot_request)
+> models::ErrorResponse rest_private_slash_cancel_bot(rest_private_cancel_bot_request)
 Cancel a bot
 
 Exchange: `https://thalex.com/api/v2/private/cancel_bot`  Testnet: `https://testnet.thalex.com/api/v2/private/cancel_bot`  Cancel a specific bot instance. 
@@ -84,7 +84,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::RestPrivateCancelAll200Response**](rest_private_cancel_all_200_response.md)
+[**models::ErrorResponse**](ErrorResponse.md)
 
 ### Authorization
 

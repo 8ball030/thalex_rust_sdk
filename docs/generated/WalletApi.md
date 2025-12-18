@@ -17,7 +17,7 @@ Method | HTTP request | Description
 
 ## rest_private_slash_btc_deposit_address
 
-> models::RestPublicIndex200Response rest_private_slash_btc_deposit_address()
+> models::RestPrivateBtcDepositAddress200Response rest_private_slash_btc_deposit_address()
 Bitcoin deposit address
 
 Exchange: `https://thalex.com/api/v2/private/btc_deposit_address`  Testnet: `https://testnet.thalex.com/api/v2/private/btc_deposit_address`  Get Bitcoin deposit address
@@ -28,7 +28,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**models::RestPublicIndex200Response**](rest_public_index_200_response.md)
+[**models::RestPrivateBtcDepositAddress200Response**](rest_private_btc_deposit_address_200_response.md)
 
 ### Authorization
 
@@ -44,7 +44,7 @@ No authorization required
 
 ## rest_private_slash_crypto_deposits
 
-> models::RestPrivateCancelAll200Response rest_private_slash_crypto_deposits()
+> models::RestPublicBook200Response rest_private_slash_crypto_deposits()
 Deposits
 
 Exchange: `https://thalex.com/api/v2/private/crypto_deposits`  Testnet: `https://testnet.thalex.com/api/v2/private/crypto_deposits`  Pending and confirmed deposits for the selected account.
@@ -55,7 +55,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**models::RestPrivateCancelAll200Response**](rest_private_cancel_all_200_response.md)
+[**models::RestPublicBook200Response**](rest_public_book_200_response.md)
 
 ### Authorization
 
@@ -71,7 +71,7 @@ No authorization required
 
 ## rest_private_slash_crypto_withdrawals
 
-> models::RestPrivateCryptoWithdrawals200Response rest_private_slash_crypto_withdrawals()
+> models::RestPublicBook200Response rest_private_slash_crypto_withdrawals()
 Withdrawals
 
 Exchange: `https://thalex.com/api/v2/private/crypto_withdrawals`  Testnet: `https://testnet.thalex.com/api/v2/private/crypto_withdrawals`  List of withdrawals from the selected account. Includes all withdrawals: pending, executed, rejected etc. 
@@ -82,7 +82,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**models::RestPrivateCryptoWithdrawals200Response**](rest_private_crypto_withdrawals_200_response.md)
+[**models::RestPublicBook200Response**](rest_public_book_200_response.md)
 
 ### Authorization
 
@@ -98,7 +98,7 @@ No authorization required
 
 ## rest_private_slash_eth_deposit_address
 
-> models::RestPrivateEthDepositAddress200Response rest_private_slash_eth_deposit_address()
+> models::RestPrivateBtcDepositAddress200Response rest_private_slash_eth_deposit_address()
 Ethereum deposit address
 
 Exchange: `https://thalex.com/api/v2/private/eth_deposit_address`  Testnet: `https://testnet.thalex.com/api/v2/private/eth_deposit_address`  Get Ethereum deposit address
@@ -109,7 +109,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**models::RestPrivateEthDepositAddress200Response**](rest_private_eth_deposit_address_200_response.md)
+[**models::RestPrivateBtcDepositAddress200Response**](rest_private_btc_deposit_address_200_response.md)
 
 ### Authorization
 
@@ -125,7 +125,7 @@ No authorization required
 
 ## rest_private_slash_internal_transfer
 
-> models::RestPrivateInternalTransfer200Response rest_private_slash_internal_transfer(rest_private_internal_transfer_request)
+> models::ErrorResponse rest_private_slash_internal_transfer(rest_private_internal_transfer_request)
 Internal transfer
 
 Exchange: `https://thalex.com/api/v2/private/internal_transfer`  Testnet: `https://testnet.thalex.com/api/v2/private/internal_transfer`  Transfer assets and/or positions from source (currently selected) to destination account.  Transfers are subject to margin checks. Please see `private/verify_internal_transfer` method description for more information. 
@@ -139,7 +139,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::RestPrivateInternalTransfer200Response**](rest_private_internal_transfer_200_response.md)
+[**models::ErrorResponse**](ErrorResponse.md)
 
 ### Authorization
 
@@ -217,7 +217,7 @@ No authorization required
 
 ## rest_private_slash_withdraw
 
-> models::RestPrivateWithdraw200Response rest_private_slash_withdraw(rest_private_withdraw_request)
+> models::ErrorResponse rest_private_slash_withdraw(rest_private_withdraw_request)
 Withdraw assets
 
 Exchange: `https://thalex.com/api/v2/private/withdraw`  Testnet: `https://testnet.thalex.com/api/v2/private/withdraw`  This method is subject to withdrawal permissions.
@@ -231,7 +231,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::RestPrivateWithdraw200Response**](rest_private_withdraw_200_response.md)
+[**models::ErrorResponse**](ErrorResponse.md)
 
 ### Authorization
 

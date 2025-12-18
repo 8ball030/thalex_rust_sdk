@@ -13,13 +13,13 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PrivateCancelRfq {
-    PrivateRfqHistoryResult(Box<models::PrivateRfqHistoryResult>),
-    PrivateTransactionHistoryResult(Box<models::PrivateTransactionHistoryResult>),
+pub enum PrivateRequiredMarginForOrder {
+    PrivateRequiredMarginForOrderResult(Box<models::PrivateRequiredMarginForOrderResult>),
+    ErrorResponse(Box<models::ErrorResponse>),
 }
 
-impl Default for PrivateCancelRfq {
+impl Default for PrivateRequiredMarginForOrder {
     fn default() -> Self {
-        Self::PrivateRfqHistoryResult(Default::default())
+        Self::PrivateRequiredMarginForOrderResult(Default::default())
     }
 }

@@ -1,14 +1,15 @@
-# PrivateTradeRfqResult
+# PrivateTransactionHistoryInlinePropertiesTransactionsItems
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**rfq_id** | **String** |  | 
-**direction** | **String** |  | 
-**price** | **f64** |  | 
+**time** | **f64** |  | 
+**asset** | **String** |  | 
 **amount** | **f64** |  | 
-**legs** | [**Vec<models::PrivateTradeRfqInlinePropertiesLegsItems>**](PrivateTradeRfqInlinePropertiesLegsItems.md) |  | 
+**instrument_name** | Option<**String**> |  | [optional]
+**transaction_type** | Option<**String**> |  | [optional]
+**balance_after** | Option<**f64**> |  | [optional]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

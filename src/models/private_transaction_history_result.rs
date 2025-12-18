@@ -14,13 +14,15 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PrivateTransactionHistoryResult {
     #[serde(rename = "transactions")]
-    pub transactions: Vec<models::OrderFill>,
+    pub transactions: Vec<models::PrivateTransactionHistoryInlinePropertiesTransactionsItems>,
     #[serde(rename = "bookmark", skip_serializing_if = "Option::is_none")]
     pub bookmark: Option<String>,
 }
 
 impl PrivateTransactionHistoryResult {
-    pub fn new(transactions: Vec<models::OrderFill>) -> PrivateTransactionHistoryResult {
+    pub fn new(
+        transactions: Vec<models::PrivateTransactionHistoryInlinePropertiesTransactionsItems>,
+    ) -> PrivateTransactionHistoryResult {
         PrivateTransactionHistoryResult {
             transactions,
             bookmark: None,

@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum PrivateOpenOrders {
-    PrivateOpenOrdersResult(Vec<models::ErrorResponse>),
+    PrivateOpenOrdersResult(Vec<models::OrderStatus>),
     ErrorResponse(Box<models::ErrorResponse>),
 }
 

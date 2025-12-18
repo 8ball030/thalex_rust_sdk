@@ -179,10 +179,11 @@ class SchemaInterner:
 
     Key features:
     - Fingerprint is computed on a fully-resolved view of the schema (local #/components/schemas refs expanded).
-    - Non-structural keys are dropped (including title) so cosmetic differences do not create duplicates.
+    - Non-structural keys are dropped (except title for success schemas) so cosmetic differences do not create duplicates.
     - Tag-aware interning prevents cross-category merges (e.g. success vs error) when the spec encodes both under 200.
-    - For tag == "error", if an equivalent schema already exists in components, we reuse it (preferring names
-      like ErrorResponse) instead of minting operation-specific error schemas.
+    - For tag == "error", title is dropped from fingerprint to enable deduplication, and if an equivalent schema 
+      already exists in components, we reuse it (preferring names like ErrorResponse).
+    - For tag == "success", title is kept in fingerprint to prevent false deduplication of semantically different schemas.
     """
 
     _DROP_KEYS = {
@@ -190,7 +191,6 @@ class SchemaInterner:
         "examples",
         "description",
         "deprecated",
-        "title",
         "with",
         "serde_as",
     }
@@ -205,16 +205,16 @@ class SchemaInterner:
         # fp -> list of existing component schema names
         self._existing_by_fp: Dict[str, List[str]] = {}
 
-        # caches
-        self._schema_fp_cache: Dict[int, str] = {}
+        # caches - now keyed by (object_id, tag)
+        self._schema_fp_cache: Dict[Tuple[int, str], str] = {}
 
         # index existing components by fingerprint
         for name, schema in (self.components or {}).items():
             if not isinstance(schema, dict):
                 continue
-            fp = self.fingerprint(schema)
+            # We don't know if existing schemas are errors or not, so compute both
+            fp = self.fingerprint(schema, tag="")
             self._existing_by_fp.setdefault(fp, []).append(name)
-            # Also register for the default (untagged) namespace
             self._fp_to_name.setdefault(("", fp), name)
 
     @staticmethod
@@ -235,7 +235,7 @@ class SchemaInterner:
             if isinstance(ref, str) and ref.startswith("#/components/schemas/"):
                 return ref.split("/")[-1]
 
-        fp = self.fingerprint(schema)
+        fp = self.fingerprint(schema, tag=tag)
         tag_key = (tag or "")
 
         # Hard rule for errors: reuse an equivalent existing error schema if present.
@@ -274,24 +274,27 @@ class SchemaInterner:
         self._fp_to_name[key] = name
         return name
 
-    def fingerprint(self, schema: Any) -> str:
+    def fingerprint(self, schema: Any, tag: Optional[str] = None) -> str:
         # cache by object identity for speed within a run
         if isinstance(schema, dict):
             sid = id(schema)
-            if sid in self._schema_fp_cache:
-                return self._schema_fp_cache[sid]
+            cache_key = (sid, tag or "")
+            if cache_key in self._schema_fp_cache:
+                return self._schema_fp_cache[cache_key]
 
-        norm = self._normalize(schema, ref_stack=())
+        is_error = (tag == "error")
+        norm = self._normalize(schema, ref_stack=(), is_error=is_error)
         s = json.dumps(norm, sort_keys=True, separators=(",", ":"))
         fp = hashlib.sha256(s.encode("utf-8")).hexdigest()
 
         if isinstance(schema, dict):
-            self._schema_fp_cache[id(schema)] = fp
+            cache_key = (id(schema), tag or "")
+            self._schema_fp_cache[cache_key] = fp
         return fp
 
-    def _normalize(self, node: Any, ref_stack: Tuple[str, ...]):
+    def _normalize(self, node: Any, ref_stack: Tuple[str, ...], is_error: bool = False):
         if isinstance(node, list):
-            return [self._normalize(x, ref_stack) for x in node]
+            return [self._normalize(x, ref_stack, is_error) for x in node]
 
         if not isinstance(node, dict):
             return node
@@ -304,11 +307,14 @@ class SchemaInterner:
                 return {"$ref": ref}  # break cycles
             target = self.components.get(name)
             if isinstance(target, dict):
-                return self._normalize(target, ref_stack + (name,))
+                return self._normalize(target, ref_stack + (name,), is_error)
             return {"$ref": ref}
 
         out: Dict[str, Any] = {}
         for k, v in node.items():
+            # Drop title for errors (to enable deduplication), keep it for success schemas
+            if k == "title" and is_error:
+                continue
             if k in self._DROP_KEYS or k.startswith("x-"):
                 continue
             if k == "required" and isinstance(v, list):
@@ -321,7 +327,7 @@ class SchemaInterner:
                     out[k] = v
                 continue
             if k in ("oneOf", "anyOf", "allOf") and isinstance(v, list):
-                branches = [self._normalize(x, ref_stack) for x in v]
+                branches = [self._normalize(x, ref_stack, is_error) for x in v]
                 # order-insensitive canonicalization: sort branches by their json hash
                 branches_sorted = sorted(
                     branches,
@@ -331,7 +337,7 @@ class SchemaInterner:
                 )
                 out[k] = branches_sorted
                 continue
-            out[k] = self._normalize(v, ref_stack)
+            out[k] = self._normalize(v, ref_stack, is_error)
 
         return out
 

@@ -3021,6 +3021,9 @@
           "$ref": "#/components/schemas/Bot"
         }
       },
+      "PrivateBtcDepositAddressResult": {
+        "type": "string"
+      },
       "PrivateCancelAllResult": {
         "type": "number"
       },
@@ -3147,16 +3150,13 @@
           "daily_marks": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/DailyMark"
+              "$ref": "#/components/schemas/OrderFill"
             }
           },
           "bookmark": {
             "type": "string"
           }
         }
-      },
-      "PrivateEthDepositAddressResult": {
-        "type": "string"
       },
       "PrivateInsertResult": {
         "type": "object",
@@ -3364,7 +3364,7 @@
       "PrivateMmRfqQuotesResult": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/OrderStatus"
+          "$ref": "#/components/schemas/RfqOrder"
         }
       },
       "PrivateNotificationsInboxResult": {
@@ -3381,7 +3381,7 @@
       "PrivateOpenOrdersResult": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/ErrorResponse"
+          "$ref": "#/components/schemas/OrderStatus"
         }
       },
       "PrivateOpenRfqsResult": {
@@ -3396,7 +3396,7 @@
           "orders": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/PrivateOrderHistoryInlinePropertiesOrdersItems"
+              "$ref": "#/components/schemas/OrderHistory"
             }
           },
           "bookmark": {
@@ -3408,6 +3408,25 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/PortfolioEntry"
+        }
+      },
+      "PrivateRequiredMarginBreakdownResult": {
+        "type": "object",
+        "properties": {
+          "portfolio": {
+            "type": "object",
+            "properties": {
+              "required_margin": {
+                "type": "number"
+              },
+              "underlyings": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PrivateRequiredMarginBreakdownInlinePropertiesPortfolioPropertiesUnderlyingsItems"
+                }
+              }
+            }
+          }
         }
       },
       "PrivateRequiredMarginForOrderResult": {
@@ -3531,6 +3550,20 @@
           }
         }
       },
+      "PrivateTradeHistoryResult": {
+        "type": "object",
+        "properties": {
+          "trades": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderFill"
+            }
+          },
+          "bookmark": {
+            "type": "string"
+          }
+        }
+      },
       "PrivateTradeRfqResult": {
         "type": "object",
         "required": [
@@ -3562,6 +3595,23 @@
             "items": {
               "$ref": "#/components/schemas/PrivateTradeRfqInlinePropertiesLegsItems"
             }
+          }
+        }
+      },
+      "PrivateTransactionHistoryResult": {
+        "type": "object",
+        "required": [
+          "transactions"
+        ],
+        "properties": {
+          "transactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PrivateTransactionHistoryInlinePropertiesTransactionsItems"
+            }
+          },
+          "bookmark": {
+            "type": "string"
           }
         }
       },
@@ -3635,10 +3685,49 @@
           }
         }
       },
-      "PublicAllInstrumentsResult": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/RfqOrder"
+      "PublicBookResult": {
+        "type": "object",
+        "required": [
+          "bids",
+          "asks",
+          "time"
+        ],
+        "properties": {
+          "bids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicBookInlinePropertiesBidsItems"
+            }
+          },
+          "asks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicBookInlinePropertiesBidsItems"
+            }
+          },
+          "last": {
+            "type": "number"
+          },
+          "time": {
+            "type": "number"
+          }
+        }
+      },
+      "PublicIndexPriceHistoricalDataResult": {
+        "type": "object",
+        "required": [
+          "index"
+        ],
+        "properties": {
+          "index": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicIndexPriceHistoricalDataInlinePropertiesIndexItems"
+            }
+          },
+          "no_data": {
+            "type": "boolean"
+          }
         }
       },
       "PublicIndexResult": {
@@ -3725,7 +3814,7 @@
           "legs": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/PublicAllInstrumentsInlineItemsPropertiesLegsItems"
+              "$ref": "#/components/schemas/PublicInstrumentsInlineItemsPropertiesLegsItems"
             }
           },
           "create_time": {
@@ -3737,6 +3826,12 @@
           "settlement_index_price": {
             "type": "number"
           }
+        }
+      },
+      "PublicInstrumentsResult": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Instrument"
         }
       },
       "PublicMarkPriceHistoricalDataResult": {
@@ -3961,6 +4056,71 @@
           }
         }
       },
+      "PrivateBotsInlineItemsOneof1": {
+        "type": "object",
+        "required": [
+          "strategy",
+          "instrument_name",
+          "status",
+          "bid_offset",
+          "ask_offset",
+          "signal",
+          "quote_size",
+          "min_position",
+          "max_position",
+          "end_time",
+          "bot_id"
+        ],
+        "properties": {
+          "bot_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "stopped"
+            ]
+          },
+          "stop_reason": {
+            "type": "string"
+          },
+          "strategy": {
+            "type": "string"
+          },
+          "instrument_name": {
+            "type": "string"
+          },
+          "signal": {
+            "type": "string",
+            "enum": [
+              "index",
+              "mark"
+            ]
+          },
+          "bid_offset": {
+            "type": "number"
+          },
+          "ask_offset": {
+            "type": "number"
+          },
+          "quote_size": {
+            "type": "number"
+          },
+          "min_position": {
+            "type": "number"
+          },
+          "max_position": {
+            "type": "number"
+          },
+          "end_time": {
+            "type": "number"
+          },
+          "label": {
+            "type": "string"
+          }
+        }
+      },
       "PrivateBotsInlineItemsOneof2": {
         "type": "object",
         "required": [
@@ -4003,6 +4163,65 @@
             }
           },
           "asks": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "step_size": {
+            "type": "number"
+          },
+          "base_position": {
+            "type": "number"
+          },
+          "upside_exit_price": {
+            "type": "number"
+          },
+          "downside_exit_price": {
+            "type": "number"
+          },
+          "max_slippage": {
+            "type": "number"
+          },
+          "end_time": {
+            "type": "number"
+          },
+          "label": {
+            "type": "string"
+          }
+        }
+      },
+      "PrivateBotsInlineItemsOneof3": {
+        "type": "object",
+        "required": [
+          "strategy",
+          "instrument_name",
+          "grid",
+          "step_size",
+          "base_position",
+          "upside_exit_price",
+          "downside_exit_price",
+          "end_time",
+          "bot_id",
+          "status"
+        ],
+        "properties": {
+          "bot_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "stop_reason": {
+            "type": "string"
+          },
+          "strategy": {
+            "type": "string"
+          },
+          "instrument_name": {
+            "type": "string"
+          },
+          "grid": {
             "type": "array",
             "items": {
               "type": "number"
@@ -4111,13 +4330,12 @@
           }
         }
       },
-      "PrivateOpenOrdersInlineItemsPropertiesLegsItems": {
+      "PrivateOrderHistoryInlinePropertiesOrdersItemsPropertiesLegsItems": {
         "type": "object",
         "required": [
           "instrument_name",
           "quantity",
-          "filled_amount",
-          "remaining_amount"
+          "filled_amount"
         ],
         "properties": {
           "instrument_name": {
@@ -4128,169 +4346,6 @@
           },
           "filled_amount": {
             "type": "number"
-          },
-          "remaining_amount": {
-            "type": "number"
-          }
-        }
-      },
-      "PrivateOrderHistoryInlinePropertiesOrdersItems": {
-        "type": "object",
-        "required": [
-          "order_id",
-          "direction",
-          "amount",
-          "filled_amount",
-          "status",
-          "fills",
-          "insert_reason",
-          "delete_reason",
-          "create_time",
-          "close_time",
-          "order_type"
-        ],
-        "properties": {
-          "order_id": {
-            "type": "string"
-          },
-          "order_type": {
-            "type": "string",
-            "enum": [
-              "limit",
-              "market"
-            ]
-          },
-          "instrument_name": {
-            "type": "string"
-          },
-          "legs": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "required": [
-                "instrument_name",
-                "quantity",
-                "filled_amount"
-              ],
-              "properties": {
-                "instrument_name": {
-                  "type": "string"
-                },
-                "quantity": {
-                  "type": "number"
-                },
-                "filled_amount": {
-                  "type": "number"
-                }
-              }
-            }
-          },
-          "direction": {
-            "type": "string",
-            "enum": [
-              "buy",
-              "sell"
-            ]
-          },
-          "price": {
-            "type": "number"
-          },
-          "amount": {
-            "type": "number"
-          },
-          "filled_amount": {
-            "type": "number"
-          },
-          "label": {
-            "type": "string"
-          },
-          "client_order_id": {
-            "type": "number"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "open",
-              "partially_filled",
-              "cancelled",
-              "cancelled_partially_filled",
-              "filled"
-            ]
-          },
-          "fills": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "required": [
-                "trade_id",
-                "price",
-                "amount",
-                "maker_taker",
-                "leg_index"
-              ],
-              "properties": {
-                "trade_id": {
-                  "type": "string"
-                },
-                "price": {
-                  "type": "number"
-                },
-                "amount": {
-                  "type": "number"
-                },
-                "time": {
-                  "type": "number"
-                },
-                "maker_taker": {
-                  "type": "string",
-                  "enum": [
-                    "maker",
-                    "taker"
-                  ]
-                },
-                "leg_index": {
-                  "type": "number"
-                }
-              }
-            }
-          },
-          "delete_reason": {
-            "type": "string",
-            "enum": [
-              "client_cancel",
-              "client_bulk_cancel",
-              "session_end",
-              "instrument_deactivated",
-              "mm_protection",
-              "failover",
-              "margin_breach",
-              "filled",
-              "immediate_cancel",
-              "admin_cancel"
-            ]
-          },
-          "insert_reason": {
-            "type": "string",
-            "enum": [
-              "client_request",
-              "conditional_order",
-              "liquidation"
-            ]
-          },
-          "conditional_order_id": {
-            "type": "string"
-          },
-          "bot_id": {
-            "type": "string"
-          },
-          "create_time": {
-            "type": "number"
-          },
-          "close_time": {
-            "type": "number"
-          },
-          "reduce_only": {
-            "type": "boolean"
           }
         }
       },
@@ -4332,6 +4387,25 @@
             ]
           },
           "balance_after": {
+            "type": "number"
+          }
+        }
+      },
+      "PrivateRfqHistoryInlinePropertiesRfqsItemsPropertiesLegsItems": {
+        "type": "object",
+        "required": [
+          "instrument_name",
+          "quantity",
+          "fee_quantity"
+        ],
+        "properties": {
+          "instrument_name": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "fee_quantity": {
             "type": "number"
           }
         }
@@ -4826,25 +4900,6 @@
           }
         }
       },
-      "PrivateCreateRfqInlinePropertiesLegsItems": {
-        "type": "object",
-        "required": [
-          "instrument_name",
-          "quantity",
-          "fee_quantity"
-        ],
-        "properties": {
-          "instrument_name": {
-            "type": "string"
-          },
-          "quantity": {
-            "type": "number"
-          },
-          "fee_quantity": {
-            "type": "number"
-          }
-        }
-      },
       "PrivateTradeRfqInlinePropertiesLegsItems": {
         "type": "object",
         "required": [
@@ -4868,26 +4923,7 @@
           }
         }
       },
-      "PrivateMmRfqsInlineItemsPropertiesLegsItems": {
-        "type": "object",
-        "required": [
-          "instrument_name",
-          "quantity",
-          "fee_quantity"
-        ],
-        "properties": {
-          "instrument_name": {
-            "type": "string"
-          },
-          "quantity": {
-            "type": "number"
-          },
-          "fee_quantity": {
-            "type": "number"
-          }
-        }
-      },
-      "PublicAllInstrumentsInlineItemsPropertiesLegsItems": {
+      "PublicInstrumentsInlineItemsPropertiesLegsItems": {
         "type": "object",
         "properties": {
           "instrument_name": {
@@ -4902,6 +4938,58 @@
         "type": "array",
         "items": {
           "type": "number"
+        }
+      },
+      "PrivateCryptoWithdrawalsInlineItems": {
+        "type": "object",
+        "required": [
+          "currency",
+          "amount",
+          "target_address",
+          "create_time",
+          "state"
+        ],
+        "properties": {
+          "currency": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "target_address": {
+            "type": "string"
+          },
+          "blockchain": {
+            "type": "string"
+          },
+          "transaction_hash": {
+            "type": "string"
+          },
+          "create_time": {
+            "type": "number"
+          },
+          "label": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "awaiting_confirmation",
+              "executing",
+              "executed",
+              "rejected"
+            ]
+          },
+          "remark": {
+            "type": "string"
+          },
+          "fee": {
+            "type": "number"
+          },
+          "fee_asset": {
+            "type": "string"
+          }
         }
       },
       "PublicMarkPriceHistoricalDataInlinePropertiesMarkOneof0": {
@@ -5301,130 +5389,6 @@
           "v4"
         ],
         "additionalProperties": false
-      },
-      "PrivateBotsInlineItemsOneof1": {
-        "type": "object",
-        "required": [
-          "strategy",
-          "instrument_name",
-          "status",
-          "bid_offset",
-          "ask_offset",
-          "signal",
-          "quote_size",
-          "min_position",
-          "max_position",
-          "end_time",
-          "bot_id"
-        ],
-        "properties": {
-          "bot_id": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "active",
-              "stopped"
-            ]
-          },
-          "stop_reason": {
-            "type": "string"
-          },
-          "strategy": {
-            "type": "string"
-          },
-          "instrument_name": {
-            "type": "string"
-          },
-          "signal": {
-            "type": "string",
-            "enum": [
-              "index",
-              "mark"
-            ]
-          },
-          "bid_offset": {
-            "type": "number"
-          },
-          "ask_offset": {
-            "type": "number"
-          },
-          "quote_size": {
-            "type": "number"
-          },
-          "min_position": {
-            "type": "number"
-          },
-          "max_position": {
-            "type": "number"
-          },
-          "end_time": {
-            "type": "number"
-          },
-          "label": {
-            "type": "string"
-          }
-        }
-      },
-      "PrivateBotsInlineItemsOneof3": {
-        "type": "object",
-        "required": [
-          "strategy",
-          "instrument_name",
-          "grid",
-          "step_size",
-          "base_position",
-          "upside_exit_price",
-          "downside_exit_price",
-          "end_time",
-          "bot_id",
-          "status"
-        ],
-        "properties": {
-          "bot_id": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string"
-          },
-          "stop_reason": {
-            "type": "string"
-          },
-          "strategy": {
-            "type": "string"
-          },
-          "instrument_name": {
-            "type": "string"
-          },
-          "grid": {
-            "type": "array",
-            "items": {
-              "type": "number"
-            }
-          },
-          "step_size": {
-            "type": "number"
-          },
-          "base_position": {
-            "type": "number"
-          },
-          "upside_exit_price": {
-            "type": "number"
-          },
-          "downside_exit_price": {
-            "type": "number"
-          },
-          "max_slippage": {
-            "type": "number"
-          },
-          "end_time": {
-            "type": "number"
-          },
-          "label": {
-            "type": "string"
-          }
-        }
       }
     }
   },
@@ -5951,7 +5915,7 @@
                       "$ref": "#/components/schemas/PrivateBotsResult"
                     },
                     {
-                      "$ref": "#/components/schemas/OrderFill"
+                      "$ref": "#/components/schemas/ErrorResponse"
                     }
                   ]
                 }
@@ -6455,7 +6419,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateCancelAllResult"
+                      "$ref": "#/components/schemas/PrivateCancelConditionalOrderResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -6682,10 +6646,10 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateCancelAllResult"
+                      "$ref": "#/components/schemas/PrivateTradeHistoryResult"
                     },
                     {
-                      "$ref": "#/components/schemas/PrivateBotsInlineItemsOneof3"
+                      "$ref": "#/components/schemas/ErrorResponse"
                     }
                   ]
                 }
@@ -6851,7 +6815,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateConditionalOrdersResult"
+                      "$ref": "#/components/schemas/PrivateTransactionHistoryResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -6923,7 +6887,7 @@
                       "$ref": "#/components/schemas/PrivateRfqHistoryResult"
                     },
                     {
-                      "$ref": "#/components/schemas/OrderFill"
+                      "$ref": "#/components/schemas/ErrorResponse"
                     }
                   ]
                 }
@@ -7049,7 +7013,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateCreateBotResult"
+                      "$ref": "#/components/schemas/PrivateRequiredMarginBreakdownResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -7297,7 +7261,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateCreateBotResult"
+                      "$ref": "#/components/schemas/PrivateRequiredMarginBreakdownResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -7464,7 +7428,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateOpenRfqsResult"
+                      "$ref": "#/components/schemas/PrivateCancelConditionalOrderResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -7599,7 +7563,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivatePortfolioResult"
+                      "$ref": "#/components/schemas/PrivateMmRfqInsertQuoteResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -7647,7 +7611,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateCancelAllResult"
+                      "$ref": "#/components/schemas/PrivateCancelConditionalOrderResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -7679,7 +7643,7 @@
                       "$ref": "#/components/schemas/PrivateMmRfqQuotesResult"
                     },
                     {
-                      "$ref": "#/components/schemas/DailyMark"
+                      "$ref": "#/components/schemas/ErrorResponse"
                     }
                   ]
                 }
@@ -7706,7 +7670,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateOpenRfqsResult"
+                      "$ref": "#/components/schemas/PublicInstrumentsResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -7736,10 +7700,10 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PublicAllInstrumentsResult"
+                      "$ref": "#/components/schemas/PublicInstrumentsResult"
                     },
                     {
-                      "$ref": "#/components/schemas/PrivateDailyMarkHistoryResult"
+                      "$ref": "#/components/schemas/ErrorResponse"
                     }
                   ]
                 }
@@ -7788,7 +7752,7 @@
                       "$ref": "#/components/schemas/PublicInstrumentResult"
                     },
                     {
-                      "$ref": "#/components/schemas/RfqOrder"
+                      "$ref": "#/components/schemas/ErrorResponse"
                     }
                   ]
                 }
@@ -7905,7 +7869,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateCancelAllResult"
+                      "$ref": "#/components/schemas/PublicBookResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -8070,7 +8034,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateCancelAllResult"
+                      "$ref": "#/components/schemas/PublicBookResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -8100,7 +8064,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateCancelAllResult"
+                      "$ref": "#/components/schemas/PublicBookResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -8130,7 +8094,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PublicIndexResult"
+                      "$ref": "#/components/schemas/PrivateBtcDepositAddressResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"
@@ -8160,10 +8124,10 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateEthDepositAddressResult"
+                      "$ref": "#/components/schemas/PrivateBtcDepositAddressResult"
                     },
                     {
-                      "$ref": "#/components/schemas/PrivateBotsInlineItemsOneof1"
+                      "$ref": "#/components/schemas/ErrorResponse"
                     }
                   ]
                 }
@@ -8492,7 +8456,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/PrivateCancelAllResult"
+                      "$ref": "#/components/schemas/PublicIndexPriceHistoricalDataResult"
                     },
                     {
                       "$ref": "#/components/schemas/ErrorResponse"

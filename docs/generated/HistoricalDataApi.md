@@ -11,7 +11,7 @@ Method | HTTP request | Description
 
 ## rest_public_slash_index_price_historical_data
 
-> models::RestPrivateCancelAll200Response rest_public_slash_index_price_historical_data(index_name, from, to, resolution)
+> models::RestPublicIndexPriceHistoricalData200Response rest_public_slash_index_price_historical_data(index_name, from, to, resolution)
 Index price historical data.
 
 Exchange: `https://thalex.com/api/v2/public/index_price_historical_data`  Testnet: `https://testnet.thalex.com/api/v2/public/index_price_historical_data`  Returns index price historical data in the specified interval and resolution in OHLC format.
@@ -28,7 +28,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::RestPrivateCancelAll200Response**](rest_private_cancel_all_200_response.md)
+[**models::RestPublicIndexPriceHistoricalData200Response**](rest_public_index_price_historical_data_200_response.md)
 
 ### Authorization
 

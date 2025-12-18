@@ -15,25 +15,11 @@ use serde::{Deserialize, Serialize};
 #[serde(untagged)]
 pub enum PrivateBots {
     PrivateBotsResult(Vec<models::Bot>),
-    OrderFill(Box<models::OrderFill>),
+    ErrorResponse(Box<models::ErrorResponse>),
 }
 
 impl Default for PrivateBots {
     fn default() -> Self {
         Self::PrivateBotsResult(Default::default())
-    }
-}
-/// Maker (trade on book order) or taker (trade on new order), if applicable.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum MakerTaker {
-    #[serde(rename = "maker")]
-    Maker,
-    #[serde(rename = "taker")]
-    Taker,
-}
-
-impl Default for MakerTaker {
-    fn default() -> MakerTaker {
-        Self::Maker
     }
 }

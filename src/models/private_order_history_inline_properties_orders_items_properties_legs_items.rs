@@ -12,7 +12,7 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct PrivateOrderHistoryInlinePropertiesOrdersItemsLegsInner {
+pub struct PrivateOrderHistoryInlinePropertiesOrdersItemsPropertiesLegsItems {
     #[serde(rename = "instrument_name")]
     pub instrument_name: String,
     #[serde(rename = "quantity")]
@@ -21,13 +21,13 @@ pub struct PrivateOrderHistoryInlinePropertiesOrdersItemsLegsInner {
     pub filled_amount: f64,
 }
 
-impl PrivateOrderHistoryInlinePropertiesOrdersItemsLegsInner {
+impl PrivateOrderHistoryInlinePropertiesOrdersItemsPropertiesLegsItems {
     pub fn new(
         instrument_name: String,
         quantity: f64,
         filled_amount: f64,
-    ) -> PrivateOrderHistoryInlinePropertiesOrdersItemsLegsInner {
-        PrivateOrderHistoryInlinePropertiesOrdersItemsLegsInner {
+    ) -> PrivateOrderHistoryInlinePropertiesOrdersItemsPropertiesLegsItems {
+        PrivateOrderHistoryInlinePropertiesOrdersItemsPropertiesLegsItems {
             instrument_name,
             quantity,
             filled_amount,

@@ -13,13 +13,13 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PrivateAccountBreakdown {
-    PrivateRfqHistoryResult(Box<models::PrivateRfqHistoryResult>),
+pub enum PrivateTradeHistory {
+    PrivateTradeHistoryResult(Box<models::PrivateTradeHistoryResult>),
     ErrorResponse(Box<models::ErrorResponse>),
 }
 
-impl Default for PrivateAccountBreakdown {
+impl Default for PrivateTradeHistory {
     fn default() -> Self {
-        Self::PrivateRfqHistoryResult(Default::default())
+        Self::PrivateTradeHistoryResult(Default::default())
     }
 }

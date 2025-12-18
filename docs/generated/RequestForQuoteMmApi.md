@@ -14,7 +14,7 @@ Method | HTTP request | Description
 
 ## rest_private_slash_mm_rfq_amend_quote
 
-> models::RestPrivateMmRfqAmendQuote200Response rest_private_slash_mm_rfq_amend_quote(rest_private_mm_rfq_amend_quote_request)
+> models::RestPrivateMmRfqInsertQuote200Response rest_private_slash_mm_rfq_amend_quote(rest_private_mm_rfq_amend_quote_request)
 Amend quote
 
 Exchange: `https://thalex.com/api/v2/private/mm_rfq_amend_quote`  Testnet: `https://testnet.thalex.com/api/v2/private/mm_rfq_amend_quote`  Change the amount and price of an existing quote. 
@@ -28,7 +28,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::RestPrivateMmRfqAmendQuote200Response**](rest_private_mm_rfq_amend_quote_200_response.md)
+[**models::RestPrivateMmRfqInsertQuote200Response**](rest_private_mm_rfq_insert_quote_200_response.md)
 
 ### Authorization
 
@@ -131,7 +131,7 @@ No authorization required
 
 ## rest_private_slash_mm_rfqs
 
-> models::RestPrivateOpenRfqs200Response rest_private_slash_mm_rfqs()
+> models::ErrorResponse rest_private_slash_mm_rfqs()
 Open RFQs
 
 Exchange: `https://thalex.com/api/v2/private/mm_rfqs`  Testnet: `https://testnet.thalex.com/api/v2/private/mm_rfqs`  Retrieves a list of open RFQs that this account has access to.
@@ -142,7 +142,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**models::RestPrivateOpenRfqs200Response**](rest_private_open_rfqs_200_response.md)
+[**models::ErrorResponse**](ErrorResponse.md)
 
 ### Authorization
 

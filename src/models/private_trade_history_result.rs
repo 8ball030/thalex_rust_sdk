@@ -12,17 +12,17 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct PrivateOrderHistoryResult {
-    #[serde(rename = "orders", skip_serializing_if = "Option::is_none")]
-    pub orders: Option<Vec<models::OrderHistory>>,
+pub struct PrivateTradeHistoryResult {
+    #[serde(rename = "trades", skip_serializing_if = "Option::is_none")]
+    pub trades: Option<Vec<models::OrderFill>>,
     #[serde(rename = "bookmark", skip_serializing_if = "Option::is_none")]
     pub bookmark: Option<String>,
 }
 
-impl PrivateOrderHistoryResult {
-    pub fn new() -> PrivateOrderHistoryResult {
-        PrivateOrderHistoryResult {
-            orders: None,
+impl PrivateTradeHistoryResult {
+    pub fn new() -> PrivateTradeHistoryResult {
+        PrivateTradeHistoryResult {
+            trades: None,
             bookmark: None,
         }
     }

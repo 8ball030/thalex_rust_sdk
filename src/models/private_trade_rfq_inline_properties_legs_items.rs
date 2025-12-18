@@ -12,33 +12,25 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct PrivateTradeRfqResult {
-    #[serde(rename = "rfq_id")]
-    pub rfq_id: String,
+pub struct PrivateTradeRfqInlinePropertiesLegsItems {
+    #[serde(rename = "instrument_name")]
+    pub instrument_name: String,
     #[serde(rename = "direction")]
     pub direction: Direction,
-    #[serde(rename = "price")]
-    pub price: f64,
     #[serde(rename = "amount")]
     pub amount: f64,
-    #[serde(rename = "legs")]
-    pub legs: Vec<models::PrivateTradeRfqInlinePropertiesLegsItems>,
 }
 
-impl PrivateTradeRfqResult {
+impl PrivateTradeRfqInlinePropertiesLegsItems {
     pub fn new(
-        rfq_id: String,
+        instrument_name: String,
         direction: Direction,
-        price: f64,
         amount: f64,
-        legs: Vec<models::PrivateTradeRfqInlinePropertiesLegsItems>,
-    ) -> PrivateTradeRfqResult {
-        PrivateTradeRfqResult {
-            rfq_id,
+    ) -> PrivateTradeRfqInlinePropertiesLegsItems {
+        PrivateTradeRfqInlinePropertiesLegsItems {
+            instrument_name,
             direction,
-            price,
             amount,
-            legs,
         }
     }
 }

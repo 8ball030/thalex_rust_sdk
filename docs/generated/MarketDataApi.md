@@ -15,7 +15,7 @@ Method | HTTP request | Description
 
 ## rest_public_slash_all_instruments
 
-> models::RestPrivateNotificationsInbox200Response rest_public_slash_all_instruments(time_low, time_high)
+> models::RestPublicInstruments200Response rest_public_slash_all_instruments(time_low, time_high)
 All instruments
 
 Exchange: `https://thalex.com/api/v2/public/all_instruments`  Testnet: `https://testnet.thalex.com/api/v2/public/all_instruments`  Retrieves the list of all instruments that were active in the specified time interval.  Note that the time interval cannot be larger than 3 days.  You can also use `public/instrument` call to retrieve information about a specific instrument. 
@@ -30,7 +30,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::RestPrivateNotificationsInbox200Response**](rest_private_notifications_inbox_200_response.md)
+[**models::RestPublicInstruments200Response**](rest_public_instruments_200_response.md)
 
 ### Authorization
 
@@ -46,7 +46,7 @@ No authorization required
 
 ## rest_public_slash_book
 
-> models::RestPrivateCancelAll200Response rest_public_slash_book(instrument_name)
+> models::RestPublicBook200Response rest_public_slash_book(instrument_name)
 Single order book
 
 Exchange: `https://thalex.com/api/v2/public/book`  Testnet: `https://testnet.thalex.com/api/v2/public/book`  Retrieves aggregated price depth for a single instrument, with a maximum of 5 levels. Please do *not* use this to poll for data -- a websocket subscription is more flexible and more useful. 
@@ -60,7 +60,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::RestPrivateCancelAll200Response**](rest_private_cancel_all_200_response.md)
+[**models::RestPublicBook200Response**](rest_public_book_200_response.md)
 
 ### Authorization
 
