@@ -11,16 +11,17 @@ run:
 	cargo run --all-features
 
 codegen:
-# 	curl https://testnet.thalex.com/docs/thalex_api.yaml -o openapi.yaml
-# 	bash build_scripts/pre_processing.sh
+	curl https://testnet.thalex.com/docs/thalex_api.yaml | yq '.' > openapi.json
+	python pre-process.py openapi.json openapi_updated.json
 
 	openapi-generator-cli generate \
-	  -i ws_spec.yaml \
+	  -i openapi_updated.json \
 	  -g rust \
 	  -o ./generated \
 	--additional-properties=supportAsync=false,useSingleRequestParameter=true
 
 
+	rm -rf ./src/models/* ./docs/generated/*
 	cp ./generated/src/models/* ./src/models/
 	cp ./generated/docs/* ./docs/generated/
 # 	cp -r ./generated/src/apis ./src/
@@ -44,9 +45,10 @@ codegen:
 		if [ "$$base" = "mod.rs" ]; then continue; fi; \
 		name=$${base%.rs}; \
 		camel=$$(echo $$name | sed -E 's/(^|_)([a-z])/\U\2/g'); \
+		camel=$$(echo $$camel | sed -E 's/_//g'); \
 		echo "pub mod $$name;" >> ./src/models/mod.rs; \
 		echo "pub use $$name::$$camel;" >> ./src/models/mod.rs; \
 	done
-# 	python build_scripts/post_processing.py
+	python post-process.py
 
 all: codegen fmt lint build test

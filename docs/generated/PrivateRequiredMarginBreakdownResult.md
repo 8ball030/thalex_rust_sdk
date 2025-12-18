@@ -1,0 +1,11 @@
+# PrivateRequiredMarginBreakdownResult
+
+## Properties
+
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**portfolio** | Option<[**models::PrivateRequiredMarginBreakdownResultPortfolio**](PrivateRequiredMarginBreakdownResult_portfolio.md)> |  | [optional]
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

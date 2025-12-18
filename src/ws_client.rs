@@ -1,3 +1,4 @@
+use serde::Deserialize;
 use tokio::{net::TcpStream, sync::oneshot};
 
 use futures_util::{SinkExt, StreamExt};
@@ -13,6 +14,8 @@ use tokio_tungstenite::{
     MaybeTlsStream, WebSocketStream, connect_async, tungstenite::protocol::Message,
 };
 
+use crate::models::{ErrorResponse, Instrument, PublicInstruments, Ticker};
+
 type WsStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
 type ResponseSender = oneshot::Sender<String>;
 type Error = Box<dyn std::error::Error + Send + Sync>;
@@ -23,6 +26,19 @@ const URL: &str = "wss://thalex.com/ws/api/v2";
 enum InternalCommand {
     Send(Message),
     Close,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct ChannelMessage {
+    pub channel_name: String,
+    pub notification: Ticker,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct RpcMessage {
+    pub id: u64,
+    pub result: PublicInstruments,
+    pub error: Option<ErrorResponse>,
 }
 
 pub struct WsClient {
@@ -73,7 +89,11 @@ impl WsClient {
     }
 
     /// JSON-RPC style call: sends a method/params, waits for matching `id`.
-    pub async fn call_rpc(&self, method: &str, params: Value) -> Result<String, Error> {
+    pub async fn get_instruments(
+        &self,
+        method: &str,
+        params: Value,
+    ) -> Result<Vec<Instrument>, Error> {
         let id = self.next_id.fetch_add(1, Ordering::Relaxed);
 
         let (tx, rx) = oneshot::channel::<String>();
@@ -100,17 +120,29 @@ impl WsClient {
             return Err(Box::new(e));
         }
 
-        let response = tokio::time::timeout(std::time::Duration::from_secs(30), rx).await??;
+        let response = rx.await?;
+        info!("Received RPC response for id={id}: {response}");
 
-        Ok(response)
+        let parsed: RpcMessage = serde_json::from_str(&response)?;
+
+        let result: PublicInstruments = parsed.result;
+
+        let instruments = match result {
+            PublicInstruments::PublicInstrumentsResult(v) => v,
+            PublicInstruments::ErrorResponse(err) => {
+                return Err(Box::new(std::io::Error::other(format!(
+                    "API error: {err:?}"
+                ))));
+            }
+        };
+
+        Ok(instruments)
     }
 
-    /// Subscribe to a channel with a callback.
-    ///
     /// The callback runs in its own task and receives each message for this channel.
     pub async fn subscribe<F>(&self, channel: &str, mut callback: F) -> Result<(), Error>
     where
-        F: FnMut(String) + Send + 'static,
+        F: FnMut(Ticker) + Send + 'static,
     {
         let channel = channel.to_string();
 
@@ -134,7 +166,15 @@ impl WsClient {
         // Spawn callback task
         tokio::spawn(async move {
             while let Some(msg) = rx.recv().await {
-                callback(msg);
+                // Parses into a json value initally
+                let parsed_msg: ChannelMessage = match serde_json::from_str(&msg) {
+                    Ok(m) => m,
+                    Err(e) => {
+                        warn!("Failed to parse channel message: {e}; raw: {msg}");
+                        continue;
+                    }
+                };
+                callback(parsed_msg.notification);
             }
         });
 
@@ -164,7 +204,12 @@ impl WsClient {
     }
 
     /// Request clean shutdown of the websocket supervisor.
-    pub async fn shutdown(&self) -> Result<(), Error> {
+    pub async fn shutdown(&self, reason: &'static str) -> Result<(), Error> {
+        error!(
+            "WsClient::shutdown() reason {} called\n{}",
+            reason,
+            std::backtrace::Backtrace::capture()
+        );
         let _ = self.shutdown_tx.send(true);
         let _ = self.write_tx.send(InternalCommand::Close);
         Ok(())
@@ -306,6 +351,7 @@ async fn run_single_connection(
                         }
                     }
                     Some(Ok(Message::Ping(data))) => {
+                        info!("Received Ping on {url}, sending Pong");
                         ws.send(Message::Pong(data)).await?;
                     }
                     Some(Ok(Message::Pong(_))) => {
