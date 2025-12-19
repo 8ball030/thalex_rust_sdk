@@ -34,6 +34,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
 
+      - name: Codegen
+        run: make codegen
+
       - name: Format
         run: make fmt
 
@@ -45,3 +48,6 @@ jobs:
 
       - name: Test
         run: make test
+
+      - name: Check not dirty
+        run: git diff --exit-code
