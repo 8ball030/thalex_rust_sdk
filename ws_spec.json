@@ -1,0 +1,92 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Websocket Subscription Schemas",
+    "version": "1.0.0",
+    "description": "Schema definitions Websocket API subscriptions for Thalex exchange."
+  },
+  "paths": {
+    "/ticker/{instrument}/{delay}": {
+      "get": {
+        "summary": "Subscribe to ticker data for a given instrument or combination",
+        "parameters": [
+          {
+            "name": "instrument",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "examples": {
+              "single": {
+                "value": "BTC-PERPETUAL",
+                "summary": "Single instrument"
+              },
+              "combination": {
+                "value": "[BTC-30MAY25-93000-C:-1,BTC-30MAY25-80000-C:1]",
+                "summary": "Combination with two legs"
+              }
+            }
+          },
+          {
+            "name": "delay",
+            "in": "path",
+            "required": true,
+            "description": "Minimum interval between feeds",
+            "schema": {
+              "$ref": "#/components/schemas/Delay"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ticker data retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TickerResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Delay": {
+        "type": "string",
+        "description": "Minimum interval between feeds",
+        "enum": [
+          "100ms",
+          "200ms",
+          "500ms",
+          "1000ms",
+          "5000ms",
+          "60000ms",
+          "raw"
+        ],
+        "example": "100ms"
+      },
+      "TickerResponse": {
+        "type": "object",
+        "required": [
+          "channel_name",
+          "notification"
+        ],
+        "properties": {
+          "channel_name": {
+            "type": "string",
+            "description": "Channel name as in subscription",
+            "pattern": "^ticker\\..+\\.(100ms|200ms|500ms|1000ms|5000ms|60000ms|raw)$",
+            "example": "ticker.BTC-PERPETUAL.100ms"
+          },
+          "notification": {
+            "$ref": "./openapi_updated.json#/components/schemas/Ticker" 
+          }
+        }
+      }
+    }
+  }
+}

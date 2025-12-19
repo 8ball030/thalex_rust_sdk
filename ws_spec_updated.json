@@ -1,0 +1,202 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Websocket Subscription Schemas",
+    "version": "1.0.0",
+    "description": "Schema definitions Websocket API subscriptions for Thalex exchange."
+  },
+  "paths": {
+    "/ticker/{instrument}/{delay}": {
+      "get": {
+        "summary": "Subscribe to ticker data for a given instrument or combination",
+        "parameters": [
+          {
+            "name": "instrument",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "examples": {
+              "single": {
+                "value": "BTC-PERPETUAL",
+                "summary": "Single instrument"
+              },
+              "combination": {
+                "value": "[BTC-30MAY25-93000-C:-1,BTC-30MAY25-80000-C:1]",
+                "summary": "Combination with two legs"
+              }
+            }
+          },
+          {
+            "name": "delay",
+            "in": "path",
+            "required": true,
+            "description": "Minimum interval between feeds",
+            "schema": {
+              "$ref": "#/components/schemas/Delay"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ticker data retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TickerResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Delay": {
+        "type": "string",
+        "description": "Minimum interval between feeds",
+        "enum": [
+          "100ms",
+          "200ms",
+          "500ms",
+          "1000ms",
+          "5000ms",
+          "60000ms",
+          "raw"
+        ],
+        "example": "100ms"
+      },
+      "TickerResponse": {
+        "type": "object",
+        "required": [
+          "channel_name",
+          "notification"
+        ],
+        "properties": {
+          "channel_name": {
+            "type": "string",
+            "description": "Channel name as in subscription",
+            "pattern": "^ticker\\..+\\.(100ms|200ms|500ms|1000ms|5000ms|60000ms|raw)$",
+            "example": "ticker.BTC-PERPETUAL.100ms"
+          },
+          "notification": {
+            "$ref": "#/components/schemas/Ticker"
+          }
+        }
+      },
+      "Ticker": {
+        "type": "object",
+        "summary": "Ticker",
+        "properties": {
+          "best_bid_price": {
+            "type": "number",
+            "description": "Price of the best (highest) bid in the orderbook, or `null` if the orderbook is empty."
+          },
+          "best_bid_amount": {
+            "type": "number",
+            "description": "Size of best bid, or `null` if the orderbook is empty."
+          },
+          "best_ask_price": {
+            "type": "number",
+            "description": "Price of best (lowest) ask in the orderbook, or `null` if the orderbook is empty."
+          },
+          "best_ask_amount": {
+            "type": "number",
+            "description": "Size of best ask, or `null` if the orderbook is empty."
+          },
+          "last_price": {
+            "type": "number",
+            "description": "Price of last trade, or `null` if no trades have been registered yet.\n\nNot included for combinations.\n"
+          },
+          "mark_price": {
+            "type": "number",
+            "description": "Current mark price."
+          },
+          "mark_timestamp": {
+            "type": "number",
+            "description": "The unix timestamp when the price was marked."
+          },
+          "iv": {
+            "type": "number",
+            "description": "Implied volatility calculated at time of marking.\n\nOnly included for options. Not included for combinations.\n"
+          },
+          "delta": {
+            "type": "number",
+            "description": "Delta calculated at time of marking.\n\nNot included for combinations.\n"
+          },
+          "index": {
+            "type": "number",
+            "description": "Index price at time of marking."
+          },
+          "forward": {
+            "type": "number",
+            "description": "Forward price at time of marking.\n\nOnly included for options.\n"
+          },
+          "volume_24h": {
+            "type": "number",
+            "description": "Total volume traded over the last 24 hours.\n\nNot included for combinations.\n"
+          },
+          "value_24h": {
+            "type": "number",
+            "description": "Total value traded over the last 24 hours.\n\nNot included for combinations.\n"
+          },
+          "low_price_24h": {
+            "type": "number",
+            "description": "Lowest price in the last 24 hours.\n\nNot included for combinations.\n"
+          },
+          "high_price_24h": {
+            "type": "number",
+            "description": "Highest price in the last 24 hours.\n\nNot included for combinations.\n"
+          },
+          "change_24h": {
+            "type": "number",
+            "description": "Difference in price between the first and the last trades in the last 24 hours, `null` if there were no trades.\n\nNot included for combinations.\n"
+          },
+          "collar_low": {
+            "type": "number",
+            "description": "Current price collar low (checks new asks)"
+          },
+          "collar_high": {
+            "type": "number",
+            "description": "Current price collar high (checks new bids)"
+          },
+          "open_interest": {
+            "type": "number",
+            "description": "Total number of outstanding unsettled contracts.\n\nNot included for combinations.\n"
+          },
+          "funding_rate": {
+            "type": "number",
+            "description": "Current rate at which long position pays and short position earns, in funding interval.\n\nOnly included for perpetuals.\n"
+          },
+          "funding_mark": {
+            "type": "number",
+            "description": "Funding value of a single contract long position since last settlement.\n\nOnly included for perpetuals.\n"
+          },
+          "realised_funding_24h": {
+            "type": "number",
+            "description": "Total funding accumulated for a single contract long position over the last 24 hours.\n\nOnly included for perpetuals.\n"
+          },
+          "average_funding_rate_24h": {
+            "type": "number",
+            "description": "Average funding rate for the last 24 hours.\n\nOnly included for perpetuals.\n"
+          }
+        },
+        "example": {
+          "mark_price": 47238.64143906124,
+          "mark_timestamp": 946684800,
+          "best_bid_price": 47240,
+          "best_bid_amount": 0.4,
+          "best_ask_price": 47260,
+          "best_ask_amount": 1,
+          "delta": 1,
+          "volume_24h": 0,
+          "value_24h": 0,
+          "open_interest": 123.456
+        }
+      }
+    }
+  }
+}

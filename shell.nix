@@ -12,6 +12,7 @@ pkgs.mkShell {
     typeshare
     openapi-generator-cli
     python312
+    redocly
 
   ];
   nativeBuildInputs =

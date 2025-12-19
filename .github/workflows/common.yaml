@@ -27,7 +27,7 @@ jobs:
           node-version: 20
       
       - name: Install openapi-generator-cli
-        run: npm i -g @openapitools/openapi-generator-cli
+        run: npm i -g @openapitools/openapi-generator-cli @redocly/cli
       
       - name: Pin generator version
         run: openapi-generator-cli version-manager set 7.9.0

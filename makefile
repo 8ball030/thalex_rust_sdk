@@ -14,36 +14,30 @@ codegen:
 	curl https://thalex.com/docs/thalex_api.yaml | yq '.' > openapi.json
 
 	python build_scripts/pre-process.py
+	rm -rf ./generated
 
 	openapi-generator-cli generate \
 	  -i openapi_updated.json \
 	  -g rust \
 	  -o ./generated \
 	--additional-properties=supportAsync=false,useSingleRequestParameter=true
-
-
 	rm -rf ./src/models/* ./docs/generated/*
 	cp ./generated/src/models/* ./src/models/
 	cp ./generated/docs/* ./docs/generated/
-# 	cp -r ./generated/src/apis ./src/
 
-	# rebuild api mod.rs
+	# we do the websocket 
+	redocly bundle ws_spec.json -o ws_spec_updated.json 
 
-# 	@echo "#![allow(clippy::all)]" > ./src/apis/mod.rs
-#	cat ./generated/src/apis/mod.rs >> ./src/apis/mod.rs
-
-	# cleanup
+	openapi-generator-cli generate \
+	  -i ws_spec_updated.json \
+	  -g rust \
+	  -o ./generated \
+	--additional-properties=supportAsync=false,useSingleRequestParameter=true
+	rm -rf ./src/models/* ./docs/generated/* 
+	cp ./generated/src/models/* ./src/models/
+	cp ./generated/docs/* ./docs/generated/
 	rm -rf ./generated
 
-	@for f in ./src/models/*.rs; do \
-		base=$$(basename $$f); \
-		if [ "$$base" = "mod.rs" ]; then continue; fi; \
-		name=$${base%.rs}; \
-		camel=$$(echo $$name | sed -E 's/(^|_)([a-z])/\U\2/g'); \
-		camel=$$(echo $$camel | sed -E 's/_//g'); \
-		echo "pub mod $$name;" >> ./src/models/mod.rs; \
-		echo "pub use $$name::$$camel;" >> ./src/models/mod.rs; \
-	done
 	python build_scripts/post-process.py
 
 all: codegen fmt lint build test

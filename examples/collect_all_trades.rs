@@ -1,4 +1,3 @@
-
 use log::{Level::Info, info};
 use simple_logger::init_with_level;
 use thalex_rust_sdk::{models::Trade, ws_client::WsClient};
