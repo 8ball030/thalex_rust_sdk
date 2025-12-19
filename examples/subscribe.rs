@@ -1,6 +1,6 @@
 use log::{Level::Info, info};
 use simple_logger::init_with_level;
-use thalex_rust_sdk::ws_client::WsClient;
+use thalex_rust_sdk::{models::Delay, ws_client::WsClient};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -12,7 +12,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     info!("Total Instruments: {}", instruments.len());
 
     let _ = client
-        .subscribe("ticker.BTC-PERPETUAL.raw", |msg| {
+        .subscriptions()
+        .ticker("BTC-PERPETUAL", Delay::Raw, |msg| {
             // Parses into a json value initally
             let best_bid_price: f64 = msg.best_bid_price.unwrap_or_default();
             let best_ask_price: f64 = msg.best_ask_price.unwrap_or_default();

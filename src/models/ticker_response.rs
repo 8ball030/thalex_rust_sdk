@@ -17,14 +17,14 @@ pub struct TickerResponse {
     #[serde(rename = "channel_name")]
     pub channel_name: String,
     #[serde(rename = "notification")]
-    pub notification: Box<models::Ticker>,
+    pub notification: models::Ticker,
 }
 
 impl TickerResponse {
     pub fn new(channel_name: String, notification: models::Ticker) -> TickerResponse {
         TickerResponse {
             channel_name,
-            notification: Box::new(notification),
+            notification,
         }
     }
 }

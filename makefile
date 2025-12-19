@@ -32,7 +32,7 @@ codegen:
 	  -i ws_spec_updated.json \
 	  -g rust \
 	  -o ./generated \
-	--additional-properties=supportAsync=false,useSingleRequestParameter=true
+	--additional-properties=supportAsync=false,useSingleRequestParameter=true,avoidBoxedModels=true
 	rm -rf ./src/models/* ./docs/generated/* 
 	cp ./generated/src/models/* ./src/models/
 	cp ./generated/docs/* ./docs/generated/
