@@ -19,7 +19,8 @@ jobs:
 
       - name: Install deps
         run: | 
-          sudo apt-get update && sudo apt-get install yq jq -y
+          sudo apt-get update && \
+          sudo apt-get install yq jq openapi-generator-cli -y
 
       - name: Install Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
