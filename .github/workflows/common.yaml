@@ -18,7 +18,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install deps
-        run: | apt-get update && apt-get install yq jq -y
+        run: | 
+          apt-get update && apt-get install yq jq -y
 
       - name: Install Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
