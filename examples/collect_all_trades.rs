@@ -1,4 +1,3 @@
-use std::env::var;
 
 use log::{Level::Info, info};
 use simple_logger::init_with_level;
@@ -46,16 +45,8 @@ impl<'a> Serialize for TradeCsv<'a> {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     init_with_level(Info).unwrap();
 
-    let client = WsClient::connect_default().await.unwrap();
-
-    let key_path = "examples/private_key.pem";
-
     dotenv::dotenv().ok();
-    // We load from the environment variables for simplicity
-    let key_id = var("KEY_ID").unwrap();
-    let account_id = var("ACCOUNT_ID").unwrap();
-
-    client.login(&key_id, &account_id, key_path).await.unwrap();
+    let client = WsClient::from_env().await.unwrap();
 
     let mut all_trades = Vec::new();
     let trade_result = client.get_trade_history(None).await.unwrap();
@@ -76,7 +67,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // We write the trades to a csv file.
     let mut processed_trades = Vec::new();
-    let filename = format!("all_trades_{account_id}.csv");
+    let filename = "all_trades.csv".to_string();
     let mut wtr = csv::WriterBuilder::new()
         .has_headers(true)
         .from_path(filename.clone())?;

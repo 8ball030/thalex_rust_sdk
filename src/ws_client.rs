@@ -5,6 +5,7 @@ use futures_util::{SinkExt, StreamExt};
 use log::{error, info, warn};
 use serde_json::Value;
 use std::collections::HashMap;
+use std::env::var;
 use std::sync::{
     Arc,
     atomic::{AtomicU64, Ordering},
@@ -57,6 +58,15 @@ impl WsClient {
     /// Create a client and start the supervisor loop, connecting to the default URL.
     pub async fn connect_default() -> Result<Self, Error> {
         Self::connect(URL).await
+    }
+
+    pub async fn from_env() -> Result<Self, Error> {
+        let key_path = var("THALEX_PRIVATE_KEY_PATH").unwrap();
+        let key_id = var("THALEX_KEY_ID").unwrap();
+        let account_id = var("THALEX_ACCOUNT_ID").unwrap();
+        let client = WsClient::connect_default().await?;
+        client.login(&key_id, &account_id, &key_path).await?;
+        Ok(client)
     }
 
     /// Create a client and start the supervisor loop, connecting to the given URL.
