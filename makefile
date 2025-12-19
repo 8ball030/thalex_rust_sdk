@@ -27,12 +27,6 @@ codegen:
 	cp ./generated/docs/* ./docs/generated/
 # 	cp -r ./generated/src/apis ./src/
 
-	# rebuild mod.rs
-	@echo "#![allow(clippy::all)]" > ./src/models/mod.rs
-	@echo "#![allow(unused_imports)]" >> ./src/models/mod.rs
-	@echo "#![allow(dead_code)]" >> ./src/models/mod.rs
-	@echo "#![allow(non_camel_case_types)]" >> ./src/models/mod.rs
-	@echo "#![allow(clippy::upper_case_acronyms)]" >> ./src/models/mod.rs
 	# rebuild api mod.rs
 
 # 	@echo "#![allow(clippy::all)]" > ./src/apis/mod.rs

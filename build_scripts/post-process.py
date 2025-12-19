@@ -5,6 +5,7 @@ Simple post processing script to fix the output of the generated models.
 import glob
 from pathlib import Path
 import os
+from textwrap import dedent
 OUTPUT_FOLDER = Path("src/models/")
 
 class PostProcessor:
@@ -56,6 +57,30 @@ class PostProcessor:
         if new_path != file_path and new_path.exists():
             raise FileExistsError(f"Cannot rename {file_path} to {new_path}, target already exists.")
         file_path.rename(new_path)
+        self.rebuild_mod_file()
+
+
+    def rebuild_mod_file(self):
+        """
+        Rebuild the mod.rs file from scratch.
+        """
+        header = dedent("""
+                        #![allow(clippy::all)]
+                        #![allow(unused_imports)]
+                        #![allow(dead_code)]
+                        #![allow(non_camel_case_types)]
+                        #![allow(clippy::upper_case_acronyms)]
+                        """).strip() + "\n\n"
+        mod_file_path = OUTPUT_FOLDER / "mod.rs"
+        lines = [header]
+        for file_path in sorted(OUTPUT_FOLDER.glob("*.rs")):
+            if file_path.name == "mod.rs":
+                continue
+            name = file_path.stem
+            camel = ''.join(part.capitalize() for part in name.split('_'))
+            lines.append(f"pub mod {name};")
+            lines.append(f"pub use {name}::{camel};")
+        mod_file_path.write_text('\n'.join(lines))
 
     def update_mod_file(self):
         """
