@@ -1,92 +1,223 @@
 {
-  "openapi": "3.1.0",
-  "info": {
-    "title": "Websocket Subscription Schemas",
-    "version": "1.0.0",
-    "description": "Schema definitions Websocket API subscriptions for Thalex exchange."
-  },
-  "paths": {
-    "/ticker/{instrument}/{delay}": {
-      "get": {
-        "summary": "Subscribe to ticker data for a given instrument or combination",
-        "parameters": [
-          {
-            "name": "instrument",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "examples": {
-              "single": {
-                "value": "BTC-PERPETUAL",
-                "summary": "Single instrument"
-              },
-              "combination": {
-                "value": "[BTC-30MAY25-93000-C:-1,BTC-30MAY25-80000-C:1]",
-                "summary": "Combination with two legs"
-              }
-            }
-          },
-          {
-            "name": "delay",
-            "in": "path",
-            "required": true,
-            "description": "Minimum interval between feeds",
-            "schema": {
-              "$ref": "#/components/schemas/Delay"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Ticker data retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TickerResponse"
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Websocket Subscription Schemas",
+        "version": "1.0.0",
+        "description": "Schema definitions Websocket API subscriptions for Thalex exchange."
+    },
+    "paths": {
+        "/ticker/{instrument}/{delay}": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to ticker.<instrument>.<delay> channel",
+                "operationId": "subscribe_ticker_<instrument>_<delay>",
+                "parameters": [
+                    {
+                        "name": "instrument",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "delay",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Delay"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TickerNotification"
+                                }
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
+        },
+        "/book/{instrument}/{grouping}/{nlevels}/{delay}": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to book.<instrument>.<grouping>.<nlevels>.<delay> channel",
+                "operationId": "subscribe_book_<instrument>_<grouping>_<nlevels>_<delay>",
+                "parameters": [
+                    {
+                        "name": "instrument",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "grouping",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "nlevels",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "delay",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Delay"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "Delay": {
-        "type": "string",
-        "description": "Minimum interval between feeds",
-        "enum": [
-          "100ms",
-          "200ms",
-          "500ms",
-          "1000ms",
-          "5000ms",
-          "60000ms",
-          "raw"
-        ],
-        "example": "100ms"
-      },
-      "TickerResponse": {
-        "type": "object",
-        "required": [
-          "channel_name",
-          "notification"
-        ],
-        "properties": {
-          "channel_name": {
-            "type": "string",
-            "description": "Channel name as in subscription",
-            "pattern": "^ticker\\..+\\.(100ms|200ms|500ms|1000ms|5000ms|60000ms|raw)$",
-            "example": "ticker.BTC-PERPETUAL.100ms"
-          },
-          "notification": {
-            "$ref": "./openapi_updated.json#/components/schemas/Ticker" 
-          }
+    },
+    "components": {
+        "schemas": {
+            "Delay": {
+                "type": "string",
+                "description": "Minimum interval between feeds",
+                "enum": [
+                    "100ms",
+                    "200ms",
+                    "500ms",
+                    "1000ms",
+                    "5000ms",
+                    "60000ms",
+                    "raw"
+                ],
+                "example": "100ms"
+            },
+            "BookNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription.",
+                        "const": "book.<instrument>.<grouping>.<nlevels>.<delay>"
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/Book"
+                    }
+                }
+            },
+            "Book": {
+                "type": "object",
+                "properties": {
+                    "trades": {
+                        "type": "array",
+                        "description": "List of `[price, amount, direction, timestamp, implied_taker]`. Note that the snapshot of this feed may contain\nolder trades that happened since the last restart of the gateway.\n\nThe `implied_taker` is a boolean flag, set to `true` when the actual taker trade happened on another order book,\nand the maker trade on this book is the result of implied matching.\n\nTrades are not sent for combination order books.\n"
+                    },
+                    "bid_changes": {
+                        "type": "array",
+                        "description": "List of price level updates (price, amount, outright amount) for buy orders, amount 0 means level is now empty.\n\nFor combination order books, price and amount refer to the price and amount per unit of the combination.\n"
+                    },
+                    "ask_changes": {
+                        "type": "array",
+                        "description": "List of price level updates (price, amount, outright amount) for sell orders, amount 0 means level is now empty.\n\nFor combination order books, price and amount refer to the price and amount per unit of the combination.\n"
+                    },
+                    "total_bid_amount": {
+                        "type": "number",
+                        "description": "The total amount of bid orders across all levels."
+                    },
+                    "total_ask_amount": {
+                        "type": "number",
+                        "description": "The total amount of ask orders across all levels."
+                    },
+                    "time": {
+                        "type": "number",
+                        "description": "Time of the last recorded update to this order book (Unix timestamp)."
+                    }
+                },
+                "example": {
+                    "trades": [
+                        [
+                            9120.5,
+                            15,
+                            "buy",
+                            156789.103,
+                            false
+                        ],
+                        [
+                            9121,
+                            30,
+                            "buy",
+                            156789.123,
+                            false
+                        ]
+                    ],
+                    "bid_changes": [
+                        [
+                            9120.5,
+                            0,
+                            0
+                        ],
+                        [
+                            9121,
+                            54,
+                            53
+                        ]
+                    ],
+                    "total_bid_amount": 45,
+                    "total_ask_amount": 30,
+                    "time": 1683901254.785744
+                },
+                "description": "Channel-specific content"
+            },
+            "TickerNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription.",
+                        "const": "ticker.<instrument>.<delay>"
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/Ticker",
+                        "description": "Channel-specific content"
+                    }
+                }
+            },
+            "Ticker": {
+                "$ref": "./openapi_updated.json#/components/schemas/Ticker"
+            }
         }
-      }
     }
-  }
 }

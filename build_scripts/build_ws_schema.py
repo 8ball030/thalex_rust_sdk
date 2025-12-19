@@ -1,0 +1,178 @@
+"""
+Read in the raw spec and generate the ws subscriptions file.
+"""
+import json
+
+from pathlib import Path
+
+import re
+
+SCHEMA_PATH = Path("new_schema.json")
+
+TRANSIENT_WS_SPEC_PATH = Path("ws_spec.json")
+
+PROCESSED_OPENAPI_PATH = Path("openapi_updated.json")
+
+CHANNEL_NAME_PATTERN = re.compile(r'Channel name: `([^`]+)`')
+SCHEMA_PATTERN = re.compile(r'Notification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/([^"]+)"')
+
+
+def extract_all_ws_tags():
+    raw_spec = json.loads(SCHEMA_PATH.read_text())
+    tags = raw_spec.get("tags", [])
+    ws_tags = [tag for tag in tags if tag.get("name", "").startswith("subs_") and tag.get("description", None)]
+
+    contents = []
+    for tag in ws_tags:
+        print(f"Tag: {tag['name']}")
+        # print(f"Description: {tag['description']}")
+        description = tag['description']
+        # We have to use regex to extract the schema references
+        channels = CHANNEL_NAME_PATTERN.findall(description)
+        schemas = SCHEMA_PATTERN.findall(description)
+
+        for channel, schema in zip(channels, schemas):
+            contents.append({
+                "tag": tag['name'],
+                "channel": channel,
+                "schema_ref": schema
+            })
+
+    return contents
+
+def from_channel_to_path(channel_name):
+    """
+    ticker.<instrument>.<delay>  -> /ticker/{instrument}/{delay}
+    """
+    parts = channel_name.split('.')
+    path_parts = []
+    params = []
+    for part in parts:
+        if part.startswith('<') and part.endswith('>'):
+            path_parts.append('{' + part[1:-1] + '}')
+            params.append(part[1:-1])
+        else:
+            path_parts.append(part)
+    return '/' + '/'.join(path_parts), params
+
+
+
+def from_schema_ref_to_notification_schema_name_and_schema(schema_ref):
+
+    raw_spec = json.loads(SCHEMA_PATH.read_text())
+    components = raw_spec.get("components", {})
+    schemas = components.get("schemas", {})
+    if schema_ref not in schemas:
+        raise(f"Schema ref {schema_ref} not found in components.schemas")
+    notification_schema = schemas[schema_ref]
+    notification_schema_name = "".join([i.capitalize() for i in schema_ref.split(".")[0].split("_")]) + "Notification"
+    extracted_payload_schema = notification_schema.get("properties", {})["notification"]
+    extracted_payload_name   =  schema_ref.split(".")[0].capitalize()
+
+    # we check if it is in our main schemas, if so can use that.
+    # We replace the notification property with the actual payload schema
+    processed_spec = json.loads(PROCESSED_OPENAPI_PATH.read_text())
+    processed_components = processed_spec.get("components", {})
+    processed_schemas = processed_components.get("schemas", {})
+    if extracted_payload_name in processed_schemas:
+        extracted_payload_schema = {"$ref": f"./openapi_updated.json#/components/schemas/{extracted_payload_name}"}
+    else:
+        notification_schema["properties"]["notification"] = {"$ref": f"#/components/schemas/{extracted_payload_name}"}
+
+    
+    return notification_schema_name, notification_schema, extracted_payload_name, extracted_payload_schema
+
+
+def update_ws_spec_with_path_and_schemas(path, path_spec, notification, notification_schema, 
+                                         extracted_payload, extracted_payload_schema):
+    to_update = json.loads(TRANSIENT_WS_SPEC_PATH.read_text())
+
+    to_update["paths"][path] = path_spec
+    to_update["components"]["schemas"][notification] = notification_schema
+    to_update["components"]["schemas"][extracted_payload] = extracted_payload_schema
+    TRANSIENT_WS_SPEC_PATH.write_text(json.dumps(to_update, indent=4))
+
+
+def from_path_and_params_to_path_spec(params, notification_schema_name, channel_name):
+    """
+    Given params = ['instrument', 'delay']
+    return the path spec for /ticker/{instrument}/{delay}
+    """
+    existing_spec = json.loads(TRANSIENT_WS_SPEC_PATH.read_text())
+    path_spec = {
+        "get": {
+            "tags": [
+                "subs_market_data"
+            ],
+            "summary": f"Subscribe to {channel_name} channel",
+            "operationId": f"subscribe_{channel_name.replace('.', '_')}",
+            "parameters": [],
+            "responses": {
+                "200": {
+                    "description": "Successful subscription",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": f"#/components/schemas/{notification_schema_name}"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    # We check if there is a ref for the param already
+    for param in params:
+        if param.capitalize() in existing_spec.get("components", {}).get("schemas", {}):
+            path_spec["get"]["parameters"].append({
+                "name": param,
+                "in": "path",
+                "required": True,
+                "schema": {
+                    "$ref": f"#/components/schemas/{param.capitalize()}"
+                }
+            })
+            continue
+        path_spec["get"]["parameters"].append({
+            "name": param,
+            "in": "path",
+            "required": True,
+            "schema": {
+                "type": "string"
+            }
+        })
+    return path_spec
+
+
+
+if __name__ == "__main__":
+    all_data = extract_all_ws_tags()
+    print(f"""Found {len(all_data)} WebSocket subscription channels in the schema:""")
+    count = 0
+    for data in all_data:
+        # we just process the subs_market_data for now
+        if data['tag'] != 'subs_market_data':
+            continue
+        print(f" Channel:     {data['channel']}")
+        path, params = from_channel_to_path(data['channel'])
+        print(f"   path:        {path}")
+        print(f"   params:      {params}")
+        print(f"   schema_ref:  {data['schema_ref']}")
+        notification_schema_name, notification_schema, extracted_payload_name, extracted_payload_schema = from_schema_ref_to_notification_schema_name_and_schema(data['schema_ref'])
+        print(f"   notification schema name: {notification_schema_name}")
+        print(f"   schema:      {json.dumps(notification_schema, indent=4)}")
+        path_spec = from_path_and_params_to_path_spec(params, notification_schema_name, data['channel'])
+
+        update_ws_spec_with_path_and_schemas(path, path_spec, 
+                                            notification_schema_name, 
+                                            notification_schema,
+                                            extracted_payload_name,
+                                            extracted_payload_schema)
+        count += 1
+        print(f"Processed {count} WebSocket subscription channels.")
+
+
+
+
+
+    
