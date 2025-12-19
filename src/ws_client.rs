@@ -1,3 +1,4 @@
+use serde::Deserialize;
 use tokio::{net::TcpStream, sync::oneshot};
 
 use futures_util::{SinkExt, StreamExt};
@@ -13,6 +14,11 @@ use tokio_tungstenite::{
     MaybeTlsStream, WebSocketStream, connect_async, tungstenite::protocol::Message,
 };
 
+use crate::auth_utils::make_auth_token;
+use crate::models::{
+    ErrorResponse, Instrument, PrivateTradeHistoryResult, PublicInstruments, Ticker,
+};
+
 type WsStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
 type ResponseSender = oneshot::Sender<String>;
 type Error = Box<dyn std::error::Error + Send + Sync>;
@@ -23,6 +29,19 @@ const URL: &str = "wss://thalex.com/ws/api/v2";
 enum InternalCommand {
     Send(Message),
     Close,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct ChannelMessage {
+    pub channel_name: String,
+    pub notification: Ticker,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct RpcMessage {
+    pub id: u64,
+    pub result: PublicInstruments,
+    pub error: Option<ErrorResponse>,
 }
 
 pub struct WsClient {
@@ -72,8 +91,32 @@ impl WsClient {
         Ok(client)
     }
 
+    pub async fn login(
+        &self,
+        key_id: &str,
+        account_id: &str,
+        private_key_path: &str,
+    ) -> Result<(), Error> {
+        // we read the private key from the given file path
+        let private_key_pem = tokio::fs::read_to_string(private_key_path).await?;
+        let token = make_auth_token(key_id, private_key_pem)?;
+
+        let msg = serde_json::json!({
+            "method": "public/login",
+            "params": {
+                "token": token,
+                "account": account_id
+            }
+        });
+
+        self.send_json(msg)?;
+
+        info!("Sent login message");
+        Ok(())
+    }
+
     /// JSON-RPC style call: sends a method/params, waits for matching `id`.
-    pub async fn call_rpc(&self, method: &str, params: Value) -> Result<String, Error> {
+    pub async fn get_instruments(&self) -> Result<Vec<Instrument>, Error> {
         let id = self.next_id.fetch_add(1, Ordering::Relaxed);
 
         let (tx, rx) = oneshot::channel::<String>();
@@ -85,8 +128,8 @@ impl WsClient {
         let request = serde_json::json!({
             "jsonrpc": "2.0",
             "id": id,
-            "method": method,
-            "params": params
+            "method": "public/instruments",
+            "params": {}
         });
 
         let text = request.to_string();
@@ -100,17 +143,72 @@ impl WsClient {
             return Err(Box::new(e));
         }
 
-        let response = tokio::time::timeout(std::time::Duration::from_secs(30), rx).await??;
+        let response = rx.await?;
 
-        Ok(response)
+        let parsed: RpcMessage = serde_json::from_str(&response)?;
+
+        let result: PublicInstruments = parsed.result;
+
+        let instruments = match result {
+            PublicInstruments::PublicInstrumentsResult(v) => v,
+            PublicInstruments::ErrorResponse(err) => {
+                return Err(Box::new(std::io::Error::other(format!(
+                    "API error: {err:?}"
+                ))));
+            }
+        };
+
+        Ok(instruments)
     }
 
-    /// Subscribe to a channel with a callback.
-    ///
+    pub async fn get_trade_history(
+        &self,
+        bookmark: Option<String>,
+    ) -> Result<PrivateTradeHistoryResult, Error> {
+        let id = self.next_id.fetch_add(1, Ordering::Relaxed);
+
+        let (tx, rx) = oneshot::channel::<String>();
+        {
+            let mut pending = self.pending_requests.lock().await;
+            pending.insert(id, tx);
+        }
+
+        let mut request = serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": id,
+            "method": "private/trade_history",
+            "params": {
+            }
+        });
+        if let Some(bm) = bookmark {
+            request["params"]["bookmark"] = serde_json::Value::String(bm);
+        }
+
+        let text = request.to_string();
+
+        if let Err(e) = self
+            .write_tx
+            .send(InternalCommand::Send(Message::Text(text.into())))
+        {
+            let mut pending = self.pending_requests.lock().await;
+            pending.remove(&id);
+            return Err(Box::new(e));
+        }
+
+        let response = rx.await?;
+
+        let parsed_response: Value = serde_json::from_str(&response)?;
+
+        let parsed: PrivateTradeHistoryResult =
+            serde_json::from_value(parsed_response["result"].clone())?;
+
+        Ok(parsed)
+    }
+
     /// The callback runs in its own task and receives each message for this channel.
     pub async fn subscribe<F>(&self, channel: &str, mut callback: F) -> Result<(), Error>
     where
-        F: FnMut(String) + Send + 'static,
+        F: FnMut(Ticker) + Send + 'static,
     {
         let channel = channel.to_string();
 
@@ -134,7 +232,15 @@ impl WsClient {
         // Spawn callback task
         tokio::spawn(async move {
             while let Some(msg) = rx.recv().await {
-                callback(msg);
+                // Parses into a json value initally
+                let parsed_msg: ChannelMessage = match serde_json::from_str(&msg) {
+                    Ok(m) => m,
+                    Err(e) => {
+                        warn!("Failed to parse channel message: {e}; raw: {msg}");
+                        continue;
+                    }
+                };
+                callback(parsed_msg.notification);
             }
         });
 
@@ -164,7 +270,8 @@ impl WsClient {
     }
 
     /// Request clean shutdown of the websocket supervisor.
-    pub async fn shutdown(&self) -> Result<(), Error> {
+    pub async fn shutdown(&self, reason: &'static str) -> Result<(), Error> {
+        info!("Shutdown requested: {reason}");
         let _ = self.shutdown_tx.send(true);
         let _ = self.write_tx.send(InternalCommand::Close);
         Ok(())

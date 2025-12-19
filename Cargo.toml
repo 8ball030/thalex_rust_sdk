@@ -11,3 +11,9 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 log = "0.4.29"
 simple_logger = "5.1.0"
+jsonwebtoken = { version = "10.2.0", features = ["rust_crypto"] }
+dotenv = "0.15.0"
+# We have dev dependencies
+
+[dev-dependencies]
+csv = "1.4.0"
