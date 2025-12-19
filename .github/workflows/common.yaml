@@ -19,7 +19,7 @@ jobs:
 
       - name: Install deps
         run: | 
-          apt-get update && apt-get install yq jq -y
+          sudo apt-get update && sudo apt-get install yq jq -y
 
       - name: Install Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
