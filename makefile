@@ -1,8 +1,8 @@
 lint: 
-	cargo clippy --all-features --all-targets --examples --tests -- -D warnings 
+	cargo clippy --examples --tests -- -D warnings 
 fmt:
 	cargo fmt --all 
-	cargo clippy --all-features --all-targets --examples --tests --fix --allow-dirty -- -D warnings
+	cargo clippy --examples --tests --fix --allow-dirty -- -D warnings
 build:
 	cargo build --all-features
 test:
@@ -11,7 +11,7 @@ run:
 	cargo run --all-features
 
 codegen:
-	curl https://testnet.thalex.com/docs/thalex_api.yaml | yq '.' > openapi.json
+	curl https://thalex.com/docs/thalex_api.yaml | yq '.' > openapi.json
 
 	python build_scripts/pre-process.py
 
