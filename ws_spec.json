@@ -99,6 +99,146 @@
                     }
                 }
             }
+        },
+        "/lwt/{instrument}/{delay}": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to lwt.<instrument>.<delay> channel",
+                "operationId": "subscribe_lwt_<instrument>_<delay>",
+                "parameters": [
+                    {
+                        "name": "instrument",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "delay",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Delay"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LwtNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/recent_trades/{target}/{category}": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to recent_trades.<target>.<category> channel",
+                "operationId": "subscribe_recent_trades_<target>_<category>",
+                "parameters": [
+                    {
+                        "name": "target",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "category",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RecentTradesNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/price_index/{underlying}": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to price_index.<underlying> channel",
+                "operationId": "subscribe_price_index_<underlying>",
+                "parameters": [
+                    {
+                        "name": "underlying",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PriceIndexNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/underlying_statistics/{underlying}": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to underlying_statistics.<underlying> channel",
+                "operationId": "subscribe_underlying_statistics_<underlying>",
+                "parameters": [
+                    {
+                        "name": "underlying",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnderlyingStatisticsNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -217,6 +357,369 @@
             },
             "Ticker": {
                 "$ref": "./openapi_updated.json#/components/schemas/Ticker"
+            },
+            "LwtNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription.",
+                        "const": "lwt.<instrument>.<delay>"
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/Lwt"
+                    }
+                }
+            },
+            "Lwt": {
+                "type": "object",
+                "properties": {
+                    "b": {
+                        "type": "array",
+                        "description": "Best bid (if any).",
+                        "minItems": 3,
+                        "maxItems": 3,
+                        "prefixItems": [
+                            {
+                                "type": "number",
+                                "description": "Price"
+                            },
+                            {
+                                "type": "number",
+                                "description": "Amount"
+                            },
+                            {
+                                "type": "number",
+                                "description": "Outright-only amount"
+                            }
+                        ]
+                    },
+                    "a": {
+                        "type": "array",
+                        "description": "Best ask (if any).",
+                        "minItems": 3,
+                        "maxItems": 3,
+                        "prefixItems": [
+                            {
+                                "type": "number",
+                                "description": "Price"
+                            },
+                            {
+                                "type": "number",
+                                "description": "Amount"
+                            },
+                            {
+                                "type": "number",
+                                "description": "Outright-only amount"
+                            }
+                        ]
+                    },
+                    "m": {
+                        "type": "number",
+                        "description": "Mark price."
+                    },
+                    "v": {
+                        "type": "number",
+                        "description": "Mark volatility.\n\nOnly included for options. Not included for combinations.\n"
+                    },
+                    "l": {
+                        "type": "number",
+                        "description": "Price of last trade (if any).\n\nNot included for combinations.\n"
+                    }
+                },
+                "example": {
+                    "b": [
+                        47240,
+                        0.4,
+                        0.4
+                    ],
+                    "a": [
+                        47260,
+                        1,
+                        0.9
+                    ],
+                    "l": 47252.64143906124,
+                    "m": 65536.16
+                },
+                "description": "Channel-specific content"
+            },
+            "RecentTradesNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription.",
+                        "const": "recent_trades.<target>.<category>"
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/RecentTrades"
+                    }
+                }
+            },
+            "RecentTrade": {
+                "type": "object",
+                "description": "item is an array with the following values: `[price, size, side (\"buy\" or \"sell\"), timestamp, instrument_name, implied_taker]`.\n\nThe `implied_taker` is a boolean flag, set to `true` when the actual taker trade happened on another order book,\nand the maker trade on this book is the result of implied matching.\n",
+                "properties": {
+                    "price": {
+                        "type": "number"
+                    },
+                    "size": {
+                        "type": "number"
+                    },
+                    "side": {
+                        "type": "string",
+                        "enum": [
+                            "buy",
+                            "sell"
+                        ]
+                    },
+                    "timestamp": {
+                        "type": "number"
+                    },
+                    "instrument_name": {
+                        "type": "string"
+                    },
+                    "implied_taker": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "PriceIndexNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription.",
+                        "const": "price_index.<underlying>"
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/PriceIndex"
+                    }
+                }
+            },
+            "PriceIndex": {
+                "$ref": "#/components/schemas/Index",
+                "description": "Channel-specific content"
+            },
+            "UnderlyingStatisticsNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription.",
+                        "const": "underlying_statistics.<underlying>"
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/UnderlyingStatistics"
+                    }
+                }
+            },
+            "UnderlyingStatistics": {
+                "type": "object",
+                "properties": {
+                    "trade_volume_24h": {
+                        "type": "number",
+                        "description": "Total amount traded in 24 hours, including futures and options."
+                    },
+                    "option_volume_24h": {
+                        "type": "number",
+                        "description": "Total amount of options traded in the past 24 hours."
+                    },
+                    "delta_one_volume_24h": {
+                        "type": "number",
+                        "description": "Total amount of futures traded in the past 24 hours."
+                    },
+                    "trade_value_24h": {
+                        "type": "number",
+                        "description": "Total underlying value traded in 24 hours. This is the sum of (amount * index price at time of trade)."
+                    },
+                    "option_value_24h": {
+                        "type": "number",
+                        "description": "Total option value traded in 24 hours. This is the sum of (amount * index price at time of trade)."
+                    },
+                    "delta_one_value_24h": {
+                        "type": "number",
+                        "description": "Total delta one value traded in 24 hours. This is the sum of (amount * index price at time of trade)."
+                    },
+                    "open_interest": {
+                        "type": "object",
+                        "description": "Total count of outstanding contracts statistics.",
+                        "properties": {
+                            "expirations": {
+                                "description": "Total count of outstanding contracts statistics per expiration date.",
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "expiration_timestamp": {
+                                            "type": "integer",
+                                            "description": "Expiration time as Unix timestamp (seconds)."
+                                        },
+                                        "expiry_date": {
+                                            "type": "string",
+                                            "description": "Expiration date in ISO format (YYYY-mm-dd)."
+                                        },
+                                        "call": {
+                                            "type": "number",
+                                            "description": "Total count of outstanding unsettled call options for the given expiration and underlying."
+                                        },
+                                        "put": {
+                                            "type": "number",
+                                            "description": "Total count of outstanding unsettled put options for the given expiration and underlying."
+                                        },
+                                        "option": {
+                                            "type": "number",
+                                            "description": "Total count of outstanding unsettled options for the given expiration and underlying."
+                                        },
+                                        "future": {
+                                            "type": "number",
+                                            "description": "Total count of outstanding unsettled future contracts for the given expiration and underlying."
+                                        }
+                                    }
+                                }
+                            },
+                            "totals": {
+                                "type": "object",
+                                "required": [
+                                    "call",
+                                    "put",
+                                    "option",
+                                    "future",
+                                    "delta_one"
+                                ],
+                                "properties": {
+                                    "call": {
+                                        "type": "number",
+                                        "description": "Total count of outstanding unsettled call options for the given underlying."
+                                    },
+                                    "put": {
+                                        "type": "number",
+                                        "description": "Total count of outstanding unsettled put options for the given underlying."
+                                    },
+                                    "option": {
+                                        "type": "number",
+                                        "description": "Total count of outstanding unsettled options for the given underlying."
+                                    },
+                                    "future": {
+                                        "type": "number",
+                                        "description": "Total count of outstanding unsettled future contracts for the given underlying."
+                                    },
+                                    "delta_one": {
+                                        "type": "number",
+                                        "description": "Total count of outstanding unsettled delta one (future and perpetual) contracts for the given underlying."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "example": {
+                    "trade_volume_24h": 53.159,
+                    "option_volume_24h": 50.0,
+                    "delta_one_volume_24h": 3.159,
+                    "trade_value_24h": 1554041.6949,
+                    "option_value_24h": 1500000.6,
+                    "delta_one_value_24h": 54041.0949,
+                    "open_interest": {
+                        "expirations": [
+                            {
+                                "expiration_timestamp": 1688112000,
+                                "expiry_date": "2023-06-30",
+                                "call": 123.4,
+                                "put": 34.5,
+                                "option": 157.9,
+                                "future": 222.333
+                            },
+                            {
+                                "expiration_timestamp": 1685088000,
+                                "expiry_date": "2023-05-26",
+                                "call": 234.5,
+                                "put": 78.91,
+                                "option": 313.41,
+                                "future": 333.444
+                            }
+                        ],
+                        "totals": {
+                            "call": 357.9,
+                            "put": 113.41,
+                            "option": 471.31,
+                            "future": 555.777,
+                            "delta_one": 811.789
+                        }
+                    }
+                },
+                "description": "Channel-specific content"
+            },
+            "Index": {
+                "type": "object",
+                "summary": "Index",
+                "required": [
+                    "index_name",
+                    "price",
+                    "timestamp"
+                ],
+                "properties": {
+                    "index_name": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "timestamp": {
+                        "type": "number",
+                        "description": "The unix timestamp when the index price was recorded in the database."
+                    },
+                    "expiration_print_average": {
+                        "type": "number",
+                        "description": "The average price so far over the current expiration, if any."
+                    },
+                    "expiration_progress": {
+                        "type": "number",
+                        "description": "A number between 0.0 and 1.0 indicating the progress of the current expiration."
+                    },
+                    "expected_expiration_price": {
+                        "type": "number",
+                        "description": "If expiration is in progress, and the index price will not change any more, this\nis the expiration price. Equals `expiration_progress * expiration_print_average + (1 - expiration_progress) * price`.\n"
+                    },
+                    "previous_settlement_price": {
+                        "type": "number",
+                        "description": "The last known settlement price (expiration price, underlying delivery price)."
+                    }
+                },
+                "example": {
+                    "index_name": "BTCUSD",
+                    "price": 47389.10833333334,
+                    "timestamp": 946684800
+                }
+            },
+            "RecentTrades": {
+                "type": "object",
+                "description": "Array of trades, each item is an array with the following values: `[price, size, side (\"buy\" or \"sell\"), timestamp, instrument_name, implied_taker]`.\n\nThe `implied_taker` is a boolean flag, set to `true` when the actual taker trade happened on another order book,\nand the maker trade on this book is the result of implied matching.\n",
+                "required": [],
+                "properties": {
+                    "trades": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RecentTrade"
+                        }
+                    }
+                }
             }
         }
     }

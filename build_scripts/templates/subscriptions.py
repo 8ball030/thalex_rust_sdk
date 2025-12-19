@@ -1,6 +1,6 @@
 from string import Template
 func_template = Template("""
-    pub async fn $channel<F>(&self, $func_args, mut callback: F) -> Result<(), Error>
+    pub async fn $channel<F>(&self, $func_args mut callback: F) -> Result<(), Error>
     where
         F: FnMut($notification_model) + Send + 'static,
     {

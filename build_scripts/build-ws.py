@@ -11,6 +11,10 @@ WS_SPEC = Path("ws_spec_updated.json")
 OUTPUT_PATH = Path("src/ws/subscriptions.rs")
 
 
+ALIASES = {
+    "PriceIndex": "Index",
+}
+
 def load_ws_spec():
     return json.loads(WS_SPEC.read_text())
 
@@ -36,10 +40,16 @@ def build_functions(spec):
         response_model = response_model_ref.split("/")[-1] if response_model_ref else "UnknownModel"
         notification_model_ref = spec.get("components", {}).get("schemas", {}).get(response_model).get("properties", {}).get("notification", {}).get("$ref", "")
         notification_model = notification_model_ref.split("/")[-1] if notification_model_ref else "UnknownNotificationModel"
+        if notification_model in ALIASES:
+            notification_model = ALIASES[notification_model]
+
+        func_args_string = ", ".join(f"{arg}: {arg_type}" for arg, arg_type in zip(arg_names, arg_types))
+        if func_args_string:
+            func_args_string += ","
 
         subscriptions_code = func_template.substitute(
             channel=channel_name,
-            func_args=", ".join(f"{arg}: {arg_type}" for arg, arg_type in zip(arg_names, arg_types)),
+            func_args=func_args_string,
             channel_args=".".join(["{" + i + "}" for i in arg_names]),
             response_model=response_model,
             notification_model=notification_model
@@ -48,11 +58,17 @@ def build_functions(spec):
     return "\n".join(functions)
 
 def build_file(spec, functions):
+    models = set(
+            spec.get("components", {}).get("schemas", {}).keys()
+        )
+    # replace with aliases
+    for alias in ALIASES:
+        if alias in models:
+            models.remove(alias)
+            models.add(ALIASES[alias])
     file_content = file_template.substitute(
         functions=functions,
-        models=", ".join(set(
-            spec.get("components", {}).get("schemas", {}).keys()
-        ))
+        models=", ".join(sorted(models))
     )
     return file_content
 

@@ -50,9 +50,10 @@ class PostProcessor:
         Rename file if it contains 'rest_' in its file name.
         """
         new_name = file_path.name \
-            .replace("rest_", "") \
             .replace("_200_response", "") \
             .replace("__", "_")
+        if new_name.startswith("rest_"):
+            new_name = new_name[5:]
         new_path = file_path.parent / new_name
         if new_path != file_path and new_path.exists():
             raise FileExistsError(f"Cannot rename {file_path} to {new_path}, target already exists.")
@@ -94,7 +95,7 @@ class PostProcessor:
         original_content = content
 
         # Replace any instances of 'rest_' in mod file
-        content = content.replace("rest_", "") \
+        content = content.replace("\nrest_", "\n") \
             .replace("_200_response", "") \
             .replace("__", "_")
         if content != original_content:

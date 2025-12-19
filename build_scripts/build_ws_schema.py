@@ -67,7 +67,7 @@ def from_schema_ref_to_notification_schema_name_and_schema(schema_ref):
     notification_schema = schemas[schema_ref]
     notification_schema_name = "".join([i.capitalize() for i in schema_ref.split(".")[0].split("_")]) + "Notification"
     extracted_payload_schema = notification_schema.get("properties", {})["notification"]
-    extracted_payload_name   =  schema_ref.split(".")[0].capitalize()
+    extracted_payload_name   =  "".join([i.capitalize() for i in schema_ref.split(".")[0].split("_")])
 
     # we check if it is in our main schemas, if so can use that.
     # We replace the notification property with the actual payload schema
@@ -88,8 +88,10 @@ def update_ws_spec_with_path_and_schemas(path, path_spec, notification, notifica
     to_update = json.loads(TRANSIENT_WS_SPEC_PATH.read_text())
 
     to_update["paths"][path] = path_spec
-    to_update["components"]["schemas"][notification] = notification_schema
-    to_update["components"]["schemas"][extracted_payload] = extracted_payload_schema
+
+    for k, v in [[notification, notification_schema], [extracted_payload, extracted_payload_schema]]:
+        if k not in to_update["components"]["schemas"]:
+            to_update["components"]["schemas"][k] = v
     TRANSIENT_WS_SPEC_PATH.write_text(json.dumps(to_update, indent=4))
 
 
@@ -144,12 +146,45 @@ def from_path_and_params_to_path_spec(params, notification_schema_name, channel_
     return path_spec
 
 
+def scan_ws_spec_for_existing_paths():
+
+    base_spec = json.loads(PROCESSED_OPENAPI_PATH.read_text())
+    base_schemas = base_spec.get("components", {}).get("schemas", {})
+
+    existing_spec = TRANSIENT_WS_SPEC_PATH.read_text()
+    existing_spec_json = json.loads(existing_spec)
+    all_spec_schemas = existing_spec_json.get("components", {}).get("schemas", {})
+
+    ref_pattern = re.compile(r'#\/components\/schemas\/([^"]+)"')
+
+    all_refs = set(ref_pattern.findall(existing_spec))
+    replacements = []
+    for ref_name in all_refs:
+        schema_name = ref_name.split("/")[-1]
+        if schema_name not in all_spec_schemas:
+            if schema_name in base_schemas:
+                print(f"Schema {schema_name} is missing in WS spec, adding from base spec.")
+                existing_spec_json = json.loads(existing_spec)
+                existing_spec_json["components"]["schemas"][schema_name] = base_schemas[schema_name]
+                replacements.append(ref_name)
+            else:
+                print(f"Schema {schema_name} is missing in WS spec and not found in base spec!")
+                raise Exception(f"Missing schema ref: {schema_name}")
+    TRANSIENT_WS_SPEC_PATH.write_text(json.dumps(existing_spec_json, indent=4))
+    # we now do a find and replace for all refs that were replaced
+    updated_spec = TRANSIENT_WS_SPEC_PATH.read_text()
+    for ref_name in replacements:
+        updated_spec = updated_spec.replace(f'#/components/schemas/{ref_name}"', f'./openapi_updated.json#/components/schemas/{ref_name}"')
+    TRANSIENT_WS_SPEC_PATH.write_text(updated_spec)
+
+
 
 if __name__ == "__main__":
     all_data = extract_all_ws_tags()
     print(f"""Found {len(all_data)} WebSocket subscription channels in the schema:""")
-    count = 0
-    for data in all_data:
+
+    processed = 0
+    for ix, data in enumerate(all_data):
         # we just process the subs_market_data for now
         if data['tag'] != 'subs_market_data':
             continue
@@ -168,8 +203,12 @@ if __name__ == "__main__":
                                             notification_schema,
                                             extracted_payload_name,
                                             extracted_payload_schema)
-        count += 1
-        print(f"Processed {count} WebSocket subscription channels.")
+        processed += 1
+        if processed > 5:
+            break
+    print(f"Processed {processed} WebSocket subscription channels.")
+    scan_ws_spec_for_existing_paths()
+    print("Scanned existing WS spec for missing schema refs.")
 
 
 
