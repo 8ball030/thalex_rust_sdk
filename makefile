@@ -2,6 +2,7 @@ lint:
 	cargo clippy --examples --tests -- -D warnings 
 fmt:
 	cargo fmt --all 
+	cargo fix --allow-dirty
 	cargo clippy --examples --tests --fix --allow-dirty -- -D warnings
 build:
 	cargo build --all-features
@@ -34,7 +35,7 @@ codegen:
 	  -i ws_spec_updated.json \
 	  -g rust \
 	  -o ./generated \
-	--additional-properties=supportAsync=false,useSingleRequestParameter=true,avoidBoxedModels=true
+	--additional-properties=supportAsync=false,useSingleRequestParameter=true,avoidBoxedModels=true,generateAliasAsModel=true
 	rm -rf ./src/models/* ./docs/generated/* 
 	cp ./generated/src/models/* ./src/models/
 	cp ./generated/docs/* ./docs/generated/
