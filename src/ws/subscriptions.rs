@@ -1,5 +1,3 @@
-use log::{info, warn};
-use tokio::sync::mpsc;
 
 use crate::{
     models::{
@@ -27,40 +25,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(Ticker) + Send + 'static,
     {
         let channel = format!("ticker.{instrument}.{delay}");
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: TickerNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: TickerNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -76,40 +46,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(Book) + Send + 'static,
     {
         let channel = format!("book.{instrument}.{grouping}.{nlevels}.{delay}");
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: BookNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: BookNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -118,40 +60,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(Lwt) + Send + 'static,
     {
         let channel = format!("lwt.{instrument}.{delay}");
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: LwtNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: LwtNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -165,40 +79,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(RecentTrades) + Send + 'static,
     {
         let channel = format!("recent_trades.{target}.{category}");
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: RecentTradesNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: RecentTradesNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -207,40 +93,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(Index) + Send + 'static,
     {
         let channel = format!("price_index.{underlying}");
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: PriceIndexNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: PriceIndexNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -253,41 +111,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(UnderlyingStatistics) + Send + 'static,
     {
         let channel = format!("underlying_statistics.{underlying}");
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: UnderlyingStatisticsNotification = match serde_json::from_str(&msg)
-                {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: UnderlyingStatisticsNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -296,40 +125,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(Session) + Send + 'static,
     {
         let channel = "session_mm_protection.".to_string();
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: SessionNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: SessionNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -338,40 +139,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(Mm) + Send + 'static,
     {
         let channel = "mm_rfqs.".to_string();
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: MmNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: MmNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -380,40 +153,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(Mm) + Send + 'static,
     {
         let channel = "mm_rfq_quotes.".to_string();
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: MmNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: MmNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -422,40 +167,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(Account) + Send + 'static,
     {
         let channel = "account_orders.".to_string();
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: AccountNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: AccountNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -464,40 +181,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(Account) + Send + 'static,
     {
         let channel = "account_persistent_orders.".to_string();
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: AccountNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: AccountNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -506,40 +195,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(Session) + Send + 'static,
     {
         let channel = "session_orders.".to_string();
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: SessionNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: SessionNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -548,40 +209,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(Account) + Send + 'static,
     {
         let channel = "account_trade_history.".to_string();
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: AccountNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: AccountNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -590,40 +223,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(Account) + Send + 'static,
     {
         let channel = "account_order_history.".to_string();
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: AccountNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: AccountNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -632,40 +237,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(Account) + Send + 'static,
     {
         let channel = "account_portfolio.".to_string();
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: AccountNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: AccountNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -674,40 +251,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(Account) + Send + 'static,
     {
         let channel = "account_summary.".to_string();
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: AccountNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: AccountNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -716,40 +265,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(Account) + Send + 'static,
     {
         let channel = "account_rfqs.".to_string();
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: AccountNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: AccountNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -758,40 +279,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(Account) + Send + 'static,
     {
         let channel = "account_rfq_history.".to_string();
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: AccountNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: AccountNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -800,40 +293,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(Account) + Send + 'static,
     {
         let channel = "account_conditional_orders.".to_string();
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: AccountNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: AccountNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -847,40 +312,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(BasePrice) + Send + 'static,
     {
         let channel = format!("base_price.{underlying}.{expiration}");
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: BasePriceNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: BasePriceNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -889,40 +326,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(InstrumentsPayload) + Send + 'static,
     {
         let channel = "instruments.".to_string();
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: InstrumentsPayloadNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: InstrumentsPayloadNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -931,40 +340,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(RfqsPayload) + Send + 'static,
     {
         let channel = "rfqs.".to_string();
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: RfqsPayloadNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: RfqsPayloadNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 
@@ -973,40 +354,12 @@ impl<'a> Subscriptions<'a> {
         F: FnMut(IndexComponents) + Send + 'static,
     {
         let channel = format!("index_components.{underlying}");
-
         // Per-subscription channel from core -> user callback
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-
-        {
-            let mut subs = self.client.subscriptions.lock().await;
-            subs.insert(channel.clone(), tx);
-        }
-
-        let msg = serde_json::json!({
-            "method": "public/subscribe",
-            "params": {
-                "channels": [channel]
-            }
-        });
-
-        self.client.send_json(msg)?;
-
-        // Spawn callback task
-        tokio::spawn(async move {
-            while let Some(msg) = rx.recv().await {
-                // Parses into a json value initally
-                let parsed_msg: IndexComponentsNotification = match serde_json::from_str(&msg) {
-                    Ok(m) => m,
-                    Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
-                        continue;
-                    }
-                };
-                callback(parsed_msg.notification);
-            }
-        });
-
-        info!("Subscribed to channel: {channel}");
+        self.client
+            .subscribe_channel(channel, move |msg: IndexComponentsNotification| {
+                callback(msg.notification);
+            })
+            .await?;
         Ok(())
     }
 }

@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use serde::de::DeserializeOwned;
 use tokio::{net::TcpStream, sync::oneshot};
 
 use futures_util::{SinkExt, StreamExt};
@@ -93,6 +94,48 @@ impl WsClient {
         ));
 
         Ok(client)
+    }
+    pub async fn subscribe_channel<P, F>(
+        &self,
+        channel: String,
+        mut callback: F,
+    ) -> Result<(), Error>
+    where
+        P: DeserializeOwned + Send + 'static,
+        F: FnMut(P) + Send + 'static,
+    {
+        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
+
+        {
+            let mut subs = self.subscriptions.lock().await;
+            subs.insert(channel.clone(), tx);
+        }
+
+        let msg = serde_json::json!({
+            "method": "public/subscribe",
+            "params": {
+                "channels": [channel]
+            }
+        });
+
+        self.send_json(msg)?;
+
+        tokio::spawn(async move {
+            while let Some(msg) = rx.recv().await {
+                let parsed: P = match serde_json::from_str(&msg) {
+                    Ok(m) => m,
+                    Err(e) => {
+                        warn!("Failed to parse channel message: {e}; raw: {msg}");
+                        continue;
+                    }
+                };
+
+                callback(parsed);
+            }
+        });
+
+        info!("Subscribed to channel: {channel}");
+        Ok(())
     }
 
     pub async fn login(
