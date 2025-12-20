@@ -15,28 +15,16 @@ use serde::{Deserialize, Serialize};
 pub struct BookNotification {
     /// Channel name as in subscription.
     #[serde(rename = "channel_name")]
-    pub channel_name: ChannelName,
+    pub channel_name: String,
     #[serde(rename = "notification")]
     pub notification: models::Book,
 }
 
 impl BookNotification {
-    pub fn new(channel_name: ChannelName, notification: models::Book) -> BookNotification {
+    pub fn new(channel_name: String, notification: models::Book) -> BookNotification {
         BookNotification {
             channel_name,
             notification,
         }
-    }
-}
-/// Channel name as in subscription.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum ChannelName {
-    #[serde(rename = "book.<instrument>.<grouping>.<nlevels>.<delay>")]
-    BookPeriodLessThanInstrumentGreaterThanPeriodLessThanGroupingGreaterThanPeriodLessThanNlevelsGreaterThanPeriodLessThanDelayGreaterThan,
-}
-
-impl Default for ChannelName {
-    fn default() -> ChannelName {
-        Self::BookPeriodLessThanInstrumentGreaterThanPeriodLessThanGroupingGreaterThanPeriodLessThanNlevelsGreaterThanPeriodLessThanDelayGreaterThan
     }
 }

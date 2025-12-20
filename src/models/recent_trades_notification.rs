@@ -15,31 +15,19 @@ use serde::{Deserialize, Serialize};
 pub struct RecentTradesNotification {
     /// Channel name as in subscription.
     #[serde(rename = "channel_name")]
-    pub channel_name: ChannelName,
+    pub channel_name: String,
     #[serde(rename = "notification")]
     pub notification: models::RecentTrades,
 }
 
 impl RecentTradesNotification {
     pub fn new(
-        channel_name: ChannelName,
+        channel_name: String,
         notification: models::RecentTrades,
     ) -> RecentTradesNotification {
         RecentTradesNotification {
             channel_name,
             notification,
         }
-    }
-}
-/// Channel name as in subscription.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum ChannelName {
-    #[serde(rename = "recent_trades.<target>.<category>")]
-    RecentTradesPeriodLessThanTargetGreaterThanPeriodLessThanCategoryGreaterThan,
-}
-
-impl Default for ChannelName {
-    fn default() -> ChannelName {
-        Self::RecentTradesPeriodLessThanTargetGreaterThanPeriodLessThanCategoryGreaterThan
     }
 }

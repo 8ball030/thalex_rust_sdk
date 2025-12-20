@@ -174,10 +174,19 @@ def scan_ws_spec_for_existing_paths():
     # we now do a find and replace for all refs that were replaced
     updated_spec = TRANSIENT_WS_SPEC_PATH.read_text()
     for ref_name in replacements:
-        updated_spec = updated_spec.replace(f'#/components/schemas/{ref_name}"', f'./openapi_updated.json#/components/schemas/{ref_name}"')
+        updated_spec = updated_spec.replace(f'"#/components/schemas/{ref_name}"', f'"./openapi_updated.json#/components/schemas/{ref_name}"')
     TRANSIENT_WS_SPEC_PATH.write_text(updated_spec)
 
 
+def remove_consts_from_spec():
+    """Read the spec, parse the specs, and remove any 'const' fields from schemas."""
+    existing_spec = json.loads(TRANSIENT_WS_SPEC_PATH.read_text())
+    for schema in existing_spec.get("components", {}).get("schemas", {}).values():
+        for prop_name, prop_spec in schema.get("properties", {}).items():
+            if "const" in prop_spec:
+                print(f"Removing const from property {prop_name}")
+                del prop_spec["const"]
+    TRANSIENT_WS_SPEC_PATH.write_text(json.dumps(existing_spec, indent=4))
 
 if __name__ == "__main__":
     all_data = extract_all_ws_tags()
@@ -186,7 +195,13 @@ if __name__ == "__main__":
     processed = 0
     for ix, data in enumerate(all_data):
         # we just process the subs_market_data for now
-        if data['tag'] != 'subs_market_data':
+        if data['tag'] not in [
+            'subs_market_data',
+            'subs_accounting',
+            'subs_mm_prot',
+            'subs_mm_rfq',
+            'subs_conditional',
+            ]:
             continue
         print(f" Channel:     {data['channel']}")
         path, params = from_channel_to_path(data['channel'])
@@ -204,11 +219,12 @@ if __name__ == "__main__":
                                             extracted_payload_name,
                                             extracted_payload_schema)
         processed += 1
-        if processed > 5:
-            break
     print(f"Processed {processed} WebSocket subscription channels.")
     scan_ws_spec_for_existing_paths()
     print("Scanned existing WS spec for missing schema refs.")
+    remove_consts_from_spec()
+    print("Removed const fields from WS spec.")
+
 
 
 

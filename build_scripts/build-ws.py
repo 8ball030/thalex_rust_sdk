@@ -13,7 +13,12 @@ OUTPUT_PATH = Path("src/ws/subscriptions.rs")
 
 ALIASES = {
     "PriceIndex": "Index",
+    # "InstrumentsPayload": "PublicInstruments"
 }
+
+ENUMS = [
+    "Delay",
+]
 
 def load_ws_spec():
     return json.loads(WS_SPEC.read_text())
@@ -23,7 +28,9 @@ def build_functions(spec):
     for path_name, path_spec in spec["paths"].items():
         print(f"Processing path: {path_name}")
         split = [i for i in path_name.split("/") if i]
-        channel_name = split.pop(0)
+        channel_name = "_".join([f for f in split
+                                 if not (f.startswith("{") and f.endswith("}"))
+                                 ])
         print("     Extracted channel name:", channel_name)
         arg_names = []
         arg_types = []
@@ -31,15 +38,17 @@ def build_functions(spec):
             if part.startswith("{") and part.endswith("}"):
                 arg_name = part[1:-1]
                 arg_names.append(arg_name)
-                if arg_name.capitalize() in spec.get("components", {}).get("schemas", {}):
+                if arg_name.capitalize() in spec.get("components", {}).get("schemas", {}) and arg_name.capitalize() in ENUMS:
                     arg_types.append(arg_name.capitalize())
                 else:
                     arg_types.append("&str")
         print("     Extracted args:", arg_names)
         response_model_ref = path_spec.get("get", {}).get("responses", {}).get("200", {}).get("content", {}).get("application/json", {}).get("schema", {}).get("$ref", "")
         response_model = response_model_ref.split("/")[-1] if response_model_ref else "UnknownModel"
+
         notification_model_ref = spec.get("components", {}).get("schemas", {}).get(response_model).get("properties", {}).get("notification", {}).get("$ref", "")
         notification_model = notification_model_ref.split("/")[-1] if notification_model_ref else "UnknownNotificationModel"
+
         if notification_model in ALIASES:
             notification_model = ALIASES[notification_model]
 
@@ -61,6 +70,7 @@ def build_file(spec, functions):
     models = set(
             spec.get("components", {}).get("schemas", {}).keys()
         )
+    
     # replace with aliases
     for alias in ALIASES:
         if alias in models:

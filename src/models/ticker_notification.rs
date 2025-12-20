@@ -15,29 +15,17 @@ use serde::{Deserialize, Serialize};
 pub struct TickerNotification {
     /// Channel name as in subscription.
     #[serde(rename = "channel_name")]
-    pub channel_name: ChannelName,
+    pub channel_name: String,
     /// Channel-specific content
     #[serde(rename = "notification")]
     pub notification: models::Ticker,
 }
 
 impl TickerNotification {
-    pub fn new(channel_name: ChannelName, notification: models::Ticker) -> TickerNotification {
+    pub fn new(channel_name: String, notification: models::Ticker) -> TickerNotification {
         TickerNotification {
             channel_name,
             notification,
         }
-    }
-}
-/// Channel name as in subscription.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum ChannelName {
-    #[serde(rename = "ticker.<instrument>.<delay>")]
-    TickerPeriodLessThanInstrumentGreaterThanPeriodLessThanDelayGreaterThan,
-}
-
-impl Default for ChannelName {
-    fn default() -> ChannelName {
-        Self::TickerPeriodLessThanInstrumentGreaterThanPeriodLessThanDelayGreaterThan
     }
 }

@@ -15,29 +15,17 @@ use serde::{Deserialize, Serialize};
 pub struct PriceIndexNotification {
     /// Channel name as in subscription.
     #[serde(rename = "channel_name")]
-    pub channel_name: ChannelName,
+    pub channel_name: String,
     /// Channel-specific content
     #[serde(rename = "notification")]
     pub notification: models::Index,
 }
 
 impl PriceIndexNotification {
-    pub fn new(channel_name: ChannelName, notification: models::Index) -> PriceIndexNotification {
+    pub fn new(channel_name: String, notification: models::Index) -> PriceIndexNotification {
         PriceIndexNotification {
             channel_name,
             notification,
         }
-    }
-}
-/// Channel name as in subscription.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum ChannelName {
-    #[serde(rename = "price_index.<underlying>")]
-    PriceIndexPeriodLessThanUnderlyingGreaterThan,
-}
-
-impl Default for ChannelName {
-    fn default() -> ChannelName {
-        Self::PriceIndexPeriodLessThanUnderlyingGreaterThan
     }
 }

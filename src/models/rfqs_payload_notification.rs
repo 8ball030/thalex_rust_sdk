@@ -12,17 +12,17 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct LwtNotification {
+pub struct RfqsPayloadNotification {
     /// Channel name as in subscription.
     #[serde(rename = "channel_name")]
     pub channel_name: String,
     #[serde(rename = "notification")]
-    pub notification: models::Lwt,
+    pub notification: models::RfqsPayload,
 }
 
-impl LwtNotification {
-    pub fn new(channel_name: String, notification: models::Lwt) -> LwtNotification {
-        LwtNotification {
+impl RfqsPayloadNotification {
+    pub fn new(channel_name: String, notification: models::RfqsPayload) -> RfqsPayloadNotification {
+        RfqsPayloadNotification {
             channel_name,
             notification,
         }

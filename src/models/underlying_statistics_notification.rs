@@ -15,31 +15,19 @@ use serde::{Deserialize, Serialize};
 pub struct UnderlyingStatisticsNotification {
     /// Channel name as in subscription.
     #[serde(rename = "channel_name")]
-    pub channel_name: ChannelName,
+    pub channel_name: String,
     #[serde(rename = "notification")]
     pub notification: models::UnderlyingStatistics,
 }
 
 impl UnderlyingStatisticsNotification {
     pub fn new(
-        channel_name: ChannelName,
+        channel_name: String,
         notification: models::UnderlyingStatistics,
     ) -> UnderlyingStatisticsNotification {
         UnderlyingStatisticsNotification {
             channel_name,
             notification,
         }
-    }
-}
-/// Channel name as in subscription.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum ChannelName {
-    #[serde(rename = "underlying_statistics.<underlying>")]
-    UnderlyingStatisticsPeriodLessThanUnderlyingGreaterThan,
-}
-
-impl Default for ChannelName {
-    fn default() -> ChannelName {
-        Self::UnderlyingStatisticsPeriodLessThanUnderlyingGreaterThan
     }
 }
