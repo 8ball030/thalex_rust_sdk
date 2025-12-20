@@ -1579,6 +1579,202 @@
                         "description": "This field is set only on the `account.rfqs` subscription."
                     }
                 }
+            },
+            "OrderStatus": {
+                "type": "object",
+                "description": "Order status.",
+                "required": [
+                    "order_id",
+                    "direction",
+                    "amount",
+                    "filled_amount",
+                    "remaining_amount",
+                    "status",
+                    "fills",
+                    "change_reason",
+                    "insert_reason",
+                    "create_time",
+                    "order_type",
+                    "time_in_force",
+                    "persistent"
+                ],
+                "properties": {
+                    "order_id": {
+                        "type": "string",
+                        "description": "System order ID, use to identify in amend/cancel, and to match trades."
+                    },
+                    "order_type": {
+                        "type": "string",
+                        "enum": [
+                            "limit",
+                            "market"
+                        ]
+                    },
+                    "time_in_force": {
+                        "type": "string",
+                        "enum": [
+                            "good_till_cancelled",
+                            "immediate_or_cancel"
+                        ]
+                    },
+                    "instrument_name": {
+                        "type": "string",
+                        "description": "Order instrument name.\n\nNot present for combination orders. Refer to `legs` field instead.\n"
+                    },
+                    "legs": {
+                        "type": "array",
+                        "description": "List of legs for this combination order.\n\nNot present for single-leg orders. Refer to `instrument_name` field instead.\n",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "instrument_name",
+                                "quantity",
+                                "filled_amount",
+                                "remaining_amount"
+                            ],
+                            "properties": {
+                                "instrument_name": {
+                                    "type": "string",
+                                    "description": "Leg instrument name.\n"
+                                },
+                                "quantity": {
+                                    "type": "number",
+                                    "description": "Quantity of this leg in a unit of the combination. A non-zero integer, negative for short legs.\n"
+                                },
+                                "filled_amount": {
+                                    "type": "number",
+                                    "description": "Amount executed on this leg.\n\nLegs are filled proportionally to their quantities.\n"
+                                },
+                                "remaining_amount": {
+                                    "type": "number",
+                                    "description": "Amount on this leg that remains in the book; if 0, order is now inactive.\n\nNote that the only `time_in_force` for combination orders currently supported is\n`immediate_or_cancel`. Therefore, combination orders will never remain on a book,\nand this field will always be zero.\n"
+                                }
+                            }
+                        }
+                    },
+                    "direction": {
+                        "type": "string",
+                        "enum": [
+                            "buy",
+                            "sell"
+                        ]
+                    },
+                    "price": {
+                        "type": "number",
+                        "description": "Limit price. May be omitted if no price was supplied (e.g. for a market order).\n\nFor combination orders this specifies limit price per unit of the combination.\n"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "description": "Order size (as inserted or amended to).\n\nFor combination orders this specifies the amount of units of the combination to trade.\n"
+                    },
+                    "filled_amount": {
+                        "type": "number",
+                        "description": "Part of the order that has been executed.\n\nFor combination orders this specifies the amount of units of the combination filled.\nLegs are filled proportionally to their quantities.\n"
+                    },
+                    "remaining_amount": {
+                        "type": "number",
+                        "description": "Part of the order that remains in the book; if 0, order is now inactive.\n\nFor combination orders this specifies the amount of units of the combination remaining on a book.\nNote that the only `time_in_force` for combination orders currently supported is\n`immediate_or_cancel`. Therefore, combination orders will never remain on a book,\nand this field will always be zero.\n"
+                    },
+                    "label": {
+                        "type": "string",
+                        "description": "Label supplied with insert. Can also be a number. Field is omitted if no label was supplied."
+                    },
+                    "client_order_id": {
+                        "type": "number",
+                        "description": "Client-supplied order id. Field is omitted if no client order id was supplied."
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "open",
+                            "partially_filled",
+                            "cancelled",
+                            "cancelled_partially_filled",
+                            "filled"
+                        ]
+                    },
+                    "fills": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OrderFill"
+                        },
+                        "description": "These are new fills related to this order status update, except if `change_reason` is\n`existing`, then the list will contain all known fills.\n"
+                    },
+                    "change_reason": {
+                        "type": "string",
+                        "enum": [
+                            "existing",
+                            "insert",
+                            "amend",
+                            "cancel",
+                            "fill"
+                        ]
+                    },
+                    "delete_reason": {
+                        "type": "string",
+                        "enum": [
+                            "client_cancel",
+                            "client_bulk_cancel",
+                            "session_end",
+                            "instrument_deactivated",
+                            "mm_protection",
+                            "failover",
+                            "margin_breach",
+                            "filled",
+                            "immediate_cancel",
+                            "admin_cancel"
+                        ],
+                        "description": "Detailed reason of order deletion if the order was deleted, omitted otherwise.\n\nThe following reasons are possible:\n\n- `client_cancel`: Order was cancelled by the client, e.g. with a call to `private/cancel`.\n\n- `client_bulk_cancel`: Order was cancelled by the client with a bulk cancel call, e.g. `private/cancel_all`.\n\n- `session_end`: Non-persistent order was automatically cancelled when a WebSocket session ended.\n\n- `instrument_deactivated`: Order was automatically cancelled when the order instrument was deactivated,\n  for example after expiration.\n\n- `mm_protection`: Order was automatically cancelled when configured market maker protection amount was exhausted.\n\n- `failover`: Non-persistent order was automatically cancelled on matching engine failover.\n\n- `margin_breach`: Order was automatically cancelled in a response to a margin breach on the account as part\n  of automatic liquidation procedures.\n\n- `filled`: Order was filled in full.\n\n- `immediate_cancel`: The order was submitted as \"immediate-or-cancel\" and was not filled in full immediately.\n  Note that the order might be partially filled when this delete reason is set.\n\n- `admin_cancel`: The order was cancelled by an exchange admin.\n"
+                    },
+                    "insert_reason": {
+                        "type": "string",
+                        "enum": [
+                            "client_request",
+                            "conditional_order",
+                            "liquidation"
+                        ],
+                        "description": "Detailed reason of order insertion."
+                    },
+                    "conditional_order_id": {
+                        "type": "string",
+                        "description": "If the order was triggered by a conditional order (stop order), the ID of that conditional order.\nOtherwise omitted.\n"
+                    },
+                    "bot_id": {
+                        "type": "string",
+                        "description": "If the order was inserted by a bot, the ID of that bot.\nOtherwise omitted.\n"
+                    },
+                    "create_time": {
+                        "type": "number",
+                        "description": "Creation time (Unix timestamp)."
+                    },
+                    "close_time": {
+                        "type": "number",
+                        "description": "Time when this order was closed or canceled (Unix timestamp). Omitted for orders that are still open."
+                    },
+                    "reduce_only": {
+                        "type": "boolean",
+                        "description": "True if the order is a reduce only order, omitted otherwise."
+                    },
+                    "persistent": {
+                        "type": "boolean",
+                        "description": "True if the order is a persistent order, false otherwise."
+                    }
+                },
+                "example": {
+                    "order_id": "1728379719872",
+                    "time_in_force": "good_till_cancelled",
+                    "instrument_name": "BTC-PERPETUAL",
+                    "price": 45000,
+                    "amount": 1.1,
+                    "order_type": "limit",
+                    "direction": "buy",
+                    "filled_amount": 0,
+                    "remaining_amount": 1.1,
+                    "status": "open",
+                    "fills": [],
+                    "change_reason": "insert",
+                    "insert_reason": "client_request"
+                }
             }
         }
     }
