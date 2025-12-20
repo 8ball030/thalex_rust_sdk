@@ -6,9 +6,8 @@ use crate::{
         InstrumentsPayloadNotification, Lwt, LwtNotification, Mm, MmNotification, PriceIndexNotification, RecentTrades, RecentTradesNotification, RfqsPayload, RfqsPayloadNotification, Session, SessionNotification, Ticker,
         TickerNotification, UnderlyingStatistics, UnderlyingStatisticsNotification,
     },
-    ws_client::WsClient,
+    ws_client::{RequestScope, WsClient},
 };
-
 type Error = Box<dyn std::error::Error + Send + Sync>;
 
 pub struct Subscriptions<'a> {
@@ -27,9 +26,13 @@ impl<'a> Subscriptions<'a> {
         let channel = format!("ticker.{instrument}.{delay}");
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: TickerNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: TickerNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -48,9 +51,13 @@ impl<'a> Subscriptions<'a> {
         let channel = format!("book.{instrument}.{grouping}.{nlevels}.{delay}");
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: BookNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: BookNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -62,9 +69,13 @@ impl<'a> Subscriptions<'a> {
         let channel = format!("lwt.{instrument}.{delay}");
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: LwtNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: LwtNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -81,9 +92,13 @@ impl<'a> Subscriptions<'a> {
         let channel = format!("recent_trades.{target}.{category}");
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: RecentTradesNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: RecentTradesNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -95,9 +110,13 @@ impl<'a> Subscriptions<'a> {
         let channel = format!("price_index.{underlying}");
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: PriceIndexNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: PriceIndexNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -113,9 +132,13 @@ impl<'a> Subscriptions<'a> {
         let channel = format!("underlying_statistics.{underlying}");
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: UnderlyingStatisticsNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: UnderlyingStatisticsNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -127,9 +150,13 @@ impl<'a> Subscriptions<'a> {
         let channel = "session_mm_protection.".to_string();
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: SessionNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: SessionNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -141,7 +168,7 @@ impl<'a> Subscriptions<'a> {
         let channel = "mm_rfqs.".to_string();
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: MmNotification| {
+            .subscribe_channel(RequestScope::Public, channel, move |msg: MmNotification| {
                 callback(msg.notification);
             })
             .await?;
@@ -155,7 +182,7 @@ impl<'a> Subscriptions<'a> {
         let channel = "mm_rfq_quotes.".to_string();
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: MmNotification| {
+            .subscribe_channel(RequestScope::Public, channel, move |msg: MmNotification| {
                 callback(msg.notification);
             })
             .await?;
@@ -169,9 +196,13 @@ impl<'a> Subscriptions<'a> {
         let channel = "account_orders.".to_string();
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: AccountNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: AccountNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -183,9 +214,13 @@ impl<'a> Subscriptions<'a> {
         let channel = "account_persistent_orders.".to_string();
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: AccountNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: AccountNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -197,9 +232,13 @@ impl<'a> Subscriptions<'a> {
         let channel = "session_orders.".to_string();
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: SessionNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: SessionNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -211,9 +250,13 @@ impl<'a> Subscriptions<'a> {
         let channel = "account_trade_history.".to_string();
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: AccountNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: AccountNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -225,9 +268,13 @@ impl<'a> Subscriptions<'a> {
         let channel = "account_order_history.".to_string();
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: AccountNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: AccountNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -239,9 +286,13 @@ impl<'a> Subscriptions<'a> {
         let channel = "account_portfolio.".to_string();
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: AccountNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: AccountNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -253,9 +304,13 @@ impl<'a> Subscriptions<'a> {
         let channel = "account_summary.".to_string();
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: AccountNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: AccountNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -267,9 +322,13 @@ impl<'a> Subscriptions<'a> {
         let channel = "account_rfqs.".to_string();
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: AccountNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: AccountNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -281,9 +340,13 @@ impl<'a> Subscriptions<'a> {
         let channel = "account_rfq_history.".to_string();
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: AccountNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: AccountNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -295,9 +358,13 @@ impl<'a> Subscriptions<'a> {
         let channel = "account_conditional_orders.".to_string();
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: AccountNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: AccountNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -314,9 +381,13 @@ impl<'a> Subscriptions<'a> {
         let channel = format!("base_price.{underlying}.{expiration}");
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: BasePriceNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: BasePriceNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -328,9 +399,13 @@ impl<'a> Subscriptions<'a> {
         let channel = "instruments.".to_string();
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: InstrumentsPayloadNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: InstrumentsPayloadNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -342,9 +417,13 @@ impl<'a> Subscriptions<'a> {
         let channel = "rfqs.".to_string();
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: RfqsPayloadNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: RfqsPayloadNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -356,9 +435,13 @@ impl<'a> Subscriptions<'a> {
         let channel = format!("index_components.{underlying}");
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(channel, move |msg: IndexComponentsNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Public,
+                channel,
+                move |msg: IndexComponentsNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
