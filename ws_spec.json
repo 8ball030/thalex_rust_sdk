@@ -239,6 +239,406 @@
                     }
                 }
             }
+        },
+        "/session/mm_protection": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to session.mm_protection channel",
+                "operationId": "subscribe_session_mm_protection",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SessionNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/mm/rfqs": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to mm.rfqs channel",
+                "operationId": "subscribe_mm_rfqs",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MmNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/mm/rfq_quotes": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to mm.rfq_quotes channel",
+                "operationId": "subscribe_mm_rfq_quotes",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MmNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/account/orders": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to account.orders channel",
+                "operationId": "subscribe_account_orders",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/account/persistent_orders": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to account.persistent_orders channel",
+                "operationId": "subscribe_account_persistent_orders",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/session/orders": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to session.orders channel",
+                "operationId": "subscribe_session_orders",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SessionNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/account/trade_history": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to account.trade_history channel",
+                "operationId": "subscribe_account_trade_history",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/account/order_history": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to account.order_history channel",
+                "operationId": "subscribe_account_order_history",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/account/portfolio": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to account.portfolio channel",
+                "operationId": "subscribe_account_portfolio",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/account/summary": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to account.summary channel",
+                "operationId": "subscribe_account_summary",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/account/rfqs": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to account.rfqs channel",
+                "operationId": "subscribe_account_rfqs",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/account/rfq_history": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to account.rfq_history channel",
+                "operationId": "subscribe_account_rfq_history",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/account/conditional_orders": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to account.conditional_orders channel",
+                "operationId": "subscribe_account_conditional_orders",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/base_price/{underlying}/{expiration}": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to base_price.<underlying>.<expiration> channel",
+                "operationId": "subscribe_base_price_<underlying>_<expiration>",
+                "parameters": [
+                    {
+                        "name": "underlying",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "expiration",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BasePriceNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/instruments": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to instruments channel",
+                "operationId": "subscribe_instruments",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InstrumentsPayloadNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/rfqs": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to rfqs channel",
+                "operationId": "subscribe_rfqs",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RfqsPayloadNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/index_components/{underlying}": {
+            "get": {
+                "tags": [
+                    "subs_market_data"
+                ],
+                "summary": "Subscribe to index_components.<underlying> channel",
+                "operationId": "subscribe_index_components_<underlying>",
+                "parameters": [
+                    {
+                        "name": "underlying",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IndexComponentsNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -266,8 +666,7 @@
                 "properties": {
                     "channel_name": {
                         "type": "string",
-                        "description": "Channel name as in subscription.",
-                        "const": "book.<instrument>.<grouping>.<nlevels>.<delay>"
+                        "description": "Channel name as in subscription."
                     },
                     "notification": {
                         "$ref": "#/components/schemas/Book"
@@ -346,8 +745,7 @@
                 "properties": {
                     "channel_name": {
                         "type": "string",
-                        "description": "Channel name as in subscription.",
-                        "const": "ticker.<instrument>.<delay>"
+                        "description": "Channel name as in subscription."
                     },
                     "notification": {
                         "$ref": "#/components/schemas/Ticker",
@@ -367,8 +765,7 @@
                 "properties": {
                     "channel_name": {
                         "type": "string",
-                        "description": "Channel name as in subscription.",
-                        "const": "lwt.<instrument>.<delay>"
+                        "description": "Channel name as in subscription."
                     },
                     "notification": {
                         "$ref": "#/components/schemas/Lwt"
@@ -456,8 +853,7 @@
                 "properties": {
                     "channel_name": {
                         "type": "string",
-                        "description": "Channel name as in subscription.",
-                        "const": "recent_trades.<target>.<category>"
+                        "description": "Channel name as in subscription."
                     },
                     "notification": {
                         "$ref": "#/components/schemas/RecentTrades"
@@ -501,8 +897,7 @@
                 "properties": {
                     "channel_name": {
                         "type": "string",
-                        "description": "Channel name as in subscription.",
-                        "const": "price_index.<underlying>"
+                        "description": "Channel name as in subscription."
                     },
                     "notification": {
                         "$ref": "#/components/schemas/PriceIndex"
@@ -522,8 +917,7 @@
                 "properties": {
                     "channel_name": {
                         "type": "string",
-                        "description": "Channel name as in subscription.",
-                        "const": "underlying_statistics.<underlying>"
+                        "description": "Channel name as in subscription."
                     },
                     "notification": {
                         "$ref": "#/components/schemas/UnderlyingStatistics"
@@ -719,6 +1113,349 @@
                             "$ref": "#/components/schemas/RecentTrade"
                         }
                     }
+                }
+            },
+            "SessionNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/Session"
+                    }
+                }
+            },
+            "Session": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "product": {
+                            "type": "string",
+                            "example": "OBTCUSD"
+                        },
+                        "remaining_amount": {
+                            "type": "number",
+                            "example": 10,
+                            "description": "Remaining amount may be less than zero if a single aggressive order has\ncaused an overshoot. If remaining amount is less than or equal to zero, the\nmass quote orders in the group will have been cancelled, and the group needs\nrefilling.\n"
+                        },
+                        "reason": {
+                            "type": "string",
+                            "enum": [
+                                "refill",
+                                "executions",
+                                "client_cancel",
+                                "session_end",
+                                "failover"
+                            ],
+                            "description": "Detailed reason of the protection group status update.\n\nThe following reasons are possible:\n- `refill`: Remaining amount was updated by the client, e.g. with a call to `private/set_mm_protection`.\n\n- `executions`: Remaining amount was updated after a trade.\n\n- `client_cancel`: Protection group was deleted by the client, e.g. with a call to `private/cancel_mass_quote`.\n\n- `session_end`: Protection group was automatically deleted when a WebSocket session ended.\n\n- `failover`: Protection group was automatically deleted on matching engine failover.\n"
+                        }
+                    }
+                },
+                "description": "Channel-specific content"
+            },
+            "MmNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/Mm"
+                    }
+                }
+            },
+            "Mm": {
+                "type": "array",
+                "items": {
+                    "$ref": "./openapi_updated.json#/components/schemas/Rfq"
+                },
+                "description": "Channel-specific content"
+            },
+            "AccountNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/Account"
+                    }
+                }
+            },
+            "Account": {
+                "type": "array",
+                "items": {
+                    "$ref": "./openapi_updated.json#/components/schemas/OrderStatus"
+                },
+                "description": "Channel-specific content"
+            },
+            "BasePriceNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/BasePrice"
+                    }
+                }
+            },
+            "BasePrice": {
+                "type": "object",
+                "required": [
+                    "base_name",
+                    "price",
+                    "index"
+                ],
+                "properties": {
+                    "base_name": {
+                        "type": "string",
+                        "description": "Instrument name of future, or \"synthetic\"."
+                    },
+                    "price": {
+                        "type": "number",
+                        "description": "Forward price of the expiration."
+                    },
+                    "index": {
+                        "type": "number",
+                        "description": "Index price of the underlying of the instrument."
+                    },
+                    "index_delta": {
+                        "type": "number",
+                        "description": "Before expiration, Thalex linearly scales the deltas of\nthe expiring instruments to zero, over a time window.\nThis number represents how far into this process the expiration is\n(i.e. delta used for margining = index_delta * actual delta of the instrument).\n"
+                    }
+                },
+                "example": {
+                    "base_name": "BTC-24SEP21",
+                    "price": 47433.658803891754,
+                    "index": 47172.69166666667,
+                    "index_delta": 1
+                },
+                "description": "Channel-specific content"
+            },
+            "InstrumentsPayloadNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/InstrumentsPayload"
+                    }
+                }
+            },
+            "InstrumentsPayload": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "added": {
+                                    "$ref": "./openapi_updated.json#/components/schemas/Instrument"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "removed": {
+                                    "$ref": "./openapi_updated.json#/components/schemas/Instrument"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "description": "Channel-specific content"
+            },
+            "RfqsPayloadNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/RfqsPayload"
+                    }
+                }
+            },
+            "RfqsPayload": {
+                "type": "array",
+                "items": {
+                    "$ref": "./openapi_updated.json#/components/schemas/Rfq"
+                },
+                "description": "Channel-specific content"
+            },
+            "IndexComponentsNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/IndexComponents"
+                    }
+                }
+            },
+            "IndexComponents": {
+                "type": "object",
+                "properties": {
+                    "index_price": {
+                        "type": "number",
+                        "description": "Price of the index."
+                    },
+                    "components": {
+                        "type": "object",
+                        "description": "Components that were used in calculating the index price.\nCode name of the source is mapped to its price.\n"
+                    }
+                },
+                "example": {
+                    "index_price": 20000,
+                    "components": {
+                        "coinbase": "19998,",
+                        "bitstamp": 20002
+                    }
+                },
+                "description": "Channel-specific content"
+            },
+            "Instrument": {
+                "type": "object",
+                "properties": {
+                    "instrument_name": {
+                        "type": "string"
+                    },
+                    "product": {
+                        "type": "string",
+                        "description": "E.g. \"FBTCUSD\", \"OBTCUSD\"."
+                    },
+                    "tick_size": {
+                        "type": "number",
+                        "description": "Price alignment."
+                    },
+                    "volume_tick_size": {
+                        "type": "number",
+                        "description": "Amount alignment."
+                    },
+                    "min_order_amount": {
+                        "type": "number",
+                        "description": "Minimum order amount for this instrument. This value is always greater or equal to `volume_tick_size`.\n\nIf this value is greater than `volume_tick_size`, it is not possible to insert an order of a smaller amount,\nor amend an existing order to a smaller amount. However, orders in the books can have smaller remaining\namounts as they get partially filled, down to the minimum of `volume_tick_size`.\n"
+                    },
+                    "underlying": {
+                        "type": "string",
+                        "description": "Related index, e.g. \"BTCUSD\"."
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "perpetual",
+                            "future",
+                            "option",
+                            "combination"
+                        ]
+                    },
+                    "option_type": {
+                        "type": "string",
+                        "enum": [
+                            "call",
+                            "put"
+                        ]
+                    },
+                    "expiry_date": {
+                        "type": "string",
+                        "description": "Expiration date in ISO format (YYYY-mm-dd)."
+                    },
+                    "expiration_timestamp": {
+                        "type": "integer",
+                        "description": "Expiration time as Unix timestamp (seconds)."
+                    },
+                    "strike_price": {
+                        "type": "number",
+                        "description": "Strike price of option."
+                    },
+                    "base_currency": {
+                        "type": "string",
+                        "description": "Base currency for pricing (i.e. USD)."
+                    },
+                    "legs": {
+                        "type": "array",
+                        "description": "For combinations, array of objects with `instrument_name` and `quantity`.",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "instrument_name": {
+                                    "type": "string"
+                                },
+                                "quantity": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "create_time": {
+                        "type": "number",
+                        "description": "Creation time (Unix timestamp)."
+                    },
+                    "settlement_price": {
+                        "type": "number",
+                        "description": "For expired instruments, the final settlement price."
+                    },
+                    "settlement_index_price": {
+                        "type": "number",
+                        "description": "For expired instruments, the underlying delivery price."
+                    }
+                },
+                "example": {
+                    "instrument_name": "BTC-10SEP21-70000-C",
+                    "product": "OBTCUSD",
+                    "tick_size": 5,
+                    "volume_tick_size": 0.1,
+                    "min_order_amount": 0.1,
+                    "underlying": "BTCUSD",
+                    "type": "option",
+                    "option_type": "call",
+                    "expiry_date": "2021-09-10",
+                    "expiration_timestamp": 1631260800,
+                    "strike_price": 70000,
+                    "base_currency": "USD",
+                    "create_time": 1631250800.103645
                 }
             }
         }
