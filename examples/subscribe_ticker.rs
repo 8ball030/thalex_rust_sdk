@@ -30,16 +30,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             } else {
                 0.0
             };
-            let spread_bps = if best_bid_price != 0.0 {
-                (spread / best_bid_price) * 10000.0
-            } else {
-                0.0
-            };
-            tokio::spawn(async move {
-                info!(
-                    "Ticker update - Bid: {best_bid_price}, Ask: {best_ask_price} spread: {spread} spread_bps: {spread_bps} index: {index_price} index_delta_bps: {index_delta_bps}"
-                );
-            });
+            info!(
+                "Ticker update - Bid: {best_bid_price}, Ask: {best_ask_price} spread: {spread} index: {index_price} index_delta_bps: {index_delta_bps}"
+            );
         }
     })
         .await;

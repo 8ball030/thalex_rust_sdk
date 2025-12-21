@@ -1,10 +1,12 @@
+
 use crate::{
     models::{
-        BasePrice, BasePriceNotification, Book, BookNotification, Delay, Index, IndexComponents,
-        IndexComponentsNotification, InstrumentsNotification, InstrumentsPayload, Lwt,
-        LwtNotification, PriceIndexNotification, RecentTrades, RecentTradesNotification,
-        RfqsNotification, RfqsPayload, Ticker, TickerNotification, UnderlyingStatistics,
-        UnderlyingStatisticsNotification,
+        BasePrice, BasePriceNotification, Book, BookNotification, Delay, Index,
+        IndexComponents, IndexComponentsNotification,
+        InstrumentsNotification, InstrumentsPayload, Lwt,
+        LwtNotification,
+        PriceIndexNotification, RecentTrades, RecentTradesNotification, RfqsNotification, RfqsPayload, Ticker,
+        TickerNotification, UnderlyingStatistics, UnderlyingStatisticsNotification,
     },
     ws_client::{RequestScope, WsClient},
 };
@@ -25,23 +27,20 @@ impl<'a> MarketDataSubscriptions<'a> {
         Fut: Future<Output = ()> + Send + 'static,
     {
         let channel = format!("ticker.{instrument}.{delay}");
-
         self.client
             .subscribe_channel(
                 RequestScope::Public,
                 channel,
                 move |msg: TickerNotification| {
-                    // bridge sync → async
                     let fut = callback(msg.notification);
                     tokio::spawn(fut);
                 },
             )
             .await?;
-
         Ok(())
     }
 
-    pub async fn book<F>(
+    pub async fn book<F, Fut>(
         &self,
         instrument: &str,
         grouping: &str,
@@ -50,174 +49,192 @@ impl<'a> MarketDataSubscriptions<'a> {
         mut callback: F,
     ) -> Result<(), Error>
     where
-        F: FnMut(Book) + Send + 'static,
+        F: FnMut(Book) -> Fut + Send + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
     {
         let channel = format!("book.{instrument}.{grouping}.{nlevels}.{delay}");
-        // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
                 RequestScope::Public,
                 channel,
                 move |msg: BookNotification| {
-                    callback(msg.notification);
+                    let fut = callback(msg.notification);
+                    tokio::spawn(fut);
                 },
             )
             .await?;
         Ok(())
     }
 
-    pub async fn lwt<F>(&self, instrument: &str, delay: Delay, mut callback: F) -> Result<(), Error>
+    pub async fn lwt<F, Fut>(
+        &self,
+        instrument: &str,
+        delay: Delay,
+        mut callback: F,
+    ) -> Result<(), Error>
     where
-        F: FnMut(Lwt) + Send + 'static,
+        F: FnMut(Lwt) -> Fut + Send + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
     {
         let channel = format!("lwt.{instrument}.{delay}");
-        // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
                 RequestScope::Public,
                 channel,
                 move |msg: LwtNotification| {
-                    callback(msg.notification);
+                    let fut = callback(msg.notification);
+                    tokio::spawn(fut);
                 },
             )
             .await?;
         Ok(())
     }
 
-    pub async fn recent_trades<F>(
+    pub async fn recent_trades<F, Fut>(
         &self,
         target: &str,
         category: &str,
         mut callback: F,
     ) -> Result<(), Error>
     where
-        F: FnMut(RecentTrades) + Send + 'static,
+        F: FnMut(RecentTrades) -> Fut + Send + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
     {
         let channel = format!("recent_trades.{target}.{category}");
-        // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
                 RequestScope::Public,
                 channel,
                 move |msg: RecentTradesNotification| {
-                    callback(msg.notification);
+                    let fut = callback(msg.notification);
+                    tokio::spawn(fut);
                 },
             )
             .await?;
         Ok(())
     }
 
-    pub async fn price_index<F>(&self, underlying: &str, mut callback: F) -> Result<(), Error>
+    pub async fn price_index<F, Fut>(&self, underlying: &str, mut callback: F) -> Result<(), Error>
     where
-        F: FnMut(Index) + Send + 'static,
+        F: FnMut(Index) -> Fut + Send + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
     {
         let channel = format!("price_index.{underlying}");
-        // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
                 RequestScope::Public,
                 channel,
                 move |msg: PriceIndexNotification| {
-                    callback(msg.notification);
+                    let fut = callback(msg.notification);
+                    tokio::spawn(fut);
                 },
             )
             .await?;
         Ok(())
     }
 
-    pub async fn underlying_statistics<F>(
+    pub async fn underlying_statistics<F, Fut>(
         &self,
         underlying: &str,
         mut callback: F,
     ) -> Result<(), Error>
     where
-        F: FnMut(UnderlyingStatistics) + Send + 'static,
+        F: FnMut(UnderlyingStatistics) -> Fut + Send + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
     {
         let channel = format!("underlying_statistics.{underlying}");
-        // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
                 RequestScope::Public,
                 channel,
                 move |msg: UnderlyingStatisticsNotification| {
-                    callback(msg.notification);
+                    let fut = callback(msg.notification);
+                    tokio::spawn(fut);
                 },
             )
             .await?;
         Ok(())
     }
 
-    pub async fn base_price<F>(
+    pub async fn base_price<F, Fut>(
         &self,
         underlying: &str,
         expiration: &str,
         mut callback: F,
     ) -> Result<(), Error>
     where
-        F: FnMut(BasePrice) + Send + 'static,
+        F: FnMut(BasePrice) -> Fut + Send + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
     {
         let channel = format!("base_price.{underlying}.{expiration}");
-        // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
                 RequestScope::Public,
                 channel,
                 move |msg: BasePriceNotification| {
-                    callback(msg.notification);
+                    let fut = callback(msg.notification);
+                    tokio::spawn(fut);
                 },
             )
             .await?;
         Ok(())
     }
 
-    pub async fn instruments<F>(&self, mut callback: F) -> Result<(), Error>
+    pub async fn instruments<F, Fut>(&self, mut callback: F) -> Result<(), Error>
     where
-        F: FnMut(InstrumentsPayload) + Send + 'static,
+        F: FnMut(InstrumentsPayload) -> Fut + Send + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
     {
         let channel = "instruments".to_string();
-        // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
                 RequestScope::Public,
                 channel,
                 move |msg: InstrumentsNotification| {
-                    callback(msg.notification);
+                    let fut = callback(msg.notification);
+                    tokio::spawn(fut);
                 },
             )
             .await?;
         Ok(())
     }
 
-    pub async fn rfqs<F>(&self, mut callback: F) -> Result<(), Error>
+    pub async fn rfqs<F, Fut>(&self, mut callback: F) -> Result<(), Error>
     where
-        F: FnMut(RfqsPayload) + Send + 'static,
+        F: FnMut(RfqsPayload) -> Fut + Send + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
     {
         let channel = "rfqs".to_string();
-        // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
                 RequestScope::Public,
                 channel,
                 move |msg: RfqsNotification| {
-                    callback(msg.notification);
+                    let fut = callback(msg.notification);
+                    tokio::spawn(fut);
                 },
             )
             .await?;
         Ok(())
     }
 
-    pub async fn index_components<F>(&self, underlying: &str, mut callback: F) -> Result<(), Error>
+    pub async fn index_components<F, Fut>(
+        &self,
+        underlying: &str,
+        mut callback: F,
+    ) -> Result<(), Error>
     where
-        F: FnMut(IndexComponents) + Send + 'static,
+        F: FnMut(IndexComponents) -> Fut + Send + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
     {
         let channel = format!("index_components.{underlying}");
-        // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
                 RequestScope::Public,
                 channel,
                 move |msg: IndexComponentsNotification| {
-                    callback(msg.notification);
+                    let fut = callback(msg.notification);
+                    tokio::spawn(fut);
                 },
             )
             .await?;

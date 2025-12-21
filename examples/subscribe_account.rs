@@ -13,11 +13,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .subscriptions()
         .accounting()
         .account_orders(|msg| {
+            async move{
             for order in msg{
                 info!(
                     "Account Order Update: id={} instrument_name={:?} order_type={:?} amount={} price={:?}",
                     order.order_id, order.instrument_name, order.order_type, order.amount, order.price
                 );
+            }
             }
         })
         .await;
@@ -26,12 +28,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .subscriptions()
         .accounting()
         .account_portfolio(|msg| {
+            async move{
             for portfolio in msg{
                 info!(
                     "Account Portfolio Update: instrument_name={:?} position={:?} mark_price={:?} average_price={:?} realised_pnl={:?}",
                     portfolio.instrument_name, portfolio.position, portfolio.mark_price, portfolio.average_price, portfolio.realised_pnl
                 );
             }
+        }
         })
         .await;
 
