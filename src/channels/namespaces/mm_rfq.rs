@@ -18,9 +18,13 @@ impl<'a> MmRfqSubscriptions<'a> {
         let channel = "mm_rfqs.".to_string();
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(RequestScope::Public, channel, move |msg: MmNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Private,
+                channel,
+                move |msg: MmNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }
@@ -32,9 +36,13 @@ impl<'a> MmRfqSubscriptions<'a> {
         let channel = "mm_rfq_quotes.".to_string();
         // Per-subscription channel from core -> user callback
         self.client
-            .subscribe_channel(RequestScope::Public, channel, move |msg: MmNotification| {
-                callback(msg.notification);
-            })
+            .subscribe_channel(
+                RequestScope::Private,
+                channel,
+                move |msg: MmNotification| {
+                    callback(msg.notification);
+                },
+            )
             .await?;
         Ok(())
     }

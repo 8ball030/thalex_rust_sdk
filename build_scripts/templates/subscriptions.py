@@ -7,7 +7,7 @@ func_template = Template("""
         let channel = format!("$channel.$channel_args");
         // Per-subscription channel from core -> user callback
         self.client.subscribe_channel(
-            RequestScope::Public,
+            RequestScope::$scope,
             channel,
             move |msg: $response_model| {
                 callback(msg.notification);

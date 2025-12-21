@@ -19,10 +19,16 @@ ENUMS = [
     "Delay",
 ]
 
+PUBLIC_TAGS = [
+    "subs_market_data",
+    "subs_system",
+]
+
+
 def load_ws_spec():
     return json.loads(WS_SPEC.read_text())
 
-def build_functions(spec, tag):
+def build_functions(spec, tag, is_public):
     functions = []
     for path_name, path_spec in spec["paths"].items():
         if tag not in path_spec.get("get", {}).get("tags", []):
@@ -62,7 +68,8 @@ def build_functions(spec, tag):
             func_args=func_args_string,
             channel_args=".".join(["{" + i + "}" for i in arg_names]),
             response_model=response_model,
-            notification_model=notification_model
+            notification_model=notification_model,
+            scope="Public" if is_public else "Private",
         )
         functions.append(subscriptions_code)
     return "\n".join(functions)
@@ -100,7 +107,7 @@ if __name__ == "__main__":
     print("Collected tags:", tags)
     for tag in tags:
         print("Processing tag:", tag)
-        functions = build_functions(spec, tag)
+        functions = build_functions(spec, tag, tag in PUBLIC_TAGS)
         file_content = build_namespace_file(spec, functions, tag)
         file_suffix = tag.replace("subs_", "")
         (OUTPUT_PATH / f"namespaces/{file_suffix}.rs").write_text(file_content)

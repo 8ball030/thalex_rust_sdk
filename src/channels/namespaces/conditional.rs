@@ -19,7 +19,7 @@ impl<'a> ConditionalSubscriptions<'a> {
         // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
-                RequestScope::Public,
+                RequestScope::Private,
                 channel,
                 move |msg: AccountNotification| {
                     callback(msg.notification);
