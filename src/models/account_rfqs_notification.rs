@@ -12,17 +12,20 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct TickerNotification {
+pub struct AccountRfqsNotification {
     /// Channel name as in subscription.
     #[serde(rename = "channel_name")]
     pub channel_name: String,
     #[serde(rename = "notification")]
-    pub notification: models::Ticker,
+    pub notification: models::AccountRfqsPayload,
 }
 
-impl TickerNotification {
-    pub fn new(channel_name: String, notification: models::Ticker) -> TickerNotification {
-        TickerNotification {
+impl AccountRfqsNotification {
+    pub fn new(
+        channel_name: String,
+        notification: models::AccountRfqsPayload,
+    ) -> AccountRfqsNotification {
+        AccountRfqsNotification {
             channel_name,
             notification,
         }

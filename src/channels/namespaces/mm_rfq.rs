@@ -1,7 +1,7 @@
 
 use crate::{
     models::{
-        Mm, MmNotification,
+        MmRfqQuotesNotification, MmRfqQuotesPayload, MmRfqsNotification, MmRfqsPayload,
     },
     ws_client::{RequestScope, WsClient},
 };
@@ -13,7 +13,7 @@ pub struct MmRfqSubscriptions<'a> {
 impl<'a> MmRfqSubscriptions<'a> {
     pub async fn mm_rfqs<F>(&self, mut callback: F) -> Result<(), Error>
     where
-        F: FnMut(Mm) + Send + 'static,
+        F: FnMut(MmRfqsPayload) + Send + 'static,
     {
         let channel = "mm.rfqs".to_string();
         // Per-subscription channel from core -> user callback
@@ -21,7 +21,7 @@ impl<'a> MmRfqSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Private,
                 channel,
-                move |msg: MmNotification| {
+                move |msg: MmRfqsNotification| {
                     callback(msg.notification);
                 },
             )
@@ -31,7 +31,7 @@ impl<'a> MmRfqSubscriptions<'a> {
 
     pub async fn mm_rfq_quotes<F>(&self, mut callback: F) -> Result<(), Error>
     where
-        F: FnMut(Mm) + Send + 'static,
+        F: FnMut(MmRfqQuotesPayload) + Send + 'static,
     {
         let channel = "mm.rfq_quotes".to_string();
         // Per-subscription channel from core -> user callback
@@ -39,7 +39,7 @@ impl<'a> MmRfqSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Private,
                 channel,
-                move |msg: MmNotification| {
+                move |msg: MmRfqQuotesNotification| {
                     callback(msg.notification);
                 },
             )

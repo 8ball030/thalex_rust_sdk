@@ -254,7 +254,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/SessionNotification"
+                                    "$ref": "#/components/schemas/SessionMmProtectionNotification"
                                 }
                             }
                         }
@@ -276,7 +276,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/MmNotification"
+                                    "$ref": "#/components/schemas/MmRfqsNotification"
                                 }
                             }
                         }
@@ -298,7 +298,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/MmNotification"
+                                    "$ref": "#/components/schemas/MmRfqQuotesNotification"
                                 }
                             }
                         }
@@ -320,7 +320,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/AccountNotification"
+                                    "$ref": "#/components/schemas/AccountOrdersNotification"
                                 }
                             }
                         }
@@ -342,7 +342,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/AccountNotification"
+                                    "$ref": "#/components/schemas/AccountPersistentOrdersNotification"
                                 }
                             }
                         }
@@ -364,7 +364,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/SessionNotification"
+                                    "$ref": "#/components/schemas/SessionOrdersNotification"
                                 }
                             }
                         }
@@ -386,7 +386,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/AccountNotification"
+                                    "$ref": "#/components/schemas/AccountTradeHistoryNotification"
                                 }
                             }
                         }
@@ -408,7 +408,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/AccountNotification"
+                                    "$ref": "#/components/schemas/AccountOrderHistoryNotification"
                                 }
                             }
                         }
@@ -430,7 +430,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/AccountNotification"
+                                    "$ref": "#/components/schemas/AccountPortfolioNotification"
                                 }
                             }
                         }
@@ -452,7 +452,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/AccountNotification"
+                                    "$ref": "#/components/schemas/AccountSummaryNotification"
                                 }
                             }
                         }
@@ -474,7 +474,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/AccountNotification"
+                                    "$ref": "#/components/schemas/AccountRfqsNotification"
                                 }
                             }
                         }
@@ -496,7 +496,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/AccountNotification"
+                                    "$ref": "#/components/schemas/AccountRfqHistoryNotification"
                                 }
                             }
                         }
@@ -518,7 +518,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/AccountNotification"
+                                    "$ref": "#/components/schemas/AccountConditionalOrdersNotification"
                                 }
                             }
                         }
@@ -579,7 +579,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/InstrumentsPayloadNotification"
+                                    "$ref": "#/components/schemas/InstrumentsNotification"
                                 }
                             }
                         }
@@ -601,7 +601,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/RfqsPayloadNotification"
+                                    "$ref": "#/components/schemas/RfqsNotification"
                                 }
                             }
                         }
@@ -735,26 +735,6 @@
                     "time": 1683901254.785744
                 },
                 "description": "Channel-specific content"
-            },
-            "TickerNotification": {
-                "type": "object",
-                "required": [
-                    "channel_name",
-                    "notification"
-                ],
-                "properties": {
-                    "channel_name": {
-                        "type": "string",
-                        "description": "Channel name as in subscription."
-                    },
-                    "notification": {
-                        "$ref": "#/components/schemas/Ticker",
-                        "description": "Channel-specific content"
-                    }
-                }
-            },
-            "Ticker": {
-                "$ref": "./openapi_updated.json#/components/schemas/Ticker"
             },
             "LwtNotification": {
                 "type": "object",
@@ -1560,6 +1540,1506 @@
             },
             "OrderStatus": {
                 "$ref": "./openapi_updated.json#/components/schemas/OrderStatus"
+            },
+            "SessionMmProtectionNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/SessionMmProtectionPayload"
+                    }
+                }
+            },
+            "SessionMmProtectionPayload": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "product": {
+                            "type": "string",
+                            "example": "OBTCUSD"
+                        },
+                        "remaining_amount": {
+                            "type": "number",
+                            "example": 10,
+                            "description": "Remaining amount may be less than zero if a single aggressive order has\ncaused an overshoot. If remaining amount is less than or equal to zero, the\nmass quote orders in the group will have been cancelled, and the group needs\nrefilling.\n"
+                        },
+                        "reason": {
+                            "type": "string",
+                            "enum": [
+                                "refill",
+                                "executions",
+                                "client_cancel",
+                                "session_end",
+                                "failover"
+                            ],
+                            "description": "Detailed reason of the protection group status update.\n\nThe following reasons are possible:\n- `refill`: Remaining amount was updated by the client, e.g. with a call to `private/set_mm_protection`.\n\n- `executions`: Remaining amount was updated after a trade.\n\n- `client_cancel`: Protection group was deleted by the client, e.g. with a call to `private/cancel_mass_quote`.\n\n- `session_end`: Protection group was automatically deleted when a WebSocket session ended.\n\n- `failover`: Protection group was automatically deleted on matching engine failover.\n"
+                        }
+                    }
+                },
+                "description": "Channel-specific content"
+            },
+            "MmRfqsNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/MmRfqsPayload"
+                    }
+                }
+            },
+            "MmRfqsPayload": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/Rfq"
+                },
+                "description": "Channel-specific content"
+            },
+            "MmRfqQuotesNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/MmRfqQuotesPayload"
+                    }
+                }
+            },
+            "MmRfqQuotesPayload": {
+                "type": "array",
+                "items": {
+                    "$ref": "./openapi_updated.json#/components/schemas/RfqOrder"
+                },
+                "description": "Channel-specific content"
+            },
+            "AccountOrdersNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/AccountOrdersPayload"
+                    }
+                }
+            },
+            "AccountOrdersPayload": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/OrderStatus"
+                },
+                "description": "Channel-specific content"
+            },
+            "AccountPersistentOrdersNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/AccountPersistentOrdersPayload"
+                    }
+                }
+            },
+            "AccountPersistentOrdersPayload": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/OrderStatus"
+                },
+                "description": "Channel-specific content"
+            },
+            "SessionOrdersNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/SessionOrdersPayload"
+                    }
+                }
+            },
+            "SessionOrdersPayload": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/OrderStatus"
+                },
+                "description": "Channel-specific content"
+            },
+            "AccountTradeHistoryNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/AccountTradeHistoryPayload"
+                    }
+                }
+            },
+            "AccountTradeHistoryPayload": {
+                "type": "array",
+                "items": {
+                    "$ref": "./openapi_updated.json#/components/schemas/Trade"
+                },
+                "description": "Channel-specific content"
+            },
+            "AccountPortfolioNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/AccountPortfolioPayload"
+                    }
+                }
+            },
+            "AccountPortfolioPayload": {
+                "type": "array",
+                "items": {
+                    "$ref": "./openapi_updated.json#/components/schemas/PortfolioEntry"
+                },
+                "description": "Channel-specific content"
+            },
+            "AccountSummaryNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/AccountSummaryPayload"
+                    }
+                }
+            },
+            "AccountRfqsNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/AccountRfqsPayload"
+                    }
+                }
+            },
+            "AccountRfqsPayload": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/Rfq"
+                },
+                "description": "Channel-specific content"
+            },
+            "AccountRfqHistoryNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/AccountRfqHistoryPayload"
+                    }
+                }
+            },
+            "AccountRfqHistoryPayload": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/Rfq"
+                },
+                "description": "Channel-specific content"
+            },
+            "AccountConditionalOrdersNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/AccountConditionalOrdersPayload"
+                    }
+                }
+            },
+            "AccountConditionalOrdersPayload": {
+                "type": "array",
+                "items": {
+                    "$ref": "./openapi_updated.json#/components/schemas/ConditionalOrder"
+                },
+                "description": "Channel-specific content"
+            },
+            "BookPayload": {
+                "type": "object",
+                "properties": {
+                    "trades": {
+                        "type": "array",
+                        "description": "List of `[price, amount, direction, timestamp, implied_taker]`. Note that the snapshot of this feed may contain\nolder trades that happened since the last restart of the gateway.\n\nThe `implied_taker` is a boolean flag, set to `true` when the actual taker trade happened on another order book,\nand the maker trade on this book is the result of implied matching.\n\nTrades are not sent for combination order books.\n"
+                    },
+                    "bid_changes": {
+                        "type": "array",
+                        "description": "List of price level updates (price, amount, outright amount) for buy orders, amount 0 means level is now empty.\n\nFor combination order books, price and amount refer to the price and amount per unit of the combination.\n"
+                    },
+                    "ask_changes": {
+                        "type": "array",
+                        "description": "List of price level updates (price, amount, outright amount) for sell orders, amount 0 means level is now empty.\n\nFor combination order books, price and amount refer to the price and amount per unit of the combination.\n"
+                    },
+                    "total_bid_amount": {
+                        "type": "number",
+                        "description": "The total amount of bid orders across all levels."
+                    },
+                    "total_ask_amount": {
+                        "type": "number",
+                        "description": "The total amount of ask orders across all levels."
+                    },
+                    "time": {
+                        "type": "number",
+                        "description": "Time of the last recorded update to this order book (Unix timestamp)."
+                    }
+                },
+                "example": {
+                    "trades": [
+                        [
+                            9120.5,
+                            15,
+                            "buy",
+                            156789.103,
+                            false
+                        ],
+                        [
+                            9121,
+                            30,
+                            "buy",
+                            156789.123,
+                            false
+                        ]
+                    ],
+                    "bid_changes": [
+                        [
+                            9120.5,
+                            0,
+                            0
+                        ],
+                        [
+                            9121,
+                            54,
+                            53
+                        ]
+                    ],
+                    "total_bid_amount": 45,
+                    "total_ask_amount": 30,
+                    "time": 1683901254.785744
+                },
+                "description": "Channel-specific content"
+            },
+            "TickerNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/TickerPayload"
+                    }
+                }
+            },
+            "TickerPayload": {
+                "$ref": "./openapi_updated.json#/components/schemas/Ticker"
+            },
+            "LwtPayload": {
+                "type": "object",
+                "properties": {
+                    "b": {
+                        "type": "array",
+                        "description": "Best bid (if any).",
+                        "minItems": 3,
+                        "maxItems": 3,
+                        "prefixItems": [
+                            {
+                                "type": "number",
+                                "description": "Price"
+                            },
+                            {
+                                "type": "number",
+                                "description": "Amount"
+                            },
+                            {
+                                "type": "number",
+                                "description": "Outright-only amount"
+                            }
+                        ]
+                    },
+                    "a": {
+                        "type": "array",
+                        "description": "Best ask (if any).",
+                        "minItems": 3,
+                        "maxItems": 3,
+                        "prefixItems": [
+                            {
+                                "type": "number",
+                                "description": "Price"
+                            },
+                            {
+                                "type": "number",
+                                "description": "Amount"
+                            },
+                            {
+                                "type": "number",
+                                "description": "Outright-only amount"
+                            }
+                        ]
+                    },
+                    "m": {
+                        "type": "number",
+                        "description": "Mark price."
+                    },
+                    "v": {
+                        "type": "number",
+                        "description": "Mark volatility.\n\nOnly included for options. Not included for combinations.\n"
+                    },
+                    "l": {
+                        "type": "number",
+                        "description": "Price of last trade (if any).\n\nNot included for combinations.\n"
+                    }
+                },
+                "example": {
+                    "b": [
+                        47240,
+                        0.4,
+                        0.4
+                    ],
+                    "a": [
+                        47260,
+                        1,
+                        0.9
+                    ],
+                    "l": 47252.64143906124,
+                    "m": 65536.16
+                },
+                "description": "Channel-specific content"
+            },
+            "RecentTradesPayload": {
+                "type": "array",
+                "description": "Array of trades, each item is an array with the following values: `[price, size, side (\"buy\" or \"sell\"), timestamp, instrument_name, implied_taker]`.\n\nThe `implied_taker` is a boolean flag, set to `true` when the actual taker trade happened on another order book,\nand the maker trade on this book is the result of implied matching.\n",
+                "items": {
+                    "type": "array",
+                    "example": [
+                        400,
+                        1,
+                        "buy",
+                        1652187265.515,
+                        "BTC-11MAY22-32400-C",
+                        false
+                    ]
+                }
+            },
+            "PriceIndexPayload": {
+                "$ref": "#/components/schemas/Index",
+                "description": "Channel-specific content"
+            },
+            "UnderlyingStatisticsPayload": {
+                "type": "object",
+                "properties": {
+                    "trade_volume_24h": {
+                        "type": "number",
+                        "description": "Total amount traded in 24 hours, including futures and options."
+                    },
+                    "option_volume_24h": {
+                        "type": "number",
+                        "description": "Total amount of options traded in the past 24 hours."
+                    },
+                    "delta_one_volume_24h": {
+                        "type": "number",
+                        "description": "Total amount of futures traded in the past 24 hours."
+                    },
+                    "trade_value_24h": {
+                        "type": "number",
+                        "description": "Total underlying value traded in 24 hours. This is the sum of (amount * index price at time of trade)."
+                    },
+                    "option_value_24h": {
+                        "type": "number",
+                        "description": "Total option value traded in 24 hours. This is the sum of (amount * index price at time of trade)."
+                    },
+                    "delta_one_value_24h": {
+                        "type": "number",
+                        "description": "Total delta one value traded in 24 hours. This is the sum of (amount * index price at time of trade)."
+                    },
+                    "open_interest": {
+                        "type": "object",
+                        "description": "Total count of outstanding contracts statistics.",
+                        "properties": {
+                            "expirations": {
+                                "description": "Total count of outstanding contracts statistics per expiration date.",
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "expiration_timestamp": {
+                                            "type": "integer",
+                                            "description": "Expiration time as Unix timestamp (seconds)."
+                                        },
+                                        "expiry_date": {
+                                            "type": "string",
+                                            "description": "Expiration date in ISO format (YYYY-mm-dd)."
+                                        },
+                                        "call": {
+                                            "type": "number",
+                                            "description": "Total count of outstanding unsettled call options for the given expiration and underlying."
+                                        },
+                                        "put": {
+                                            "type": "number",
+                                            "description": "Total count of outstanding unsettled put options for the given expiration and underlying."
+                                        },
+                                        "option": {
+                                            "type": "number",
+                                            "description": "Total count of outstanding unsettled options for the given expiration and underlying."
+                                        },
+                                        "future": {
+                                            "type": "number",
+                                            "description": "Total count of outstanding unsettled future contracts for the given expiration and underlying."
+                                        }
+                                    }
+                                }
+                            },
+                            "totals": {
+                                "type": "object",
+                                "required": [
+                                    "call",
+                                    "put",
+                                    "option",
+                                    "future",
+                                    "delta_one"
+                                ],
+                                "properties": {
+                                    "call": {
+                                        "type": "number",
+                                        "description": "Total count of outstanding unsettled call options for the given underlying."
+                                    },
+                                    "put": {
+                                        "type": "number",
+                                        "description": "Total count of outstanding unsettled put options for the given underlying."
+                                    },
+                                    "option": {
+                                        "type": "number",
+                                        "description": "Total count of outstanding unsettled options for the given underlying."
+                                    },
+                                    "future": {
+                                        "type": "number",
+                                        "description": "Total count of outstanding unsettled future contracts for the given underlying."
+                                    },
+                                    "delta_one": {
+                                        "type": "number",
+                                        "description": "Total count of outstanding unsettled delta one (future and perpetual) contracts for the given underlying."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "example": {
+                    "trade_volume_24h": 53.159,
+                    "option_volume_24h": 50.0,
+                    "delta_one_volume_24h": 3.159,
+                    "trade_value_24h": 1554041.6949,
+                    "option_value_24h": 1500000.6,
+                    "delta_one_value_24h": 54041.0949,
+                    "open_interest": {
+                        "expirations": [
+                            {
+                                "expiration_timestamp": 1688112000,
+                                "expiry_date": "2023-06-30",
+                                "call": 123.4,
+                                "put": 34.5,
+                                "option": 157.9,
+                                "future": 222.333
+                            },
+                            {
+                                "expiration_timestamp": 1685088000,
+                                "expiry_date": "2023-05-26",
+                                "call": 234.5,
+                                "put": 78.91,
+                                "option": 313.41,
+                                "future": 333.444
+                            }
+                        ],
+                        "totals": {
+                            "call": 357.9,
+                            "put": 113.41,
+                            "option": 471.31,
+                            "future": 555.777,
+                            "delta_one": 811.789
+                        }
+                    }
+                },
+                "description": "Channel-specific content"
+            },
+            "BasePricePayload": {
+                "type": "object",
+                "required": [
+                    "base_name",
+                    "price",
+                    "index"
+                ],
+                "properties": {
+                    "base_name": {
+                        "type": "string",
+                        "description": "Instrument name of future, or \"synthetic\"."
+                    },
+                    "price": {
+                        "type": "number",
+                        "description": "Forward price of the expiration."
+                    },
+                    "index": {
+                        "type": "number",
+                        "description": "Index price of the underlying of the instrument."
+                    },
+                    "index_delta": {
+                        "type": "number",
+                        "description": "Before expiration, Thalex linearly scales the deltas of\nthe expiring instruments to zero, over a time window.\nThis number represents how far into this process the expiration is\n(i.e. delta used for margining = index_delta * actual delta of the instrument).\n"
+                    }
+                },
+                "example": {
+                    "base_name": "BTC-24SEP21",
+                    "price": 47433.658803891754,
+                    "index": 47172.69166666667,
+                    "index_delta": 1
+                },
+                "description": "Channel-specific content"
+            },
+            "InstrumentsNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/InstrumentsPayload"
+                    }
+                }
+            },
+            "RfqsNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/RfqsPayload"
+                    }
+                }
+            },
+            "IndexComponentsPayload": {
+                "type": "object",
+                "properties": {
+                    "index_price": {
+                        "type": "number",
+                        "description": "Price of the index."
+                    },
+                    "components": {
+                        "type": "object",
+                        "description": "Components that were used in calculating the index price.\nCode name of the source is mapped to its price.\n"
+                    }
+                },
+                "example": {
+                    "index_price": 20000,
+                    "components": {
+                        "coinbase": "19998,",
+                        "bitstamp": 20002
+                    }
+                },
+                "description": "Channel-specific content"
+            },
+            "ConditionalOrder": {
+                "type": "object",
+                "required": [
+                    "order_id",
+                    "instrument_name",
+                    "direction",
+                    "amount",
+                    "stop_price",
+                    "status",
+                    "create_time",
+                    "update_time",
+                    "reject_reason",
+                    "reduce_only",
+                    "target"
+                ],
+                "properties": {
+                    "order_id": {
+                        "type": "string",
+                        "description": "Unique ID, use to identify in cancel"
+                    },
+                    "instrument_name": {
+                        "type": "string"
+                    },
+                    "direction": {
+                        "type": "string",
+                        "enum": [
+                            "buy",
+                            "sell"
+                        ]
+                    },
+                    "amount": {
+                        "type": "number",
+                        "description": "Size of the order when activated"
+                    },
+                    "target": {
+                        "type": "string",
+                        "enum": [
+                            "last",
+                            "mark",
+                            "index"
+                        ],
+                        "description": "The trigger type that `stop_price` and `bracket_price` will refer to."
+                    },
+                    "stop_price": {
+                        "type": "number",
+                        "description": "Trigger price at which the order will be activated"
+                    },
+                    "limit_price": {
+                        "type": "number",
+                        "description": "For stop limit order, the price at which the order will be placed"
+                    },
+                    "bracket_price": {
+                        "type": "number",
+                        "description": "For bracket order, the price at which profit will be taken (upper activation price)"
+                    },
+                    "trailing_stop_callback_rate": {
+                        "type": "number",
+                        "description": "For trailing stop loss, the callback rate as a ratio (e.g. 0.05 for 5%)"
+                    },
+                    "label": {
+                        "type": "string",
+                        "description": "Optional user label"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "created",
+                            "active",
+                            "converted",
+                            "rejected",
+                            "cancel requested",
+                            "cancelled"
+                        ]
+                    },
+                    "create_time": {
+                        "type": "number"
+                    },
+                    "update_time": {
+                        "type": "number",
+                        "description": "Time of last update (conversion or change of trailing stop price)"
+                    },
+                    "convert_time": {
+                        "type": "number",
+                        "description": "Time of trigger"
+                    },
+                    "converted_order_id": {
+                        "type": "string",
+                        "description": "System order ID of the created order."
+                    },
+                    "reject_reason": {
+                        "type": "string",
+                        "description": "If conversion failed, the reason"
+                    },
+                    "reduce_only": {
+                        "type": "boolean"
+                    }
+                },
+                "example": {
+                    "order_id": "00011E570000004B",
+                    "instrument_name": "BTC-PERPETUAL",
+                    "direction": "buy",
+                    "amount": 1,
+                    "stop_price": 50000,
+                    "limit_price": 45000,
+                    "status": "created",
+                    "create_time": 1630062311.3324597,
+                    "update_time": 1630062311.3324597,
+                    "reduce_only": false,
+                    "target": "mark"
+                }
+            },
+            "OrderHistory": {
+                "type": "object",
+                "description": "Historical order.",
+                "required": [
+                    "order_id",
+                    "direction",
+                    "amount",
+                    "filled_amount",
+                    "status",
+                    "fills",
+                    "insert_reason",
+                    "delete_reason",
+                    "create_time",
+                    "close_time",
+                    "order_type"
+                ],
+                "properties": {
+                    "order_id": {
+                        "type": "string",
+                        "description": "System order ID, use to identify in amend/cancel, and to match trades."
+                    },
+                    "order_type": {
+                        "type": "string",
+                        "enum": [
+                            "limit",
+                            "market"
+                        ]
+                    },
+                    "instrument_name": {
+                        "type": "string",
+                        "description": "Order instrument name.\n\nNot present for combination orders. Refer to `legs` field instead.\n"
+                    },
+                    "legs": {
+                        "type": "array",
+                        "description": "List of legs for this combination order.\n\nNot present for single-leg orders. Refer to `instrument_name` field instead.\n",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "instrument_name",
+                                "quantity",
+                                "filled_amount"
+                            ],
+                            "properties": {
+                                "instrument_name": {
+                                    "type": "string",
+                                    "description": "Leg instrument name.\n"
+                                },
+                                "quantity": {
+                                    "type": "number",
+                                    "description": "Quantity of this leg in a unit of the combination. A non-zero integer, negative for short legs.\n"
+                                },
+                                "filled_amount": {
+                                    "type": "number",
+                                    "description": "Amount executed on this leg.\n\nLegs are filled proportionally to their quantities.\n"
+                                }
+                            }
+                        }
+                    },
+                    "direction": {
+                        "type": "string",
+                        "enum": [
+                            "buy",
+                            "sell"
+                        ]
+                    },
+                    "price": {
+                        "type": "number",
+                        "description": "Limit price. May be omitted if no price was supplied (e.g. for a market order).\n\nFor combination orders this specifies limit price per unit of the combination.\n"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "description": "Order size (as inserted or amended to).\n\nFor combination orders this specifies the amount of units of the combination to trade.\n"
+                    },
+                    "filled_amount": {
+                        "type": "number",
+                        "description": "Part of the order that has been executed.\n\nFor combination orders this specifies the amount of units of the combination filled.\nLegs are filled proportionally to their quantities.\n"
+                    },
+                    "label": {
+                        "type": "string",
+                        "description": "Label supplied with insert. Can also be a number. Field is omitted if no label was supplied."
+                    },
+                    "client_order_id": {
+                        "type": "number",
+                        "description": "Client-supplied order id. Field is omitted if no client order id was supplied."
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "open",
+                            "partially_filled",
+                            "cancelled",
+                            "cancelled_partially_filled",
+                            "filled"
+                        ]
+                    },
+                    "fills": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "./openapi_updated.json#/components/schemas/OrderFill"
+                        },
+                        "description": "All fills for this order."
+                    },
+                    "delete_reason": {
+                        "type": "string",
+                        "enum": [
+                            "client_cancel",
+                            "client_bulk_cancel",
+                            "session_end",
+                            "instrument_deactivated",
+                            "mm_protection",
+                            "failover",
+                            "margin_breach",
+                            "filled",
+                            "immediate_cancel",
+                            "admin_cancel"
+                        ],
+                        "description": "Detailed reason of order deletion if the order was deleted, omitted otherwise.\n\nThe following reasons are possible:\n\n- `client_cancel`: Order was cancelled by the client, e.g. with a call to `private/cancel`.\n\n- `client_bulk_cancel`: Order was cancelled by the client with a bulk cancel call, e.g. `private/cancel_all`.\n\n- `session_end`: Non-persistent order was automatically cancelled when a WebSocket session ended.\n\n- `instrument_deactivated`: Order was automatically cancelled when the order instrument was deactivated,\n  for example after expiration.\n\n- `mm_protection`: Order was automatically cancelled when configured market maker protection amount was exhausted.\n\n- `failover`: Non-persistent order was automatically cancelled on matching engine failover.\n\n- `margin_breach`: Order was automatically cancelled in a response to a margin breach on the account as part\n  of automatic liquidation procedures.\n\n- `filled`: Order was filled in full.\n\n- `immediate_cancel`: The order was submitted as \"immediate-or-cancel\" and was not filled in full immediately.\n  Note that the order might be partially filled when this delete reason is set.\n\n- `admin_cancel`: The order was cancelled by an exchange admin.\n"
+                    },
+                    "insert_reason": {
+                        "type": "string",
+                        "enum": [
+                            "client_request",
+                            "conditional_order",
+                            "liquidation"
+                        ],
+                        "description": "Detailed reason of order insertion."
+                    },
+                    "conditional_order_id": {
+                        "type": "string",
+                        "description": "If the order was triggered by a conditional order (stop order), the ID of that conditional order.\nOtherwise omitted.\n"
+                    },
+                    "bot_id": {
+                        "type": "string",
+                        "description": "If the order was inserted by a bot, the ID of that bot.\nOtherwise omitted.\n"
+                    },
+                    "create_time": {
+                        "type": "number",
+                        "description": "Creation time (Unix timestamp)."
+                    },
+                    "close_time": {
+                        "type": "number",
+                        "description": "Time when this order was closed or canceled (Unix timestamp)."
+                    },
+                    "reduce_only": {
+                        "type": "boolean",
+                        "description": "True if the order is a reduce only order, omitted otherwise."
+                    }
+                },
+                "example": {
+                    "order_id": "001BF14D00000003",
+                    "instrument_name": "BTC-16DEC23-46000-C",
+                    "direction": "sell",
+                    "price": "10.0,",
+                    "amount": "0.2,",
+                    "filled_amount": "0.2,",
+                    "status": "filled",
+                    "fills": [
+                        {
+                            "trade_id": "008000000000000017A0CACBF5A3BF38",
+                            "price": 10.0,
+                            "amount": 0.2,
+                            "time": 1702583649.3794017,
+                            "maker_taker": "taker"
+                        }
+                    ],
+                    "create_time": "1702583649.379417,",
+                    "close_time": "1702583649.379417,",
+                    "insert_reason": "client_request",
+                    "delete_reason": "filled",
+                    "order_type": "limit"
+                }
+            },
+            "PortfolioEntry": {
+                "type": "object",
+                "properties": {
+                    "instrument_name": {
+                        "type": "string",
+                        "description": "Instrument name."
+                    },
+                    "position": {
+                        "type": "number",
+                        "description": "Amount of this contract currently held; short positions are negative."
+                    },
+                    "mark_price": {
+                        "type": "number",
+                        "description": "Current mark price for the instrument."
+                    },
+                    "iv": {
+                        "type": "number",
+                        "description": "Implied volatility calculated at time of marking."
+                    },
+                    "index": {
+                        "type": "number",
+                        "description": "Index price at time of marking."
+                    },
+                    "start_price": {
+                        "type": "number",
+                        "description": "Average price paid to obtain position.\n\nNote: for instruments that are subject to daily futures-style settlement, the start price\nis reset to the mark price at the end of each session and all the unrealized P&L is thus realized.\nUse `private/daily_mark_history` API endpoint to get information about daily settlements.\n"
+                    },
+                    "average_price": {
+                        "type": "number",
+                        "description": "Average price paid to obtain position. Doesn't reset at settlement."
+                    },
+                    "unrealised_pnl": {
+                        "type": "number",
+                        "description": "Unrealised P&L in the current session for this position based on current mark price,\nequal to `(mark_price - start_price) * position`.\n\nNote: for instruments that are subject to daily futures-style settlement, the start price\nis reset to the mark price at the end of each session and all the unrealized P&L is thus realized.\nUse `private/daily_mark_history` API endpoint to get information about daily settlements.\n"
+                    },
+                    "realised_pnl": {
+                        "type": "number",
+                        "description": "Realized P&L in the current session.\n\nRealized P&L is settled into a settlement asset at the end of each session. \n"
+                    },
+                    "entry_value": {
+                        "type": "number",
+                        "description": "Total entry value, equal to `start_price * position`."
+                    },
+                    "perpetual_funding_entry_value": {
+                        "type": "number",
+                        "description": "Entry mark value for perpetual funding.\nUnrealised perpetual funding is (current perp funding mark * position) -\nperpetual funding entry value. Not\nincluded if zero.\n"
+                    },
+                    "unrealised_perpetual_funding": {
+                        "type": "number",
+                        "description": "For perpetual positions, current unrealized perpetual funding.\n\nThe funding is realized as P&L and settled into settlement asset at the end of each session.\n"
+                    }
+                },
+                "example": {
+                    "instrument_name": "BTC-PERPETUAL",
+                    "position": 1,
+                    "mark_price": 47299.741264339274,
+                    "start_price": 47260,
+                    "average_price": 47260,
+                    "unrealised_pnl": 39.75859976453942,
+                    "realised_pnl": 0,
+                    "entry_value": 47260,
+                    "perpetual_funding_entry_value": -0.13040705,
+                    "unrealised_perpetual_funding": 0.017335425264924917
+                }
+            },
+            "RfqOrder": {
+                "type": "object",
+                "required": [
+                    "rfq_id",
+                    "order_id",
+                    "direction",
+                    "price",
+                    "amount"
+                ],
+                "properties": {
+                    "rfq_id": {
+                        "type": "string",
+                        "description": "Identifier of the RFQ."
+                    },
+                    "order_id": {
+                        "type": "string",
+                        "description": "Identifier of the individual quote."
+                    },
+                    "client_order_id": {
+                        "type": "number",
+                        "description": "Client-supplied order id. Field is omitted if no client order id was supplied."
+                    },
+                    "direction": {
+                        "type": "string",
+                        "enum": [
+                            "buy",
+                            "sell"
+                        ]
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "amount": {
+                        "type": "number"
+                    },
+                    "label": {
+                        "type": "string"
+                    },
+                    "trade_price": {
+                        "type": "number",
+                        "description": "the price at which this order traded."
+                    },
+                    "trade_amount": {
+                        "type": "number",
+                        "description": "the number of combinations that traded."
+                    },
+                    "delete_reason": {
+                        "type": "string",
+                        "enum": [
+                            "client_cancel",
+                            "session_end",
+                            "instrument_deactivated",
+                            "mm_protection",
+                            "failover",
+                            "margin_breach",
+                            "filled"
+                        ],
+                        "description": "Detailed reason of order deletion."
+                    },
+                    "event": {
+                        "type": "string",
+                        "enum": [
+                            "Inserted",
+                            "Amended",
+                            "Cancelled",
+                            "Filled",
+                            "Existing"
+                        ],
+                        "description": "This field is set only on subscriptions."
+                    }
+                }
+            },
+            "AccountOrderHistoryNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/AccountOrderHistoryPayload"
+                    }
+                }
+            },
+            "AccountOrderHistoryPayload": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/OrderHistory"
+                },
+                "description": "Channel-specific content"
+            },
+            "Trade": {
+                "type": "object",
+                "properties": {
+                    "trade_type": {
+                        "type": "string",
+                        "description": "Type of the trade.\n\nNote: as of API v2.31.0 we have stopped representing futures-style settlements as trades of `daily_mark` type. You might still\nget such trades in the history, but no new trades of `daily_mark` type will be created.\nTo get information about daily marks, use `private/daily_mark_history` API endpoint.\n",
+                        "enum": [
+                            "normal",
+                            "block",
+                            "combo",
+                            "amend",
+                            "delete",
+                            "internal_transfer",
+                            "expiration",
+                            "daily_mark",
+                            "rfq",
+                            "liquidation"
+                        ]
+                    },
+                    "trade_id": {
+                        "type": "string"
+                    },
+                    "order_id": {
+                        "type": "string"
+                    },
+                    "instrument_name": {
+                        "type": "string"
+                    },
+                    "direction": {
+                        "type": "string",
+                        "enum": [
+                            "buy",
+                            "sell"
+                        ]
+                    },
+                    "price": {
+                        "type": "number",
+                        "description": "Trade price."
+                    },
+                    "amount": {
+                        "type": "number",
+                        "description": "Traded amount."
+                    },
+                    "label": {
+                        "type": "string",
+                        "description": "User label."
+                    },
+                    "time": {
+                        "type": "number",
+                        "description": "Time of trade (Unix timestamp)."
+                    },
+                    "position_after": {
+                        "type": "number",
+                        "description": "Position in this instrument right after the trade."
+                    },
+                    "session_realised_after": {
+                        "type": "number",
+                        "description": "Session realised P&L for this instrument right after the trade."
+                    },
+                    "position_pnl": {
+                        "type": "number",
+                        "description": "If trade closed a position, the positional P&L that was realised."
+                    },
+                    "perpetual_funding_pnl": {
+                        "type": "number",
+                        "description": "If trade closed a position in a perpetual, the funding P&L that was realised."
+                    },
+                    "fee": {
+                        "type": "number",
+                        "description": "The fee paid for this trade."
+                    },
+                    "index": {
+                        "type": "number",
+                        "description": "The relevant index at time of trade."
+                    },
+                    "fee_rate": {
+                        "type": "number",
+                        "description": "The fee rate applied to calculate the fee."
+                    },
+                    "funding_mark": {
+                        "type": "number",
+                        "description": "The perpetual funding mark as applied to the trade (see `Ticker`)."
+                    },
+                    "liquidation_fee": {
+                        "type": "number",
+                        "description": "Fee paid in case of liquidation."
+                    },
+                    "client_order_id": {
+                        "type": "number",
+                        "description": "Client order reference as set in related order."
+                    },
+                    "maker_taker": {
+                        "type": "string",
+                        "description": "Maker (trade on book order) or taker (trade on new order), if applicable.",
+                        "enum": [
+                            "maker",
+                            "taker"
+                        ]
+                    },
+                    "bot_id": {
+                        "type": "string",
+                        "description": "If the trade was made by a bot, the ID of that bot.\nOtherwise omitted.\n"
+                    },
+                    "leg_index": {
+                        "type": "number",
+                        "description": "Index of a leg on which the trade happened for combination orders. Zero for single-leg orders.\n\nFor combination orders the direction of the trade is defined by the direction of the order and\nthe sign of the leg quantity.\n"
+                    }
+                },
+                "example": {
+                    "order_id": "00011E570000004A",
+                    "trade_id": "0080000000000000169F22D05B785A2B",
+                    "instrument_name": "BTC-PERPETUAL",
+                    "direction": "buy",
+                    "price": 47280,
+                    "amount": 0.1,
+                    "label": "",
+                    "time": 1630059868.4145653,
+                    "position_after": 1.1,
+                    "trade_type": "normal",
+                    "session_realised_after": 25,
+                    "fee_rate": 0.00025,
+                    "index": 47200,
+                    "fee": 1.18,
+                    "funding_mark": 0.014,
+                    "leg_index": 0
+                }
+            },
+            "AccountSummaryPayload": {
+                "$ref": "./openapi_updated.json#/components/schemas/AccountSummary",
+                "description": "Channel-specific content"
+            },
+            "OrderFill": {
+                "type": "object",
+                "required": [
+                    "trade_id",
+                    "price",
+                    "amount",
+                    "maker_taker",
+                    "leg_index"
+                ],
+                "properties": {
+                    "trade_id": {
+                        "type": "string",
+                        "description": "Trade ID."
+                    },
+                    "price": {
+                        "type": "number",
+                        "description": "Fill price."
+                    },
+                    "amount": {
+                        "type": "number",
+                        "description": "Filled amount"
+                    },
+                    "time": {
+                        "type": "number"
+                    },
+                    "maker_taker": {
+                        "type": "string",
+                        "enum": [
+                            "maker",
+                            "taker"
+                        ],
+                        "description": "Maker (trade on book order) or taker (trade on new order), if applicable."
+                    },
+                    "leg_index": {
+                        "type": "number",
+                        "description": "Index of a leg on which the trade happened for combination orders. Zero for single-leg orders.\n\nFor combination orders the direction of the trade is defined by the direction of the order and\nthe sign of the leg quantity.\n"
+                    }
+                }
+            },
+            "AccountSummary": {
+                "type": "object",
+                "required": [
+                    "cash",
+                    "unrealised_pnl",
+                    "cash_collateral",
+                    "margin",
+                    "required_margin",
+                    "remaining_margin",
+                    "session_realised_pnl"
+                ],
+                "properties": {
+                    "unrealised_pnl": {
+                        "type": "number",
+                        "description": "Total unrealised profit or loss."
+                    },
+                    "cash_collateral": {
+                        "type": "number",
+                        "description": "Total margin based on cash holdings."
+                    },
+                    "margin": {
+                        "type": "number",
+                        "description": "Total margin from unrealised P&L and cash holdings."
+                    },
+                    "required_margin": {
+                        "type": "number",
+                        "description": "Required margin based on current position."
+                    },
+                    "remaining_margin": {
+                        "type": "number",
+                        "description": "Difference between margin and required margin."
+                    },
+                    "session_realised_pnl": {
+                        "type": "number",
+                        "description": "Realised profit or loss in current session."
+                    },
+                    "cash": {
+                        "type": "array",
+                        "description": "List of cash holdings, for each relevant currency, and how they contribute to margin.",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "currency",
+                                "balance",
+                                "collateral_factor",
+                                "collateral_index_price",
+                                "transactable"
+                            ],
+                            "properties": {
+                                "currency": {
+                                    "type": "string",
+                                    "description": "Currency name."
+                                },
+                                "balance": {
+                                    "type": "number",
+                                    "description": "Current balance in this currency."
+                                },
+                                "collateral_factor": {
+                                    "type": "number",
+                                    "description": "The collateral quality of the asset i.e. the fraction of the asset that can be used as a collateral."
+                                },
+                                "collateral_index_price": {
+                                    "type": "number",
+                                    "description": "Index price used to calculate collateral effect of this position.\nCan be `null` for assets that are not converted using an index, e.g. for stable coins.\n"
+                                },
+                                "transactable": {
+                                    "type": "boolean",
+                                    "description": "If this flag is `true`, this currency can be deposited and withdrawn."
+                                }
+                            }
+                        }
+                    }
+                },
+                "example": {
+                    "cash": [
+                        {
+                            "currency": "USDT",
+                            "balance": 1000000004483.9625,
+                            "collateral_factor": 1,
+                            "collateral_index_price": null,
+                            "transactable": true
+                        }
+                    ],
+                    "unrealised_pnl": 491.00977310002116,
+                    "session_realised_pnl": 0,
+                    "cash_collateral": 1000000004483.9625,
+                    "margin": 1000000004994.1586,
+                    "required_margin": 13123.880458333333,
+                    "remaining_margin": 999999991870.2781
+                }
+            },
+            "Ticker": {
+                "type": "object",
+                "summary": "Ticker",
+                "properties": {
+                    "best_bid_price": {
+                        "type": "number",
+                        "description": "Price of the best (highest) bid in the orderbook, or `null` if the orderbook is empty."
+                    },
+                    "best_bid_amount": {
+                        "type": "number",
+                        "description": "Size of best bid, or `null` if the orderbook is empty."
+                    },
+                    "best_ask_price": {
+                        "type": "number",
+                        "description": "Price of best (lowest) ask in the orderbook, or `null` if the orderbook is empty."
+                    },
+                    "best_ask_amount": {
+                        "type": "number",
+                        "description": "Size of best ask, or `null` if the orderbook is empty."
+                    },
+                    "last_price": {
+                        "type": "number",
+                        "description": "Price of last trade, or `null` if no trades have been registered yet.\n\nNot included for combinations.\n"
+                    },
+                    "mark_price": {
+                        "type": "number",
+                        "description": "Current mark price."
+                    },
+                    "mark_timestamp": {
+                        "type": "number",
+                        "description": "The unix timestamp when the price was marked."
+                    },
+                    "iv": {
+                        "type": "number",
+                        "description": "Implied volatility calculated at time of marking.\n\nOnly included for options. Not included for combinations.\n"
+                    },
+                    "delta": {
+                        "type": "number",
+                        "description": "Delta calculated at time of marking.\n\nNot included for combinations.\n"
+                    },
+                    "index": {
+                        "type": "number",
+                        "description": "Index price at time of marking."
+                    },
+                    "forward": {
+                        "type": "number",
+                        "description": "Forward price at time of marking.\n\nOnly included for options.\n"
+                    },
+                    "volume_24h": {
+                        "type": "number",
+                        "description": "Total volume traded over the last 24 hours.\n\nNot included for combinations.\n"
+                    },
+                    "value_24h": {
+                        "type": "number",
+                        "description": "Total value traded over the last 24 hours.\n\nNot included for combinations.\n"
+                    },
+                    "low_price_24h": {
+                        "type": "number",
+                        "description": "Lowest price in the last 24 hours.\n\nNot included for combinations.\n"
+                    },
+                    "high_price_24h": {
+                        "type": "number",
+                        "description": "Highest price in the last 24 hours.\n\nNot included for combinations.\n"
+                    },
+                    "change_24h": {
+                        "type": "number",
+                        "description": "Difference in price between the first and the last trades in the last 24 hours, `null` if there were no trades.\n\nNot included for combinations.\n"
+                    },
+                    "collar_low": {
+                        "type": "number",
+                        "description": "Current price collar low (checks new asks)"
+                    },
+                    "collar_high": {
+                        "type": "number",
+                        "description": "Current price collar high (checks new bids)"
+                    },
+                    "open_interest": {
+                        "type": "number",
+                        "description": "Total number of outstanding unsettled contracts.\n\nNot included for combinations.\n"
+                    },
+                    "funding_rate": {
+                        "type": "number",
+                        "description": "Current rate at which long position pays and short position earns, in funding interval.\n\nOnly included for perpetuals.\n"
+                    },
+                    "funding_mark": {
+                        "type": "number",
+                        "description": "Funding value of a single contract long position since last settlement.\n\nOnly included for perpetuals.\n"
+                    },
+                    "realised_funding_24h": {
+                        "type": "number",
+                        "description": "Total funding accumulated for a single contract long position over the last 24 hours.\n\nOnly included for perpetuals.\n"
+                    },
+                    "average_funding_rate_24h": {
+                        "type": "number",
+                        "description": "Average funding rate for the last 24 hours.\n\nOnly included for perpetuals.\n"
+                    }
+                },
+                "example": {
+                    "mark_price": 47238.64143906124,
+                    "mark_timestamp": 946684800,
+                    "best_bid_price": 47240,
+                    "best_bid_amount": 0.4,
+                    "best_ask_price": 47260,
+                    "best_ask_amount": 1,
+                    "delta": 1,
+                    "volume_24h": 0,
+                    "value_24h": 0,
+                    "open_interest": 123.456
+                }
             }
         }
     }

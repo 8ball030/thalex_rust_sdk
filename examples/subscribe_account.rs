@@ -22,6 +22,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         })
         .await;
 
+    let _ = client
+        .subscriptions()
+        .accounting()
+        .account_portfolio(|msg| {
+            for portfolio in msg{
+                info!(
+                    "Account Portfolio Update: instrument_name={:?} position={:?} mark_price={:?} average_price={:?} realised_pnl={:?}",
+                    portfolio.instrument_name, portfolio.position, portfolio.mark_price, portfolio.average_price, portfolio.realised_pnl
+                );
+            }
+        })
+        .await;
+
     loop {
         // Catch ctrl-c to exit
         tokio::select! {

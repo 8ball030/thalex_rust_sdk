@@ -1,7 +1,7 @@
 
 use crate::{
     models::{
-        Session, SessionNotification,
+        SessionMmProtectionNotification, SessionMmProtectionPayload,
     },
     ws_client::{RequestScope, WsClient},
 };
@@ -13,7 +13,7 @@ pub struct MmProtSubscriptions<'a> {
 impl<'a> MmProtSubscriptions<'a> {
     pub async fn session_mm_protection<F>(&self, mut callback: F) -> Result<(), Error>
     where
-        F: FnMut(Session) + Send + 'static,
+        F: FnMut(SessionMmProtectionPayload) + Send + 'static,
     {
         let channel = "session.mm_protection".to_string();
         // Per-subscription channel from core -> user callback
@@ -21,7 +21,7 @@ impl<'a> MmProtSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Private,
                 channel,
-                move |msg: SessionNotification| {
+                move |msg: SessionMmProtectionNotification| {
                     callback(msg.notification);
                 },
             )

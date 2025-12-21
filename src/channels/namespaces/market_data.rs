@@ -1,10 +1,11 @@
 
 use crate::{
     models::{
-        BasePrice, BasePriceNotification, Book, BookNotification,
-        Delay, Index, IndexComponents, IndexComponentsNotification, InstrumentsPayload,
-        InstrumentsPayloadNotification, Lwt, LwtNotification, PriceIndexNotification, RecentTrades, RecentTradesNotification, RfqsPayload, RfqsPayloadNotification, Ticker,
-        TickerNotification, UnderlyingStatistics, UnderlyingStatisticsNotification,
+        BasePrice,
+        BasePriceNotification, Book, BookNotification, Delay, Index, IndexComponents, IndexComponentsNotification, InstrumentsNotification, InstrumentsPayload, Lwt, LwtNotification, PriceIndexNotification,
+        RecentTrades, RecentTradesNotification,
+        RfqsNotification, RfqsPayload, Ticker, TickerNotification,
+        UnderlyingStatistics, UnderlyingStatisticsNotification,
     },
     ws_client::{RequestScope, WsClient},
 };
@@ -176,7 +177,7 @@ impl<'a> MarketDataSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Public,
                 channel,
-                move |msg: InstrumentsPayloadNotification| {
+                move |msg: InstrumentsNotification| {
                     callback(msg.notification);
                 },
             )
@@ -194,7 +195,7 @@ impl<'a> MarketDataSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Public,
                 channel,
-                move |msg: RfqsPayloadNotification| {
+                move |msg: RfqsNotification| {
                     callback(msg.notification);
                 },
             )

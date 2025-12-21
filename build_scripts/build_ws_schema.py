@@ -57,6 +57,17 @@ def from_channel_to_path(channel_name):
 
 
 
+def strip_and_combine_name(s):
+    """Ensure reasonable name."""
+    # first remove and join on .
+    sub_name = ".".join(i for i in s.split("/") if i and not (i.startswith("{") and i.endswith("}")))
+    # We also split on _ and capitalize
+    sub_name = sub_name.replace("_", ".")
+
+    sub_name = "".join(i.capitalize() for i in sub_name.split("."))
+
+    return sub_name.split("<")[0]
+
 def from_schema_ref_to_notification_schema_name_and_schema(schema_ref):
 
     raw_spec = json.loads(SCHEMA_PATH.read_text())
@@ -65,9 +76,18 @@ def from_schema_ref_to_notification_schema_name_and_schema(schema_ref):
     if schema_ref not in schemas:
         raise(f"Schema ref {schema_ref} not found in components.schemas")
     notification_schema = schemas[schema_ref]
-    notification_schema_name = "".join([i.capitalize() for i in schema_ref.split(".")[0].split("_")]) + "Notification"
+
+    # notification_schema_name = "".join([i.capitalize() for i in schema_ref.split(".")[0].split("_")]) + "Notification"
+
+    notification_schema_name = strip_and_combine_name(schema_ref).replace("Payload", "Notification")
+    if not notification_schema_name.endswith("Notification"):
+        notification_schema_name += "Notification"
+
+
     extracted_payload_schema = notification_schema.get("properties", {})["notification"]
-    extracted_payload_name   =  "".join([i.capitalize() for i in schema_ref.split(".")[0].split("_")])
+    extracted_payload_name   =  strip_and_combine_name(schema_ref )
+    if not extracted_payload_name.endswith("Payload"):
+        extracted_payload_name += "Payload"
 
     # we check if it is in our main schemas, if so can use that.
     # We replace the notification property with the actual payload schema
@@ -210,7 +230,8 @@ if __name__ == "__main__":
         print(f"   schema_ref:  {data['schema_ref']}")
         notification_schema_name, notification_schema, extracted_payload_name, extracted_payload_schema = from_schema_ref_to_notification_schema_name_and_schema(data['schema_ref'])
         print(f"   notification schema name: {notification_schema_name}")
-        print(f"   schema:      {json.dumps(notification_schema, indent=4)}")
+        print(f"   extracted payload name: {extracted_payload_name}")
+        # print(f"   schema:      {json.dumps(notification_schema, indent=4)}")
         path_spec = from_path_and_params_to_path_spec(params, notification_schema_name, data['channel'], data['tag'])
 
         update_ws_spec_with_path_and_schemas(path, path_spec, 

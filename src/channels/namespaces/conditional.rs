@@ -1,7 +1,7 @@
 
 use crate::{
     models::{
-        Account, AccountNotification,
+        AccountConditionalOrdersNotification, AccountConditionalOrdersPayload,
     },
     ws_client::{RequestScope, WsClient},
 };
@@ -13,7 +13,7 @@ pub struct ConditionalSubscriptions<'a> {
 impl<'a> ConditionalSubscriptions<'a> {
     pub async fn account_conditional_orders<F>(&self, mut callback: F) -> Result<(), Error>
     where
-        F: FnMut(Account) + Send + 'static,
+        F: FnMut(AccountConditionalOrdersPayload) + Send + 'static,
     {
         let channel = "account.conditional_orders".to_string();
         // Per-subscription channel from core -> user callback
@@ -21,7 +21,7 @@ impl<'a> ConditionalSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Private,
                 channel,
-                move |msg: AccountNotification| {
+                move |msg: AccountConditionalOrdersNotification| {
                     callback(msg.notification);
                 },
             )

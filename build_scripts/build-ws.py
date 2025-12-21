@@ -12,7 +12,10 @@ OUTPUT_PATH = Path("src/channels")
 
 
 ALIASES = {
+    "PriceIndexPayload": "Index",
     "PriceIndex": "Index",
+    "AccountSummaryPayload": "AccountSummary",
+    "TickerPayload": "Ticker",
 }
 
 ENUMS = [
@@ -21,9 +24,15 @@ ENUMS = [
 
 PUBLIC_TAGS = [
     "subs_market_data",
-    "subs_system",
+    # "subs_system",
 ]
 
+TO_PROCESS_TAGS = PUBLIC_TAGS + [
+    "subs_accounting",
+    "subs_conditional",
+    "subs_mm_prot",
+    "subs_mm_rfq",
+]
 
 def load_ws_spec():
     return json.loads(WS_SPEC.read_text())
@@ -86,6 +95,7 @@ def build_namespace_file(spec, functions, tag):
     # replace with aliases
     for alias in ALIASES:
         if alias in models:
+            print("   Replacing model with alias:", alias, "->", ALIASES[alias])
             models.remove(alias)
             models.add(ALIASES[alias])
     namespace_name = "".join(i.capitalize() for i in tag.replace("subs_", "").split("_"))
@@ -111,6 +121,9 @@ if __name__ == "__main__":
     tags = collect_all_tags(spec)
     print("Collected tags:", tags)
     for tag in tags:
+        if tag not in TO_PROCESS_TAGS:
+            print("Skipping non-public tag:", tag)
+            continue
         print("Processing tag:", tag)
         functions = build_functions(spec, tag, tag in PUBLIC_TAGS)
         file_content = build_namespace_file(spec, functions, tag)
