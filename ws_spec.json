@@ -243,7 +243,7 @@
         "/session/mm_protection": {
             "get": {
                 "tags": [
-                    "subs_market_data"
+                    "subs_mm_prot"
                 ],
                 "summary": "Subscribe to session.mm_protection channel",
                 "operationId": "subscribe_session_mm_protection",
@@ -265,7 +265,7 @@
         "/mm/rfqs": {
             "get": {
                 "tags": [
-                    "subs_market_data"
+                    "subs_mm_rfq"
                 ],
                 "summary": "Subscribe to mm.rfqs channel",
                 "operationId": "subscribe_mm_rfqs",
@@ -287,7 +287,7 @@
         "/mm/rfq_quotes": {
             "get": {
                 "tags": [
-                    "subs_market_data"
+                    "subs_mm_rfq"
                 ],
                 "summary": "Subscribe to mm.rfq_quotes channel",
                 "operationId": "subscribe_mm_rfq_quotes",
@@ -309,7 +309,7 @@
         "/account/orders": {
             "get": {
                 "tags": [
-                    "subs_market_data"
+                    "subs_accounting"
                 ],
                 "summary": "Subscribe to account.orders channel",
                 "operationId": "subscribe_account_orders",
@@ -331,7 +331,7 @@
         "/account/persistent_orders": {
             "get": {
                 "tags": [
-                    "subs_market_data"
+                    "subs_accounting"
                 ],
                 "summary": "Subscribe to account.persistent_orders channel",
                 "operationId": "subscribe_account_persistent_orders",
@@ -353,7 +353,7 @@
         "/session/orders": {
             "get": {
                 "tags": [
-                    "subs_market_data"
+                    "subs_accounting"
                 ],
                 "summary": "Subscribe to session.orders channel",
                 "operationId": "subscribe_session_orders",
@@ -375,7 +375,7 @@
         "/account/trade_history": {
             "get": {
                 "tags": [
-                    "subs_market_data"
+                    "subs_accounting"
                 ],
                 "summary": "Subscribe to account.trade_history channel",
                 "operationId": "subscribe_account_trade_history",
@@ -397,7 +397,7 @@
         "/account/order_history": {
             "get": {
                 "tags": [
-                    "subs_market_data"
+                    "subs_accounting"
                 ],
                 "summary": "Subscribe to account.order_history channel",
                 "operationId": "subscribe_account_order_history",
@@ -419,7 +419,7 @@
         "/account/portfolio": {
             "get": {
                 "tags": [
-                    "subs_market_data"
+                    "subs_accounting"
                 ],
                 "summary": "Subscribe to account.portfolio channel",
                 "operationId": "subscribe_account_portfolio",
@@ -441,7 +441,7 @@
         "/account/summary": {
             "get": {
                 "tags": [
-                    "subs_market_data"
+                    "subs_accounting"
                 ],
                 "summary": "Subscribe to account.summary channel",
                 "operationId": "subscribe_account_summary",
@@ -463,7 +463,7 @@
         "/account/rfqs": {
             "get": {
                 "tags": [
-                    "subs_market_data"
+                    "subs_accounting"
                 ],
                 "summary": "Subscribe to account.rfqs channel",
                 "operationId": "subscribe_account_rfqs",
@@ -485,7 +485,7 @@
         "/account/rfq_history": {
             "get": {
                 "tags": [
-                    "subs_market_data"
+                    "subs_accounting"
                 ],
                 "summary": "Subscribe to account.rfq_history channel",
                 "operationId": "subscribe_account_rfq_history",
@@ -507,7 +507,7 @@
         "/account/conditional_orders": {
             "get": {
                 "tags": [
-                    "subs_market_data"
+                    "subs_conditional"
                 ],
                 "summary": "Subscribe to account.conditional_orders channel",
                 "operationId": "subscribe_account_conditional_orders",

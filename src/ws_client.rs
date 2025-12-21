@@ -1,5 +1,6 @@
 use serde::Deserialize;
 use serde::de::DeserializeOwned;
+use std::fmt;
 use tokio::{net::TcpStream, sync::oneshot};
 
 use futures_util::{SinkExt, StreamExt};
@@ -19,7 +20,7 @@ use tokio_tungstenite::{
 use crate::auth_utils::make_auth_token;
 use crate::models::{ErrorResponse, Instrument, PrivateTradeHistoryResult, PublicInstruments};
 
-use crate::ws::Subscriptions;
+use crate::channels::subscriptions::Subscriptions;
 
 type WsStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
 type ResponseSender = oneshot::Sender<String>;
@@ -38,6 +39,22 @@ pub struct RpcMessage {
     pub id: u64,
     pub result: PublicInstruments,
     pub error: Option<ErrorResponse>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum RequestScope {
+    Public,
+    Private,
+}
+
+impl fmt::Display for RequestScope {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            RequestScope::Public => write!(f, "public"),
+            RequestScope::Private => write!(f, "private"),
+        }
+    }
 }
 
 pub struct WsClient {
@@ -97,6 +114,7 @@ impl WsClient {
     }
     pub async fn subscribe_channel<P, F>(
         &self,
+        scope: RequestScope,
         channel: String,
         mut callback: F,
     ) -> Result<(), Error>
@@ -112,7 +130,7 @@ impl WsClient {
         }
 
         let msg = serde_json::json!({
-            "method": "public/subscribe",
+            "method": format!("{}/subscribe", scope),
             "params": {
                 "channels": [channel]
             }

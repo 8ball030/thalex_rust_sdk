@@ -95,7 +95,7 @@ def update_ws_spec_with_path_and_schemas(path, path_spec, notification, notifica
     TRANSIENT_WS_SPEC_PATH.write_text(json.dumps(to_update, indent=4))
 
 
-def from_path_and_params_to_path_spec(params, notification_schema_name, channel_name):
+def from_path_and_params_to_path_spec(params, notification_schema_name, channel_name, tag):
     """
     Given params = ['instrument', 'delay']
     return the path spec for /ticker/{instrument}/{delay}
@@ -104,7 +104,7 @@ def from_path_and_params_to_path_spec(params, notification_schema_name, channel_
     path_spec = {
         "get": {
             "tags": [
-                "subs_market_data"
+                tag
             ],
             "summary": f"Subscribe to {channel_name} channel",
             "operationId": f"subscribe_{channel_name.replace('.', '_')}",
@@ -211,7 +211,7 @@ if __name__ == "__main__":
         notification_schema_name, notification_schema, extracted_payload_name, extracted_payload_schema = from_schema_ref_to_notification_schema_name_and_schema(data['schema_ref'])
         print(f"   notification schema name: {notification_schema_name}")
         print(f"   schema:      {json.dumps(notification_schema, indent=4)}")
-        path_spec = from_path_and_params_to_path_spec(params, notification_schema_name, data['channel'])
+        path_spec = from_path_and_params_to_path_spec(params, notification_schema_name, data['channel'], data['tag'])
 
         update_ws_spec_with_path_and_schemas(path, path_spec, 
                                             notification_schema_name, 

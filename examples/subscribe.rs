@@ -13,6 +13,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let _ = client
         .subscriptions()
+        .market_data()
         .ticker("BTC-PERPETUAL", Delay::Raw, |msg| {
             // Parses into a json value initally
             let best_bid_price: f64 = msg.best_bid_price.unwrap();

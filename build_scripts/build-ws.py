@@ -8,25 +8,32 @@ from pathlib import Path
 from templates.subscriptions import func_template, file_template
 
 WS_SPEC = Path("ws_spec_updated.json")
-OUTPUT_PATH = Path("src/ws/subscriptions.rs")
+OUTPUT_PATH = Path("src/channels")
 
 
 ALIASES = {
     "PriceIndex": "Index",
-    # "InstrumentsPayload": "PublicInstruments"
 }
 
 ENUMS = [
     "Delay",
 ]
 
+PUBLIC_TAGS = [
+    "subs_market_data",
+    "subs_system",
+]
+
+
 def load_ws_spec():
     return json.loads(WS_SPEC.read_text())
 
-def build_functions(spec):
+def build_functions(spec, tag, is_public):
     functions = []
     for path_name, path_spec in spec["paths"].items():
-        print(f"Processing path: {path_name}")
+        if tag not in path_spec.get("get", {}).get("tags", []):
+            continue
+        print(f"  path: {path_name}")
         split = [i for i in path_name.split("/") if i]
         channel_name = "_".join([f for f in split
                                  if not (f.startswith("{") and f.endswith("}"))
@@ -61,31 +68,47 @@ def build_functions(spec):
             func_args=func_args_string,
             channel_args=".".join(["{" + i + "}" for i in arg_names]),
             response_model=response_model,
-            notification_model=notification_model
+            notification_model=notification_model,
+            scope="Public" if is_public else "Private",
         )
         functions.append(subscriptions_code)
     return "\n".join(functions)
 
-def build_file(spec, functions):
+def build_namespace_file(spec, functions, tag):
     models = set(
             spec.get("components", {}).get("schemas", {}).keys()
         )
-    
     # replace with aliases
     for alias in ALIASES:
         if alias in models:
             models.remove(alias)
             models.add(ALIASES[alias])
+    namespace_name = "".join(i.capitalize() for i in tag.replace("subs_", "").split("_"))
+
     file_content = file_template.substitute(
         functions=functions,
-        models=", ".join(sorted(models))
+        models=", ".join(sorted(models)),
+        tag=namespace_name + "Subscriptions"
     )
     return file_content
 
+def collect_all_tags(spec):
+    tags = set()
+    for _, path_spec in spec["paths"].items():
+        path_tags = path_spec.get("get", {}).get("tags", [])
+        print("   Found tags:", path_tags)
+        for tag in path_tags:
+            tags.add(tag)
+    return tags
+
 if __name__ == "__main__":
     spec = load_ws_spec()
-    functions = build_functions(spec)
-    file_content = build_file(spec, functions)
-    OUTPUT_PATH.write_text(file_content)
-
+    tags = collect_all_tags(spec)
+    print("Collected tags:", tags)
+    for tag in tags:
+        print("Processing tag:", tag)
+        functions = build_functions(spec, tag, tag in PUBLIC_TAGS)
+        file_content = build_namespace_file(spec, functions, tag)
+        file_suffix = tag.replace("subs_", "")
+        (OUTPUT_PATH / f"namespaces/{file_suffix}.rs").write_text(file_content)
 
