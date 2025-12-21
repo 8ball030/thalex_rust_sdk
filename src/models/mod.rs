@@ -328,8 +328,6 @@ pub mod rpc_response;
 pub use rpc_response::RpcResponse;
 pub mod session;
 pub use session::Session;
-pub mod session_inner;
-pub use session_inner::SessionInner;
 pub mod session_notification;
 pub use session_notification::SessionNotification;
 pub mod sgsl;

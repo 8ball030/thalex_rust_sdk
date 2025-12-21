@@ -170,7 +170,7 @@ impl<'a> MarketDataSubscriptions<'a> {
     where
         F: FnMut(InstrumentsPayload) + Send + 'static,
     {
-        let channel = "instruments.".to_string();
+        let channel = "instruments".to_string();
         // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
@@ -188,7 +188,7 @@ impl<'a> MarketDataSubscriptions<'a> {
     where
         F: FnMut(RfqsPayload) + Send + 'static,
     {
-        let channel = "rfqs.".to_string();
+        let channel = "rfqs".to_string();
         // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(

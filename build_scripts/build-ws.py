@@ -63,10 +63,15 @@ def build_functions(spec, tag, is_public):
         if func_args_string:
             func_args_string += ","
 
+
+        sub_name = ".".join(i for i in path_name.split("/") if i and not (i.startswith("{") and i.endswith("}")))
+        print("     Subscription name:", sub_name)
+        channel_with_args = ".".join([sub_name] + ["{" + i + "}" for i in arg_names])
+
         subscriptions_code = func_template.substitute(
             channel=channel_name,
             func_args=func_args_string,
-            channel_args=".".join(["{" + i + "}" for i in arg_names]),
+            channel_with_args=channel_with_args,
             response_model=response_model,
             notification_model=notification_model,
             scope="Public" if is_public else "Private",

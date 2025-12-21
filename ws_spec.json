@@ -1134,29 +1134,7 @@
             "Session": {
                 "type": "array",
                 "items": {
-                    "type": "object",
-                    "properties": {
-                        "product": {
-                            "type": "string",
-                            "example": "OBTCUSD"
-                        },
-                        "remaining_amount": {
-                            "type": "number",
-                            "example": 10,
-                            "description": "Remaining amount may be less than zero if a single aggressive order has\ncaused an overshoot. If remaining amount is less than or equal to zero, the\nmass quote orders in the group will have been cancelled, and the group needs\nrefilling.\n"
-                        },
-                        "reason": {
-                            "type": "string",
-                            "enum": [
-                                "refill",
-                                "executions",
-                                "client_cancel",
-                                "session_end",
-                                "failover"
-                            ],
-                            "description": "Detailed reason of the protection group status update.\n\nThe following reasons are possible:\n- `refill`: Remaining amount was updated by the client, e.g. with a call to `private/set_mm_protection`.\n\n- `executions`: Remaining amount was updated after a trade.\n\n- `client_cancel`: Protection group was deleted by the client, e.g. with a call to `private/cancel_mass_quote`.\n\n- `session_end`: Protection group was automatically deleted when a WebSocket session ended.\n\n- `failover`: Protection group was automatically deleted on matching engine failover.\n"
-                        }
-                    }
+                    "$ref": "#/components/schemas/OrderStatus"
                 },
                 "description": "Channel-specific content"
             },
@@ -1202,7 +1180,7 @@
             "Account": {
                 "type": "array",
                 "items": {
-                    "$ref": "./openapi_updated.json#/components/schemas/OrderStatus"
+                    "$ref": "#/components/schemas/OrderStatus"
                 },
                 "description": "Channel-specific content"
             },

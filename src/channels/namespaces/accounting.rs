@@ -15,7 +15,7 @@ impl<'a> AccountingSubscriptions<'a> {
     where
         F: FnMut(Account) + Send + 'static,
     {
-        let channel = "account_orders.".to_string();
+        let channel = "account.orders".to_string();
         // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
@@ -33,7 +33,7 @@ impl<'a> AccountingSubscriptions<'a> {
     where
         F: FnMut(Account) + Send + 'static,
     {
-        let channel = "account_persistent_orders.".to_string();
+        let channel = "account.persistent_orders".to_string();
         // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
@@ -51,7 +51,7 @@ impl<'a> AccountingSubscriptions<'a> {
     where
         F: FnMut(Session) + Send + 'static,
     {
-        let channel = "session_orders.".to_string();
+        let channel = "session.orders".to_string();
         // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
@@ -69,7 +69,7 @@ impl<'a> AccountingSubscriptions<'a> {
     where
         F: FnMut(Account) + Send + 'static,
     {
-        let channel = "account_trade_history.".to_string();
+        let channel = "account.trade_history".to_string();
         // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
@@ -87,7 +87,7 @@ impl<'a> AccountingSubscriptions<'a> {
     where
         F: FnMut(Account) + Send + 'static,
     {
-        let channel = "account_order_history.".to_string();
+        let channel = "account.order_history".to_string();
         // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
@@ -105,7 +105,7 @@ impl<'a> AccountingSubscriptions<'a> {
     where
         F: FnMut(Account) + Send + 'static,
     {
-        let channel = "account_portfolio.".to_string();
+        let channel = "account.portfolio".to_string();
         // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
@@ -123,7 +123,7 @@ impl<'a> AccountingSubscriptions<'a> {
     where
         F: FnMut(Account) + Send + 'static,
     {
-        let channel = "account_summary.".to_string();
+        let channel = "account.summary".to_string();
         // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
@@ -141,7 +141,7 @@ impl<'a> AccountingSubscriptions<'a> {
     where
         F: FnMut(Account) + Send + 'static,
     {
-        let channel = "account_rfqs.".to_string();
+        let channel = "account.rfqs".to_string();
         // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
@@ -159,7 +159,7 @@ impl<'a> AccountingSubscriptions<'a> {
     where
         F: FnMut(Account) + Send + 'static,
     {
-        let channel = "account_rfq_history.".to_string();
+        let channel = "account.rfq_history".to_string();
         // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(

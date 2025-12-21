@@ -15,7 +15,7 @@ impl<'a> MmProtSubscriptions<'a> {
     where
         F: FnMut(Session) + Send + 'static,
     {
-        let channel = "session_mm_protection.".to_string();
+        let channel = "session.mm_protection".to_string();
         // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(

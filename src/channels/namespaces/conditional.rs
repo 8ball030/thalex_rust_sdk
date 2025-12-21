@@ -15,7 +15,7 @@ impl<'a> ConditionalSubscriptions<'a> {
     where
         F: FnMut(Account) + Send + 'static,
     {
-        let channel = "account_conditional_orders.".to_string();
+        let channel = "account.conditional_orders".to_string();
         // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(

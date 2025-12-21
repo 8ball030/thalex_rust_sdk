@@ -4,7 +4,7 @@ func_template = Template("""
     where
         F: FnMut($notification_model) + Send + 'static,
     {
-        let channel = format!("$channel.$channel_args");
+        let channel = format!("$channel_with_args");
         // Per-subscription channel from core -> user callback
         self.client.subscribe_channel(
             RequestScope::$scope,

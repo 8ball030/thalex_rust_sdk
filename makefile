@@ -40,6 +40,7 @@ codegen:
 	rm -rf ./generated
 
 	python build_scripts/post-process.py
+	python build_scripts/fix_array_types.py ws_spec_updated.json src/models
 	python build_scripts/build-ws.py
 
 	rm openapi_updated.json ws_spec_updated.json openapi.json

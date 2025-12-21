@@ -15,7 +15,7 @@ impl<'a> MmRfqSubscriptions<'a> {
     where
         F: FnMut(Mm) + Send + 'static,
     {
-        let channel = "mm_rfqs.".to_string();
+        let channel = "mm.rfqs".to_string();
         // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
@@ -33,7 +33,7 @@ impl<'a> MmRfqSubscriptions<'a> {
     where
         F: FnMut(Mm) + Send + 'static,
     {
-        let channel = "mm_rfq_quotes.".to_string();
+        let channel = "mm.rfq_quotes".to_string();
         // Per-subscription channel from core -> user callback
         self.client
             .subscribe_channel(
