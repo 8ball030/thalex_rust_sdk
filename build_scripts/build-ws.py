@@ -85,8 +85,6 @@ def build_namespace_file(spec, functions, tag):
     )
     return file_content
 
-
-
 def collect_all_tags(spec):
     tags = set()
     for _, path_spec in spec["paths"].items():
@@ -95,12 +93,6 @@ def collect_all_tags(spec):
         for tag in path_tags:
             tags.add(tag)
     return tags
-
-
-def build_mod_file(tags):
-    lines = ["pub mod " + tag.replace("subs_", "") + ";" for tag in tags]
-    MOD_FILE_PATH = OUTPUT_PATH / "mod.rs"
-    MOD_FILE_PATH.write_text("\n".join(lines))
 
 if __name__ == "__main__":
     spec = load_ws_spec()
@@ -112,5 +104,4 @@ if __name__ == "__main__":
         file_content = build_namespace_file(spec, functions, tag)
         file_suffix = tag.replace("subs_", "")
         (OUTPUT_PATH / f"namespaces/{file_suffix}.rs").write_text(file_content)
-    build_mod_file(tags)
 
