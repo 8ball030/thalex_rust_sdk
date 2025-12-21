@@ -98,7 +98,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         || price_diff_bps.abs() > PRICE_TOLERANCE_MAX_BPS
                     {
                         let updated_bid_order = client
-                            .amend_order(bid_order.order_id.clone(), ORDER_SIZE, bid_price)
+                            .amend_order(
+                                bid_order.order_id.clone(),
+                                MARKET_NAME,
+                                ORDER_SIZE,
+                                bid_price,
+                            )
                             .await
                             .unwrap();
                         info!(
@@ -118,7 +123,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         || price_diff_bps.abs() > PRICE_TOLERANCE_MAX_BPS
                     {
                         let updated_ask_order = client
-                            .amend_order(ask_order.order_id.clone(), ORDER_SIZE, ask_price)
+                            .amend_order(
+                                ask_order.order_id.clone(),
+                                MARKET_NAME,
+                                ORDER_SIZE,
+                                ask_price,
+                            )
                             .await
                             .unwrap();
                         info!(

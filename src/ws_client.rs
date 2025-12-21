@@ -67,6 +67,7 @@ pub struct WsClient {
     pub subscriptions: Arc<Mutex<HashMap<String, mpsc::UnboundedSender<String>>>>,
     next_id: Arc<AtomicU64>,
     shutdown_tx: watch::Sender<bool>,
+    instruments_cache: Arc<Mutex<HashMap<String, Instrument>>>,
 }
 
 impl WsClient {
@@ -104,6 +105,7 @@ impl WsClient {
             subscriptions: subscriptions.clone(),
             next_id: next_id.clone(),
             shutdown_tx: shutdown_tx.clone(),
+            instruments_cache: Arc::new(Mutex::new(HashMap::new())),
         };
 
         // Spawn supervisor that reconnects and owns the websocket.
@@ -114,8 +116,48 @@ impl WsClient {
             pending_requests,
             subscriptions,
         ));
-
+        client.cache_instruments().await?;
         Ok(client)
+    }
+
+    async fn cache_instruments(&self) -> Result<(), Error> {
+        let instruments = self.get_instruments().await?;
+        let mut cache = self.instruments_cache.lock().await;
+        cache.clear();
+        for instrument in &instruments {
+            cache.insert(
+                instrument.instrument_name.clone().unwrap(),
+                instrument.clone(),
+            );
+        }
+        Ok(())
+    }
+
+    async fn check_and_refresh_instrument_cache(
+        &self,
+        instrument_name: &str,
+    ) -> Result<Instrument, Error> {
+        let instrument = self
+            .instruments_cache
+            .lock()
+            .await
+            .get(instrument_name)
+            .cloned();
+        // refresh cache if not found?
+        if let Some(instr) = instrument {
+            Ok(instr)
+        } else {
+            self.cache_instruments().await?;
+            let cache = self.instruments_cache.lock().await;
+            if let Some(instr) = cache.get(instrument_name).cloned() {
+                Ok(instr)
+            } else {
+                Err(Box::new(std::io::Error::new(
+                    std::io::ErrorKind::NotFound,
+                    format!("Instrument not found: {instrument_name}"),
+                )))
+            }
+        }
     }
 
     pub fn send_json(&self, value: Value) -> Result<(), Error> {
@@ -312,13 +354,19 @@ impl WsClient {
         direction: Direction,
         order_type: OrderType,
     ) -> Result<OrderStatus, Error> {
+        // Check if instrument is already cached
+        let instrument = self
+            .check_and_refresh_instrument_cache(instrument_name)
+            .await?;
+        let tick_size = instrument.tick_size.unwrap();
+
         let result: Value = self
             .send_rpc(
                 "private/insert",
                 serde_json::json!({
                     "instrument_name": instrument_name,
                     "amount": amount,
-                    "price": round_to_ticks(price, 0.1),
+                    "price": round_to_ticks(price, tick_size),
                     "direction": direction,
                     "order_type": order_type,
                 }),
@@ -331,15 +379,24 @@ impl WsClient {
     pub async fn amend_order(
         &self,
         order_id: String,
+        instrument_name: &str,
         amount: f64,
         price: f64,
     ) -> Result<OrderStatus, Error> {
-        let params = serde_json::json!({
-            "order_id": order_id,
-            "amount": amount,
-            "price": round_to_ticks(price, 0.1),
-        });
-        let result: Value = self.send_rpc("private/amend", params).await?;
+        let instrument = self
+            .check_and_refresh_instrument_cache(instrument_name)
+            .await?;
+        let tick_size = instrument.tick_size.unwrap();
+        let result: Value = self
+            .send_rpc(
+                "private/amend",
+                serde_json::json!({
+                    "order_id": order_id,
+                    "amount": amount,
+                    "price": round_to_ticks(price, tick_size)
+                }),
+            )
+            .await?;
 
         let order_status: OrderStatus = serde_json::from_value(result)?;
         Ok(order_status)
