@@ -43,6 +43,6 @@ codegen:
 	python build_scripts/fix_array_types.py ws_spec_updated.json src/models
 	python build_scripts/build-ws.py
 
-	rm openapi_updated.json ws_spec_updated.json openapi.json
+	rm openapi_updated.json ws_spec_updated.json openapi.json new_schema.json
 
 all: codegen fmt lint build test
