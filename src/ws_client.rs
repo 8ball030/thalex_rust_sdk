@@ -364,6 +364,7 @@ impl WsClient {
         info!("Set cancel_on_disconnect result: {result:?}");
         Ok(())
     }
+    #[allow(clippy::too_many_arguments)]
     pub async fn insert_order(
         &self,
         instrument_name: &str,
@@ -371,6 +372,8 @@ impl WsClient {
         price: f64,
         direction: Direction,
         order_type: OrderType,
+        post_only: bool,
+        reject_post_only: bool,
     ) -> Result<OrderStatus, Error> {
         // Check if instrument is already cached
         let instrument = self
@@ -387,6 +390,9 @@ impl WsClient {
                     "price": round_to_ticks(price, tick_size),
                     "direction": direction,
                     "order_type": order_type,
+                    "post_only": post_only,
+                    "reject_post_only": reject_post_only
+
                 }),
             )
             .await?;

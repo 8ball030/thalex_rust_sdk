@@ -1,9 +1,5 @@
-
 use crate::{
-    models::{
-        MmRfqQuotesNotification,
-        MmRfqQuotesPayload, MmRfqsNotification, MmRfqsPayload,
-    },
+    models::{MmRfqQuotesNotification, MmRfqQuotesPayload, MmRfqsNotification, MmRfqsPayload},
     ws_client::{RequestScope, WsClient},
 };
 type Error = Box<dyn std::error::Error + Send + Sync>;

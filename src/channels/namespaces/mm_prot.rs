@@ -1,8 +1,5 @@
-
 use crate::{
-    models::{
-        SessionMmProtectionNotification, SessionMmProtectionPayload,
-    },
+    models::{SessionMmProtectionNotification, SessionMmProtectionPayload},
     ws_client::{RequestScope, WsClient},
 };
 type Error = Box<dyn std::error::Error + Send + Sync>;

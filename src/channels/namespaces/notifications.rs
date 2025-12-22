@@ -1,8 +1,5 @@
-
 use crate::{
-    models::{
-        Notifications, UserInboxNotificationsNotification,
-    },
+    models::{Notifications, UserInboxNotificationsNotification},
     ws_client::{RequestScope, WsClient},
 };
 type Error = Box<dyn std::error::Error + Send + Sync>;

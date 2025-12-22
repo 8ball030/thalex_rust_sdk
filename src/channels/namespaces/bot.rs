@@ -1,8 +1,5 @@
-
 use crate::{
-    models::{
-        AccountBotsNotification, AccountBotsPayload,
-    },
+    models::{AccountBotsNotification, AccountBotsPayload},
     ws_client::{RequestScope, WsClient},
 };
 type Error = Box<dyn std::error::Error + Send + Sync>;

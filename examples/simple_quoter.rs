@@ -65,6 +65,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                             bid_price,
                             Direction::Buy,
                             OrderType::Limit,
+                            true,
+                            true,
                         )
                         .await
                         .unwrap();
@@ -80,6 +82,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                             ask_price,
                             Direction::Sell,
                             OrderType::Limit,
+                            true,
+                            true,
                         )
                         .await
                         .unwrap();
