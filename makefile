@@ -1,9 +1,10 @@
 lint: 
 	cargo clippy --examples --tests -- -D warnings 
 fmt:
-	cargo fmt --all 
 	cargo fix --allow-dirty
+	cargo fmt --all 
 	cargo clippy --examples --tests --fix --allow-dirty -- -D warnings
+
 build:
 	cargo build --all-features
 test:

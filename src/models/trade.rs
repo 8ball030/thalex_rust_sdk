@@ -54,7 +54,7 @@ pub struct Trade {
         skip_serializing_if = "Option::is_none"
     )]
     pub perpetual_funding_pnl: Option<f64>,
-    /// The fee paid for this trade.
+    /// The fee paid for this trade.  The fee for a trade is calculated as `fee_basis * fee_rate * amount`, and is then subject to clamping to minimum and maximum fee. Depending on the instrument, `fee_basis` can be different (e.g. it can be equal to the underlying index, trade price or combo mark price). Please refer to trading information pages for more details.
     #[serde(rename = "fee", skip_serializing_if = "Option::is_none")]
     pub fee: Option<f64>,
     /// The relevant index at time of trade.
@@ -63,6 +63,9 @@ pub struct Trade {
     /// The fee rate applied to calculate the fee.
     #[serde(rename = "fee_rate", skip_serializing_if = "Option::is_none")]
     pub fee_rate: Option<f64>,
+    /// The fee basis on which the fee is calculated.
+    #[serde(rename = "fee_basis", skip_serializing_if = "Option::is_none")]
+    pub fee_basis: Option<f64>,
     /// The perpetual funding mark as applied to the trade (see `Ticker`).
     #[serde(rename = "funding_mark", skip_serializing_if = "Option::is_none")]
     pub funding_mark: Option<f64>,
@@ -102,6 +105,7 @@ impl Trade {
             fee: None,
             index: None,
             fee_rate: None,
+            fee_basis: None,
             funding_mark: None,
             liquidation_fee: None,
             client_order_id: None,

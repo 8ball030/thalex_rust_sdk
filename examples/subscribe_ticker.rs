@@ -1,9 +1,6 @@
 use log::{Level::Info, info};
 use simple_logger::init_with_level;
-use thalex_rust_sdk::{
-    models::Delay,
-    ws_client::{ExternalEvent, WsClient},
-};
+use thalex_rust_sdk::{models::Delay, types::ExternalEvent, ws_client::WsClient};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

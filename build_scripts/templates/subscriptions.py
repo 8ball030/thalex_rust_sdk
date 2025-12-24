@@ -28,9 +28,10 @@ use crate::{models::{
     $models
 }, ws_client::{
     WsClient,
-    RequestScope
+}, types::{
+    Error, 
+    RequestScope, 
 }};
-type Error = Box<dyn std::error::Error + Send + Sync>;
 
 pub struct $tag<'a> {
     pub client: &'a WsClient,

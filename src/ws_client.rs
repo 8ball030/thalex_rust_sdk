@@ -1,8 +1,5 @@
-use serde::Deserialize;
 use serde::de::DeserializeOwned;
-use std::fmt;
 use tokio::{
-    net::TcpStream,
     sync::oneshot,
     time::{Duration, Instant, MissedTickBehavior, interval, sleep},
 };
@@ -17,73 +14,25 @@ use std::sync::{
     atomic::{AtomicU64, Ordering},
 };
 use tokio::sync::{Mutex, mpsc, watch};
-use tokio_tungstenite::{
-    MaybeTlsStream, WebSocketStream, connect_async, tungstenite::protocol::Message,
-};
+use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
 
-use crate::auth_utils::make_auth_token;
-use crate::models::order_status::{Direction, OrderType};
 use crate::models::{
-    ErrorResponse, Instrument, OrderStatus, PortfolioEntry, PrivatePortfolio,
-    PrivateTradeHistoryResult, PublicInstruments,
+    Instrument, PortfolioEntry, PrivatePortfolio, PrivateTradeHistoryResult, PublicInstruments,
+};
+use crate::{
+    auth_utils::make_auth_token,
+    types::{
+        Error, ExternalEvent, InternalCommand, LoginState, RequestScope, ResponseSender,
+        RpcMessage, WsStream,
+    },
 };
 
 use crate::channels::subscriptions::Subscriptions;
 use crate::rpc::Rpc;
-use crate::utils::round_to_ticks;
-
-type WsStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
-type ResponseSender = oneshot::Sender<String>;
-type Error = Box<dyn std::error::Error + Send + Sync>;
 
 const URL: &str = "wss://thalex.com/ws/api/v2";
 const PING_INTERVAL: Duration = Duration::from_secs(5);
 const READ_TIMEOUT: Duration = Duration::from_secs(5);
-
-/// Commands sent from the client API to the connection task.
-enum InternalCommand {
-    Send(Message),
-    Close,
-    // / Trigger resubscription to all channels
-    // Resubscribe,
-}
-
-#[derive(PartialEq, Clone, Debug, Copy)]
-pub enum ExternalEvent {
-    Connected,
-    Disconnected,
-    Exited,
-}
-
-#[derive(Clone, Debug)]
-struct LoginState {
-    key_id: String,
-    account_id: String,
-    key_path: String,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-pub struct RpcMessage {
-    pub id: Option<u64>,
-    pub result: Value,
-    pub error: Option<ErrorResponse>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum RequestScope {
-    Public,
-    Private,
-}
-
-impl fmt::Display for RequestScope {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            RequestScope::Public => write!(f, "public"),
-            RequestScope::Private => write!(f, "private"),
-        }
-    }
-}
 
 pub struct WsClient {
     write_tx: mpsc::UnboundedSender<InternalCommand>,
@@ -104,9 +53,6 @@ impl WsClient {
     pub fn rpc(&self) -> Rpc {
         Rpc { client: self }
     }
-    // pub async fn connect_default() -> Result<Self, Error> {
-    //     Self::connect(URL).await
-    // }
 
     pub async fn from_env() -> Result<Self, Error> {
         let key_path = var("THALEX_PRIVATE_KEY_PATH").unwrap();
@@ -194,7 +140,7 @@ impl WsClient {
         Ok(())
     }
 
-    async fn check_and_refresh_instrument_cache(
+    pub async fn check_and_refresh_instrument_cache(
         &self,
         instrument_name: &str,
     ) -> Result<Instrument, Error> {
@@ -410,97 +356,6 @@ impl WsClient {
             )
             .await;
         info!("Set cancel_on_disconnect result: {result:?}");
-        Ok(())
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    pub async fn insert_order(
-        &self,
-        instrument_name: &str,
-        amount: f64,
-        price: f64,
-        direction: Direction,
-        order_type: OrderType,
-        post_only: bool,
-        reject_post_only: bool,
-    ) -> Result<OrderStatus, Error> {
-        let instrument = self
-            .check_and_refresh_instrument_cache(instrument_name)
-            .await?;
-        let tick_size = instrument.tick_size.unwrap();
-
-        // info!("Inserting order: instrument: {}, amount: {}, price: {}, direction: {:?}, order_type: {:?}, post_only: {}, reject_post_only: {}", instrument_name, amount, price, direction, order_type, post_only, reject_post_only);
-        let result: Value = self
-            .send_rpc(
-                "private/insert",
-                serde_json::json!({
-                    "instrument_name": instrument_name,
-                    "amount": amount,
-                    "price": round_to_ticks(price, tick_size),
-                    "direction": direction,
-                    "order_type": order_type,
-                    "post_only": post_only,
-                    "reject_post_only": reject_post_only
-
-                }),
-            )
-            .await?;
-
-        let order_status: OrderStatus = serde_json::from_value(result)?;
-        Ok(order_status)
-    }
-
-    pub async fn amend_order(
-        &self,
-        order_id: String,
-        instrument_name: &str,
-        amount: f64,
-        price: f64,
-    ) -> Result<OrderStatus, Error> {
-        let instrument = self
-            .check_and_refresh_instrument_cache(instrument_name)
-            .await?;
-        let tick_size = instrument.tick_size.unwrap();
-        let result: Value = self
-            .send_rpc(
-                "private/amend",
-                serde_json::json!({
-                    "order_id": order_id,
-                    "amount": amount,
-                    "price": round_to_ticks(price, tick_size)
-                }),
-            )
-            .await?;
-
-        let order_status: OrderStatus = serde_json::from_value(result)?;
-        Ok(order_status)
-    }
-    pub async fn cancel_order(&self, order_id: String) -> Result<OrderStatus, Error> {
-        let result: Value = self
-            .send_rpc(
-                "private/cancel",
-                serde_json::json!({
-                    "order_id": order_id
-                }),
-            )
-            .await?;
-
-        let order_status: OrderStatus = serde_json::from_value(result)?;
-        Ok(order_status)
-    }
-    pub async fn cancel_all_orders(&self) -> Result<Vec<OrderStatus>, Error> {
-        let result: Value = self
-            .send_rpc("private/cancel_all", serde_json::json!({}))
-            .await?;
-
-        let orders_status: Vec<OrderStatus> = serde_json::from_value(result)?;
-        Ok(orders_status)
-    }
-    pub async fn cancel_session(&self) -> Result<(), Error> {
-        let result = self
-            .send_rpc::<Value>("private/cancel_session", serde_json::json!({}))
-            .await;
-        info!("Cancel session result: {result:?}");
         Ok(())
     }
 

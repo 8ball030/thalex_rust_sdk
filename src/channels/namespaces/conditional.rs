@@ -1,8 +1,8 @@
 use crate::{
     models::{AccountConditionalOrdersNotification, AccountConditionalOrdersPayload},
-    ws_client::{RequestScope, WsClient},
+    types::{Error, RequestScope},
+    ws_client::WsClient,
 };
-type Error = Box<dyn std::error::Error + Send + Sync>;
 
 pub struct ConditionalSubscriptions<'a> {
     pub client: &'a WsClient,

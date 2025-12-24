@@ -7,9 +7,9 @@ use crate::{
         AccountSummaryNotification, AccountTradeHistoryNotification, AccountTradeHistoryPayload,
         SessionOrdersNotification, SessionOrdersPayload,
     },
-    ws_client::{RequestScope, WsClient},
+    types::{Error, RequestScope},
+    ws_client::WsClient,
 };
-type Error = Box<dyn std::error::Error + Send + Sync>;
 
 pub struct AccountingSubscriptions<'a> {
     pub client: &'a WsClient,

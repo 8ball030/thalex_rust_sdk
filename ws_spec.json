@@ -640,50 +640,6 @@
                 }
             }
         },
-        "/system": {
-            "get": {
-                "tags": [
-                    "subs_system"
-                ],
-                "summary": "Subscribe to system channel",
-                "operationId": "subscribe_system",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "Successful subscription",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SystemNotification"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/banners": {
-            "get": {
-                "tags": [
-                    "subs_system"
-                ],
-                "summary": "Subscribe to banners channel",
-                "operationId": "subscribe_banners",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "Successful subscription",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/BannersNotification"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/user/inbox_notifications": {
             "get": {
                 "tags": [
@@ -721,6 +677,50 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/AccountBotsNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/system": {
+            "get": {
+                "tags": [
+                    "subs_system"
+                ],
+                "summary": "Subscribe to system channel",
+                "operationId": "subscribe_system",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SystemNotification"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/banners": {
+            "get": {
+                "tags": [
+                    "subs_system"
+                ],
+                "summary": "Subscribe to banners channel",
+                "operationId": "subscribe_banners",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful subscription",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BannersNotification"
                                 }
                             }
                         }
@@ -2758,133 +2758,6 @@
                 },
                 "description": "Channel-specific content"
             },
-            "Trade": {
-                "type": "object",
-                "properties": {
-                    "trade_type": {
-                        "type": "string",
-                        "description": "Type of the trade.\n\nNote: as of API v2.31.0 we have stopped representing futures-style settlements as trades of `daily_mark` type. You might still\nget such trades in the history, but no new trades of `daily_mark` type will be created.\nTo get information about daily marks, use `private/daily_mark_history` API endpoint.\n",
-                        "enum": [
-                            "normal",
-                            "block",
-                            "combo",
-                            "amend",
-                            "delete",
-                            "internal_transfer",
-                            "expiration",
-                            "daily_mark",
-                            "rfq",
-                            "liquidation"
-                        ]
-                    },
-                    "trade_id": {
-                        "type": "string"
-                    },
-                    "order_id": {
-                        "type": "string"
-                    },
-                    "instrument_name": {
-                        "type": "string"
-                    },
-                    "direction": {
-                        "type": "string",
-                        "enum": [
-                            "buy",
-                            "sell"
-                        ]
-                    },
-                    "price": {
-                        "type": "number",
-                        "description": "Trade price."
-                    },
-                    "amount": {
-                        "type": "number",
-                        "description": "Traded amount."
-                    },
-                    "label": {
-                        "type": "string",
-                        "description": "User label."
-                    },
-                    "time": {
-                        "type": "number",
-                        "description": "Time of trade (Unix timestamp)."
-                    },
-                    "position_after": {
-                        "type": "number",
-                        "description": "Position in this instrument right after the trade."
-                    },
-                    "session_realised_after": {
-                        "type": "number",
-                        "description": "Session realised P&L for this instrument right after the trade."
-                    },
-                    "position_pnl": {
-                        "type": "number",
-                        "description": "If trade closed a position, the positional P&L that was realised."
-                    },
-                    "perpetual_funding_pnl": {
-                        "type": "number",
-                        "description": "If trade closed a position in a perpetual, the funding P&L that was realised."
-                    },
-                    "fee": {
-                        "type": "number",
-                        "description": "The fee paid for this trade."
-                    },
-                    "index": {
-                        "type": "number",
-                        "description": "The relevant index at time of trade."
-                    },
-                    "fee_rate": {
-                        "type": "number",
-                        "description": "The fee rate applied to calculate the fee."
-                    },
-                    "funding_mark": {
-                        "type": "number",
-                        "description": "The perpetual funding mark as applied to the trade (see `Ticker`)."
-                    },
-                    "liquidation_fee": {
-                        "type": "number",
-                        "description": "Fee paid in case of liquidation."
-                    },
-                    "client_order_id": {
-                        "type": "number",
-                        "description": "Client order reference as set in related order."
-                    },
-                    "maker_taker": {
-                        "type": "string",
-                        "description": "Maker (trade on book order) or taker (trade on new order), if applicable.",
-                        "enum": [
-                            "maker",
-                            "taker"
-                        ]
-                    },
-                    "bot_id": {
-                        "type": "string",
-                        "description": "If the trade was made by a bot, the ID of that bot.\nOtherwise omitted.\n"
-                    },
-                    "leg_index": {
-                        "type": "number",
-                        "description": "Index of a leg on which the trade happened for combination orders. Zero for single-leg orders.\n\nFor combination orders the direction of the trade is defined by the direction of the order and\nthe sign of the leg quantity.\n"
-                    }
-                },
-                "example": {
-                    "order_id": "00011E570000004A",
-                    "trade_id": "0080000000000000169F22D05B785A2B",
-                    "instrument_name": "BTC-PERPETUAL",
-                    "direction": "buy",
-                    "price": 47280,
-                    "amount": 0.1,
-                    "label": "",
-                    "time": 1630059868.4145653,
-                    "position_after": 1.1,
-                    "trade_type": "normal",
-                    "session_realised_after": 25,
-                    "fee_rate": 0.00025,
-                    "index": 47200,
-                    "fee": 1.18,
-                    "funding_mark": 0.014,
-                    "leg_index": 0
-                }
-            },
             "AccountSummaryPayload": {
                 "$ref": "./openapi_updated.json#/components/schemas/AccountSummary",
                 "description": "Channel-specific content"
@@ -3129,6 +3002,49 @@
                     "open_interest": 123.456
                 }
             },
+            "UserInboxNotificationsNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/UserInboxNotificationsPayload"
+                    }
+                }
+            },
+            "UserInboxNotificationsPayload": {
+                "$ref": "./openapi_updated.json#/components/schemas/Notifications",
+                "description": "Channel-specific content"
+            },
+            "AccountBotsNotification": {
+                "type": "object",
+                "required": [
+                    "channel_name",
+                    "notification"
+                ],
+                "properties": {
+                    "channel_name": {
+                        "type": "string",
+                        "description": "Channel name as in subscription."
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/AccountBotsPayload"
+                    }
+                }
+            },
+            "AccountBotsPayload": {
+                "type": "array",
+                "items": {
+                    "$ref": "./openapi_updated.json#/components/schemas/Bot"
+                },
+                "description": "Channel-specific content"
+            },
             "SystemNotification": {
                 "type": "object",
                 "required": [
@@ -3170,86 +3086,6 @@
                 "items": {
                     "$ref": "./openapi_updated.json#/components/schemas/Banner"
                 },
-                "description": "Channel-specific content"
-            },
-            "Banner": {
-                "type": "object",
-                "required": [
-                    "time",
-                    "severity",
-                    "message"
-                ],
-                "properties": {
-                    "id": {
-                        "type": "number",
-                        "description": "The id of this banner."
-                    },
-                    "time": {
-                        "type": "number",
-                        "description": "Time when this banner was posted (Unix timestamp)."
-                    },
-                    "severity": {
-                        "type": "string",
-                        "description": "Severity of the banner message. Used to choose appropriate styling for banner display.",
-                        "enum": [
-                            "info",
-                            "warning",
-                            "critical"
-                        ]
-                    },
-                    "title": {
-                        "type": "string",
-                        "description": "Optional title of the banner."
-                    },
-                    "message": {
-                        "type": "string",
-                        "description": "Message text to be displayed in the banner."
-                    }
-                },
-                "example": {
-                    "id": 1,
-                    "time": 1630059868.4145653,
-                    "severity": "info",
-                    "title": "Important information",
-                    "message": "Starting next week we are lowering our fees by 10%."
-                }
-            },
-            "SystemEvent": {
-                "type": "object",
-                "required": [
-                    "event"
-                ],
-                "properties": {
-                    "event": {
-                        "type": "string",
-                        "description": "Type of the system event.\n\n- `reconnect`: you receive this event when the WebSocket connection is about to be closed by the server and you need to open a new one. This can happen, for example, during exchange maintenance windows. The event is sent at least 10 seconds before the connection is closed.\n",
-                        "enum": [
-                            "reconnect"
-                        ]
-                    }
-                },
-                "example": {
-                    "event": "reconnect"
-                }
-            },
-            "UserInboxNotificationsNotification": {
-                "type": "object",
-                "required": [
-                    "channel_name",
-                    "notification"
-                ],
-                "properties": {
-                    "channel_name": {
-                        "type": "string",
-                        "description": "Channel name as in subscription."
-                    },
-                    "notification": {
-                        "$ref": "#/components/schemas/UserInboxNotificationsPayload"
-                    }
-                }
-            },
-            "UserInboxNotificationsPayload": {
-                "$ref": "./openapi_updated.json#/components/schemas/Notifications",
                 "description": "Channel-specific content"
             },
             "Notifications": {
@@ -3338,29 +3174,6 @@
                         }
                     ]
                 }
-            },
-            "AccountBotsNotification": {
-                "type": "object",
-                "required": [
-                    "channel_name",
-                    "notification"
-                ],
-                "properties": {
-                    "channel_name": {
-                        "type": "string",
-                        "description": "Channel name as in subscription."
-                    },
-                    "notification": {
-                        "$ref": "#/components/schemas/AccountBotsPayload"
-                    }
-                }
-            },
-            "AccountBotsPayload": {
-                "type": "array",
-                "items": {
-                    "$ref": "./openapi_updated.json#/components/schemas/Bot"
-                },
-                "description": "Channel-specific content"
             },
             "Bot": {
                 "oneOf": [
@@ -3528,8 +3341,7 @@
                             "asks",
                             "step_size",
                             "base_position",
-                            "upside_exit_price",
-                            "downside_exit_price",
+                            "target_mean_price",
                             "end_time",
                             "bot_id",
                             "status"
@@ -3572,6 +3384,10 @@
                                     "type": "number"
                                 }
                             },
+                            "target_mean_price": {
+                                "type": "number",
+                                "description": "The price level to exit positions at."
+                            },
                             "step_size": {
                                 "type": "number",
                                 "description": "The default size of to quote on one level. See [the bot strategies section](#tag/bot_strategies) for more explanation."
@@ -3611,8 +3427,7 @@
                             "grid",
                             "step_size",
                             "base_position",
-                            "upside_exit_price",
-                            "downside_exit_price",
+                            "target_mean_price",
                             "end_time",
                             "bot_id",
                             "status"
@@ -3644,6 +3459,10 @@
                                     "type": "number"
                                 },
                                 "description": "The default price levels the bot will be quoting at. See [the bot strategies section](#tag/bot_strategies) for more explanation."
+                            },
+                            "target_mean_price": {
+                                "type": "number",
+                                "description": "As long as the account's portfolio position in the instrument that the bot is trading is equal to base_position, the bot will insert step_size asks on the grid above target_mean_price (one per level), and step_size bids below target_mean_price."
                             },
                             "step_size": {
                                 "type": "number",
@@ -3787,6 +3606,137 @@
                     "exit_price": 100000,
                     "exit_position": 0,
                     "end_time": 1740064912
+                }
+            },
+            "Trade": {
+                "type": "object",
+                "properties": {
+                    "trade_type": {
+                        "type": "string",
+                        "description": "Type of the trade.\n\nNote: as of API v2.31.0 we have stopped representing futures-style settlements as trades of `daily_mark` type. You might still\nget such trades in the history, but no new trades of `daily_mark` type will be created.\nTo get information about daily marks, use `private/daily_mark_history` API endpoint.\n",
+                        "enum": [
+                            "normal",
+                            "block",
+                            "combo",
+                            "amend",
+                            "delete",
+                            "internal_transfer",
+                            "expiration",
+                            "daily_mark",
+                            "rfq",
+                            "liquidation"
+                        ]
+                    },
+                    "trade_id": {
+                        "type": "string"
+                    },
+                    "order_id": {
+                        "type": "string"
+                    },
+                    "instrument_name": {
+                        "type": "string"
+                    },
+                    "direction": {
+                        "type": "string",
+                        "enum": [
+                            "buy",
+                            "sell"
+                        ]
+                    },
+                    "price": {
+                        "type": "number",
+                        "description": "Trade price."
+                    },
+                    "amount": {
+                        "type": "number",
+                        "description": "Traded amount."
+                    },
+                    "label": {
+                        "type": "string",
+                        "description": "User label."
+                    },
+                    "time": {
+                        "type": "number",
+                        "description": "Time of trade (Unix timestamp)."
+                    },
+                    "position_after": {
+                        "type": "number",
+                        "description": "Position in this instrument right after the trade."
+                    },
+                    "session_realised_after": {
+                        "type": "number",
+                        "description": "Session realised P&L for this instrument right after the trade."
+                    },
+                    "position_pnl": {
+                        "type": "number",
+                        "description": "If trade closed a position, the positional P&L that was realised."
+                    },
+                    "perpetual_funding_pnl": {
+                        "type": "number",
+                        "description": "If trade closed a position in a perpetual, the funding P&L that was realised."
+                    },
+                    "fee": {
+                        "type": "number",
+                        "description": "The fee paid for this trade.\n\nThe fee for a trade is calculated as `fee_basis * fee_rate * amount`, and is then subject\nto clamping to minimum and maximum fee. Depending on the instrument, `fee_basis` can be different\n(e.g. it can be equal to the underlying index, trade price or combo mark price). Please\nrefer to trading information pages for more details.\n"
+                    },
+                    "index": {
+                        "type": "number",
+                        "description": "The relevant index at time of trade."
+                    },
+                    "fee_rate": {
+                        "type": "number",
+                        "description": "The fee rate applied to calculate the fee."
+                    },
+                    "fee_basis": {
+                        "type": "number",
+                        "description": "The fee basis on which the fee is calculated."
+                    },
+                    "funding_mark": {
+                        "type": "number",
+                        "description": "The perpetual funding mark as applied to the trade (see `Ticker`)."
+                    },
+                    "liquidation_fee": {
+                        "type": "number",
+                        "description": "Fee paid in case of liquidation."
+                    },
+                    "client_order_id": {
+                        "type": "number",
+                        "description": "Client order reference as set in related order."
+                    },
+                    "maker_taker": {
+                        "type": "string",
+                        "description": "Maker (trade on book order) or taker (trade on new order), if applicable.",
+                        "enum": [
+                            "maker",
+                            "taker"
+                        ]
+                    },
+                    "bot_id": {
+                        "type": "string",
+                        "description": "If the trade was made by a bot, the ID of that bot.\nOtherwise omitted.\n"
+                    },
+                    "leg_index": {
+                        "type": "number",
+                        "description": "Index of a leg on which the trade happened for combination orders. Zero for single-leg orders.\n\nFor combination orders the direction of the trade is defined by the direction of the order and\nthe sign of the leg quantity.\n"
+                    }
+                },
+                "example": {
+                    "order_id": "00011E570000004A",
+                    "trade_id": "0080000000000000169F22D05B785A2B",
+                    "instrument_name": "BTC-PERPETUAL",
+                    "direction": "buy",
+                    "price": 47280,
+                    "amount": 0.1,
+                    "label": "",
+                    "time": 1630059868.4145653,
+                    "position_after": 1.1,
+                    "trade_type": "normal",
+                    "session_realised_after": 25,
+                    "fee_rate": 0.00025,
+                    "index": 47200,
+                    "fee": 1.18,
+                    "funding_mark": 0.014,
+                    "leg_index": 0
                 }
             }
         }
