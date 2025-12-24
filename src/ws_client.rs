@@ -66,7 +66,6 @@ impl WsClient {
         WsClient::new(URL, "".to_string(), "".to_string(), "".to_string()).await
     }
 
-    /// Create a client and start the supervisor loop, connecting to the given URL.
     pub async fn new(
         url: impl Into<String>,
         key_id: String,
@@ -82,7 +81,6 @@ impl WsClient {
         let subscriptions = Arc::new(Mutex::new(HashMap::new()));
         let next_id = Arc::new(AtomicU64::new(1));
 
-        // let (disconnect_tx, disconnect_rx) = watch::channel(false);
         let (connection_state_tx, connection_state_rx) =
             watch::channel(ExternalEvent::Disconnected);
 
@@ -102,25 +100,15 @@ impl WsClient {
             shutdown_tx: shutdown_tx.clone(),
             instruments_cache: Arc::new(Mutex::new(HashMap::new())),
             login_state,
-            // pending_login_id: pending_login_id.clone(),
-            // disconnect_rx: disconnect_rx
             connection_state_rx,
         };
 
-        // let cancel_on_disconnect = true;
-        // Spawn supervisor that reconnects and owns the websocket.
         tokio::spawn(connection_supervisor(
             url,
             cmd_rx,
             shutdown_rx,
             pending_requests,
             subscriptions,
-            // login_state,
-            // pending_login_id,
-            // cmd_tx,
-            // next_id.clone(),
-            // cancel_on_disconnect,
-            // disconnect_tx,
             connection_state_tx,
         ));
         client.cache_instruments().await?;
@@ -165,13 +153,6 @@ impl WsClient {
                 )))
             }
         }
-    }
-
-    pub fn send_json(&self, value: Value) -> Result<(), Error> {
-        let text = value.to_string();
-        self.write_tx
-            .send(InternalCommand::Send(Message::Text(text.into())))?;
-        Ok(())
     }
 
     pub async fn send_rpc<T: DeserializeOwned>(
@@ -401,8 +382,6 @@ impl WsClient {
     }
 }
 
-/// Supervisor: reconnects on failures, replays subscriptions on each new connection.
-#[allow(clippy::too_many_arguments)]
 async fn connection_supervisor(
     url: String,
     mut cmd_rx: mpsc::UnboundedReceiver<InternalCommand>,
@@ -475,8 +454,6 @@ async fn connection_supervisor(
     info!("Connection supervisor exited for {url}");
 }
 
-/// Single connection lifetime. Exits on close / error / shutdown.
-#[allow(clippy::too_many_arguments)]
 async fn run_single_connection(
     url: &str,
     mut ws: WsStream,
@@ -536,9 +513,6 @@ async fn run_single_connection(
                             text.to_string(),
                             pending_requests,
                             subscriptions,
-                            // pending_login_id,
-                            // cmd_tx,
-                            // url
                         ).await;
                     }
                     Some(Ok(Message::Binary(bin))) => {
@@ -547,9 +521,6 @@ async fn run_single_connection(
                                 text,
                                 pending_requests,
                                 subscriptions,
-                                // pending_login_id,
-                                // cmd_tx,
-                                // url
                             ).await;
                         } else {
                             warn!("Non-UTF8 binary message on {url}");
@@ -591,9 +562,6 @@ async fn handle_incoming(
     text: String,
     pending_requests: &Arc<Mutex<HashMap<u64, ResponseSender>>>,
     subscriptions: &Arc<Mutex<HashMap<String, mpsc::UnboundedSender<String>>>>,
-    // pending_login_id: &Arc<Mutex<Option<u64>>>,
-    // cmd_tx: &mpsc::UnboundedSender<InternalCommand>,
-    // url: &str,
 ) {
     let parsed: Value = match serde_json::from_str(&text) {
         Ok(v) => v,
