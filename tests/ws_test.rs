@@ -3,7 +3,7 @@ use thalex_rust_sdk::{models::Delay, ws_client::WsClient};
 
 #[tokio::test]
 async fn test_websocket_subscription_working() {
-    let client = WsClient::connect_default().await.unwrap();
+    let client = WsClient::new_public().await.unwrap();
     let result = client
         .subscriptions()
         .market_data()
@@ -17,7 +17,7 @@ async fn test_websocket_subscription_working() {
 
 #[tokio::test]
 async fn test_websocket_subscription_not_working() {
-    let client = WsClient::connect_default().await.unwrap();
+    let client = WsClient::new_public().await.unwrap();
     let result = client
         .subscriptions()
         .market_data()
