@@ -45,7 +45,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         info!("Starting receive loop!");
         match client.run_till_event().await {
             ExternalEvent::Connected => {
-                // Should not happen
                 let _ = client.resubscribe_all().await;
                 warn!("Received Connected event in main loop!");
             }

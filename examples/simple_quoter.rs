@@ -1,13 +1,13 @@
 use std::sync::Arc;
 
-use log::{Level::Info, info};
+use log::{Level::Info, info, warn};
 use simple_logger::init_with_level;
 use thalex_rust_sdk::{
     models::{
         Delay, OrderStatus,
         order_status::{Direction, OrderType, Status},
     },
-    ws_client::WsClient,
+    ws_client::{ExternalEvent, WsClient},
 };
 use tokio::sync::Mutex;
 
@@ -180,17 +180,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         })
         .await;
 
+    client.wait_for_connection().await;
     loop {
-        // Catch ctrl-c to exit
-        tokio::select! {
-            _ = tokio::time::sleep(tokio::time::Duration::from_secs(1)) => {}
-            _ = tokio::signal::ctrl_c() => {
-                println!("Ctrl-C received, shutting down");
+        info!("Starting receive loop!");
+        match client.run_till_event().await {
+            ExternalEvent::Connected => {
+                let _ = client.resubscribe_all().await;
+                warn!("Received Connected event in main loop!");
+            }
+            ExternalEvent::Disconnected => {
+                warn!("Client is disconnected! waiting before running.");
+                continue;
+            }
+            ExternalEvent::Exited => {
                 break;
             }
         }
+        tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
     }
-
-    // client.shutdown("Time to go!").await.unwrap();
+    client.shutdown("Time to go!").await.unwrap();
     Ok(())
 }
