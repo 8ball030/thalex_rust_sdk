@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from pprint import pprint
 
-from build_scripts.utils import collect_all_tags_from_spec
+from utils import collect_all_tags_from_spec
 
 OPEN_API_SPEC = "openapi.json"
 
