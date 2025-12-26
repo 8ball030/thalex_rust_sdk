@@ -27,10 +27,11 @@ MAP_OPENAPI_TYPE_TO_RUST = {
 TAGS_TO_PROCESS = [
     "rpc_session_management",
     "rpc_trading",
+    "rpc_market_data",
 ]
 
 
-RPC_RESULT_ALIASES = {
+RPC_RESULT_IMPORT_ALIASES = {
     "InsertRpcResult": "OrderStatus",
     "BuyRpcResult": "OrderStatus",
     "SellRpcResult": "OrderStatus",
@@ -38,17 +39,38 @@ RPC_RESULT_ALIASES = {
     "CancelRpcResult": "OrderStatus",
     "CancelAllRpcResult": "f64",
     "CancelSessionRpcResult": "Value",
+    "TickerRpcResult": "Ticker",
+    "TickersRpcResult": "Ticker",
+    "IndexRpcResult": "Index",
+    "InstrumentsRpcResult": "Instrument",
+    "InstrumentRpcResult": "Instrument",
+    "AllInstrumentsRpcResult": "Instrument",
 }
+
+RETURN_MODEL_TO_VECTOR_ALIASES = {
+    "InstrumentsRpcResult": "Vec<Instrument>",
+    "TickersRpcResult": "Vec<Ticker>",
+    "AllInstrumentsRpcResult": "Vec<Instrument>",
+}
+
 
 
 IMPORTS_TO_SKIP = [
     "CancelAllParams",
     "CancelSessionParams",
+    "InstrumentsParams",
     "CancelSessionRpcResult",
     "CancelAllRpcResult",
     "f64",
     "Value",
 ]
+base_imports = [
+        "RpcErrorResponse",
+        "OrderStatus",
+        "Instrument",
+        "Ticker",
+        "Index",
+    ]
 
 def main():
     spec = json.loads(Path(OPEN_API_SPEC).read_text())
@@ -58,16 +80,12 @@ def main():
     functions = []
 
 
-    base_imports = [
-        "RpcErrorResponse",
-        "OrderStatus",
-    ]
     for tag in TAGS_TO_PROCESS:
         print(f"Processing tag: {tag}")
         functions, model_imports = process_tag(spec, tag)
 
         imports = base_imports + model_imports
-        imports = list(set([RPC_RESULT_ALIASES.get(imp, imp) for imp in imports]))
+        imports = list(set([RPC_RESULT_IMPORT_ALIASES.get(imp, imp) for imp in imports]))
         imports = [imp for imp in imports if imp not in IMPORTS_TO_SKIP]
         file_content = file_template.substitute(
             tag=to_camel_case(tag.replace("rpc_", "").capitalize())+"Rpc",
@@ -155,6 +173,11 @@ def build_function_code(method,
                         has_params=True
                         ):
 
+    if return_model in RETURN_MODEL_TO_VECTOR_ALIASES:
+        aliased_return_model = RETURN_MODEL_TO_VECTOR_ALIASES[return_model]
+    else:
+        aliased_return_model = RPC_RESULT_IMPORT_ALIASES.get(return_model, return_model)
+
     if has_params:
     
         function_code = method_template.substitute(
@@ -165,7 +188,7 @@ def build_function_code(method,
             params=params,
             result_model=result_model,
             rpc_result_model=rpc_result_model,
-            return_model=RPC_RESULT_ALIASES.get(return_model, return_model),
+            return_model=aliased_return_model,
             # params_json="{" + params_json_string + "}"
         )
     else:
@@ -176,7 +199,7 @@ def build_function_code(method,
             method=method,
             result_model=result_model,
             rpc_result_model=rpc_result_model,
-            return_model=RPC_RESULT_ALIASES.get(return_model, return_model),
+            return_model=aliased_return_model,
             # params_json="{" + params_json_string + "}"
         )
     return function_code
@@ -244,6 +267,21 @@ def generate_rpc_spec(original_spec):
     del new_spec['x-tagGroups']
     RPC_SPEC_PATH.write_text(json.dumps(new_spec, indent=2))
 
+
+MODELS_TO_LIFT = [
+    "RpcResponse",
+    "RpcRequest",
+    "RpcErrorResponse",
+    "ErrorResponse",
+    "EmptyObject",
+    "InsertRequest",
+    "OrderStatus",
+    "OrderFill",
+    "Index",
+    "Ticker",
+    "Instrument",
+]
+
 def process_tag(spec, tag):
     print(f" Building RPC for tag: {tag}")
     paths = {}
@@ -253,15 +291,7 @@ def process_tag(spec, tag):
                 paths[path_name] = method_spec
     print(f"  Found {len(paths)} paths for tag {tag}")
 
-    # We put in the RpcRequest and RpcErrorResponse models
-    NEW_MODELS["RpcResponse"] = spec["components"]["schemas"]["RpcResponse"]
-    NEW_MODELS["RpcRequest"] = spec["components"]["schemas"]["RpcRequest"]
-    NEW_MODELS["RpcErrorResponse"] = spec["components"]["schemas"]["RpcErrorResponse"]
-    NEW_MODELS["ErrorResponse"] = spec["components"]["schemas"]["ErrorResponse"]
-    NEW_MODELS["EmptyObject"] = spec["components"]["schemas"]["EmptyObject"]
-    NEW_MODELS["InsertRequest"] = spec["components"]["schemas"]["InsertRequest"]
-    NEW_MODELS["OrderStatus"] = spec["components"]["schemas"]["OrderStatus"]
-    NEW_MODELS["OrderFill"] = spec["components"]["schemas"]["OrderFill"]
+    [NEW_MODELS.update({model: spec["components"]["schemas"][model] for model in MODELS_TO_LIFT})]
     functions = []
 
     model_imports = []

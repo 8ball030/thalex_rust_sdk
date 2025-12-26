@@ -46,6 +46,6 @@ codegen:
 	python build_scripts/fix_array_types.py ws_spec_updated.json src/models
 	python build_scripts/build-ws.py
 
-	rm ws_spec_updated.json
+	rm ws_spec_updated.json rpc_spec_generated.json
 
 all: codegen fmt lint build test
