@@ -1,0 +1,1440 @@
+{
+  "openapi": "3.1.0",
+  "servers": [
+    {
+      "url": "https://thalex.com/api/v2",
+      "description": "Exchange"
+    },
+    {
+      "url": "https://testnet.thalex.com/api/v2",
+      "description": "Testnet"
+    }
+  ],
+  "info": {
+    "title": "Thalex RPC API",
+    "version": "1.0.0"
+  },
+  "components": {
+    "schemas": {
+      "RpcResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "object",
+            "description": "Your request id, or null if not supplied."
+          }
+        }
+      },
+      "RpcRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "object",
+            "description": "Your request id, optional."
+          }
+        },
+        "example": {}
+      },
+      "RpcErrorResponse": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RpcResponse"
+          },
+          {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "message"
+            ],
+            "description": "Error code and message.",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "EmptyObject": {
+        "type": "object",
+        "description": "Empty object."
+      },
+      "InsertRequest": {
+        "type": "object",
+        "required": [
+          "amount"
+        ],
+        "properties": {
+          "client_order_id": {
+            "type": "integer",
+            "description": "Session-local identifier for this order. Only valid for websocket sessions. If set,\nmust be an integer between 0 and 2^64-1, inclusive. When using numbers larger than 2^32,\nplease beware of implicit floating point conversions in some JSON libraries.\n"
+          },
+          "instrument_name": {
+            "type": "string",
+            "description": "Name of the instrument to trade.\n\nThis field must not be present when inserting a combination order. Use `legs` field instead.\n"
+          },
+          "legs": {
+            "type": "array",
+            "description": "List of legs for a combination order.\n\nThere must be at least two and at most four legs specified. All leg instruments must be distinct.\n\nOther constraints apply, please check trading information page on combination orders.\n\nThis field must not be present when inserting single-leg orders. Use `instrument_name` field instead.\n",
+            "items": {
+              "type": "object",
+              "required": [
+                "instrument_name",
+                "quantity"
+              ],
+              "properties": {
+                "instrument_name": {
+                  "type": "string",
+                  "description": "Name of the instrument to trade on this leg.\n"
+                },
+                "quantity": {
+                  "type": "number",
+                  "description": "Quantity of this leg in a unit of the combination. Must be integer. Must not be zero. Use a negative number for short legs.\n\nResult of multiplication of `quantity` and order `amount` must be aligned to tick size for every leg.\n"
+                }
+              }
+            }
+          },
+          "price": {
+            "type": "number",
+            "description": "Limit price; required for limit orders.\n\nFor combination orders this specifies limit price per unit of the combination.\n"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Amount of currency to trade (e.g. BTC for futures).\n\nFor combination orders this specifies the amount of units of the combination to trade.\n"
+          },
+          "label": {
+            "type": "string"
+          },
+          "order_type": {
+            "type": "string",
+            "enum": [
+              "limit",
+              "market"
+            ],
+            "default": "limit"
+          },
+          "time_in_force": {
+            "type": "string",
+            "enum": [
+              "good_till_cancelled",
+              "immediate_or_cancel"
+            ],
+            "description": "Note that for limit orders, the default `time_in_force` is\n`good_till_cancelled`, while for market orders, the default is\n`immediate_or_cancel`. It is illegal to send a GTC market order, or an IOC post\norder.\n\nFor combination orders `time_in_force` must always be set to `immediate_or_cancel`.\n"
+          },
+          "post_only": {
+            "type": "boolean",
+            "description": "If the order price is in cross with the current best price on the opposite side in the\norder book, then the price is adjusted to one tick away from that price, ensuring that\nthe order will never trade on insert. If the adjusted price of a buy order falls at or\nbelow zero where not allowed, then the order is cancelled with delete reason 'immediate_cancel'.\n\nThis flag is not supported for combination orders.\n"
+          },
+          "reject_post_only": {
+            "type": "boolean",
+            "description": "This flag is only effective in combination with post_only. If set, then instead of adjusting\nthe order price, the order will be cancelled with delete reason 'immediate_cancel'. The\ncombination of post_only and reject_post_only is effectively a book-or-cancel order.\n\nThis flag is not supported for combination orders.\n"
+          },
+          "reduce_only": {
+            "type": "boolean",
+            "description": "An order marked `reduce_only` will have its amount reduced to the open position.\nIf there is no open position, or if the order direction would cause an increase\nof the open position, the order is rejected. If the order is placed in the book,\nit will be subsequently monitored, and reduced to the open position if the\nposition changes through other means (best effort). Multiple reduce-only orders\nwill all be reduced individually.\n\nThis flag is not supported for combination orders.\n"
+          },
+          "collar": {
+            "type": "string",
+            "enum": [
+              "ignore",
+              "reject",
+              "clamp"
+            ],
+            "description": "If the instrument has a safety price collar set, and the limit price of the order\n(infinite for market orders) is in cross with (more aggressive than) this collar,\nhow to handle. If set to `ignore`, the order will proceed as requested. If `reject`,\nthe order fails early. If `clamp`, the price is adjusted to the collar.\n\nThe default is `clamp` for market orders and `reject` for everything else.\n\nCollar `ignore` is forbidden for market orders.\n\nPrice collars are applied to combination orders. Price collar for a combination is a linear combination of the leg collars with their corresponding quantities as coefficients.\n"
+          }
+        },
+        "example": {
+          "instrument_name": "BTC-PERPETUAL",
+          "price": 45000,
+          "amount": 1.1,
+          "order_type": "limit"
+        }
+      },
+      "OrderStatus": {
+        "type": "object",
+        "description": "Order status.",
+        "required": [
+          "order_id",
+          "direction",
+          "amount",
+          "filled_amount",
+          "remaining_amount",
+          "status",
+          "fills",
+          "change_reason",
+          "insert_reason",
+          "create_time",
+          "order_type",
+          "time_in_force",
+          "persistent"
+        ],
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "description": "System order ID, use to identify in amend/cancel, and to match trades."
+          },
+          "order_type": {
+            "type": "string",
+            "enum": [
+              "limit",
+              "market"
+            ]
+          },
+          "time_in_force": {
+            "type": "string",
+            "enum": [
+              "good_till_cancelled",
+              "immediate_or_cancel"
+            ]
+          },
+          "instrument_name": {
+            "type": "string",
+            "description": "Order instrument name.\n\nNot present for combination orders. Refer to `legs` field instead.\n"
+          },
+          "legs": {
+            "type": "array",
+            "description": "List of legs for this combination order.\n\nNot present for single-leg orders. Refer to `instrument_name` field instead.\n",
+            "items": {
+              "type": "object",
+              "required": [
+                "instrument_name",
+                "quantity",
+                "filled_amount",
+                "remaining_amount"
+              ],
+              "properties": {
+                "instrument_name": {
+                  "type": "string",
+                  "description": "Leg instrument name.\n"
+                },
+                "quantity": {
+                  "type": "number",
+                  "description": "Quantity of this leg in a unit of the combination. A non-zero integer, negative for short legs.\n"
+                },
+                "filled_amount": {
+                  "type": "number",
+                  "description": "Amount executed on this leg.\n\nLegs are filled proportionally to their quantities.\n"
+                },
+                "remaining_amount": {
+                  "type": "number",
+                  "description": "Amount on this leg that remains in the book; if 0, order is now inactive.\n\nNote that the only `time_in_force` for combination orders currently supported is\n`immediate_or_cancel`. Therefore, combination orders will never remain on a book,\nand this field will always be zero.\n"
+                }
+              }
+            }
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "buy",
+              "sell"
+            ]
+          },
+          "price": {
+            "type": "number",
+            "description": "Limit price. May be omitted if no price was supplied (e.g. for a market order).\n\nFor combination orders this specifies limit price per unit of the combination.\n"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Order size (as inserted or amended to).\n\nFor combination orders this specifies the amount of units of the combination to trade.\n"
+          },
+          "filled_amount": {
+            "type": "number",
+            "description": "Part of the order that has been executed.\n\nFor combination orders this specifies the amount of units of the combination filled.\nLegs are filled proportionally to their quantities.\n"
+          },
+          "remaining_amount": {
+            "type": "number",
+            "description": "Part of the order that remains in the book; if 0, order is now inactive.\n\nFor combination orders this specifies the amount of units of the combination remaining on a book.\nNote that the only `time_in_force` for combination orders currently supported is\n`immediate_or_cancel`. Therefore, combination orders will never remain on a book,\nand this field will always be zero.\n"
+          },
+          "label": {
+            "type": "string",
+            "description": "Label supplied with insert. Can also be a number. Field is omitted if no label was supplied."
+          },
+          "client_order_id": {
+            "type": "number",
+            "description": "Client-supplied order id. Field is omitted if no client order id was supplied."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "partially_filled",
+              "cancelled",
+              "cancelled_partially_filled",
+              "filled"
+            ]
+          },
+          "fills": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderFill"
+            },
+            "description": "These are new fills related to this order status update, except if `change_reason` is\n`existing`, then the list will contain all known fills.\n"
+          },
+          "change_reason": {
+            "type": "string",
+            "enum": [
+              "existing",
+              "insert",
+              "amend",
+              "cancel",
+              "fill"
+            ]
+          },
+          "delete_reason": {
+            "type": "string",
+            "enum": [
+              "client_cancel",
+              "client_bulk_cancel",
+              "session_end",
+              "instrument_deactivated",
+              "mm_protection",
+              "failover",
+              "margin_breach",
+              "filled",
+              "immediate_cancel",
+              "admin_cancel"
+            ],
+            "description": "Detailed reason of order deletion if the order was deleted, omitted otherwise.\n\nThe following reasons are possible:\n\n- `client_cancel`: Order was cancelled by the client, e.g. with a call to `private/cancel`.\n\n- `client_bulk_cancel`: Order was cancelled by the client with a bulk cancel call, e.g. `private/cancel_all`.\n\n- `session_end`: Non-persistent order was automatically cancelled when a WebSocket session ended.\n\n- `instrument_deactivated`: Order was automatically cancelled when the order instrument was deactivated,\n  for example after expiration.\n\n- `mm_protection`: Order was automatically cancelled when configured market maker protection amount was exhausted.\n\n- `failover`: Non-persistent order was automatically cancelled on matching engine failover.\n\n- `margin_breach`: Order was automatically cancelled in a response to a margin breach on the account as part\n  of automatic liquidation procedures.\n\n- `filled`: Order was filled in full.\n\n- `immediate_cancel`: The order was submitted as \"immediate-or-cancel\" and was not filled in full immediately.\n  Note that the order might be partially filled when this delete reason is set.\n\n- `admin_cancel`: The order was cancelled by an exchange admin.\n"
+          },
+          "insert_reason": {
+            "type": "string",
+            "enum": [
+              "client_request",
+              "conditional_order",
+              "liquidation"
+            ],
+            "description": "Detailed reason of order insertion."
+          },
+          "conditional_order_id": {
+            "type": "string",
+            "description": "If the order was triggered by a conditional order (stop order), the ID of that conditional order.\nOtherwise omitted.\n"
+          },
+          "bot_id": {
+            "type": "string",
+            "description": "If the order was inserted by a bot, the ID of that bot.\nOtherwise omitted.\n"
+          },
+          "create_time": {
+            "type": "number",
+            "description": "Creation time (Unix timestamp)."
+          },
+          "close_time": {
+            "type": "number",
+            "description": "Time when this order was closed or canceled (Unix timestamp). Omitted for orders that are still open."
+          },
+          "reduce_only": {
+            "type": "boolean",
+            "description": "True if the order is a reduce only order, omitted otherwise."
+          },
+          "persistent": {
+            "type": "boolean",
+            "description": "True if the order is a persistent order, false otherwise."
+          }
+        },
+        "example": {
+          "order_id": "1728379719872",
+          "time_in_force": "good_till_cancelled",
+          "instrument_name": "BTC-PERPETUAL",
+          "price": 45000,
+          "amount": 1.1,
+          "order_type": "limit",
+          "direction": "buy",
+          "filled_amount": 0,
+          "remaining_amount": 1.1,
+          "status": "open",
+          "fills": [],
+          "change_reason": "insert",
+          "insert_reason": "client_request"
+        }
+      },
+      "OrderFill": {
+        "type": "object",
+        "required": [
+          "trade_id",
+          "price",
+          "amount",
+          "maker_taker",
+          "leg_index"
+        ],
+        "properties": {
+          "trade_id": {
+            "type": "string",
+            "description": "Trade ID."
+          },
+          "price": {
+            "type": "number",
+            "description": "Fill price."
+          },
+          "amount": {
+            "type": "number",
+            "description": "Filled amount"
+          },
+          "time": {
+            "type": "number"
+          },
+          "maker_taker": {
+            "type": "string",
+            "enum": [
+              "maker",
+              "taker"
+            ],
+            "description": "Maker (trade on book order) or taker (trade on new order), if applicable."
+          },
+          "leg_index": {
+            "type": "number",
+            "description": "Index of a leg on which the trade happened for combination orders. Zero for single-leg orders.\n\nFor combination orders the direction of the trade is defined by the direction of the order and\nthe sign of the leg quantity.\n"
+          }
+        }
+      },
+      "LoginResult": {
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "properties": {
+          "result": {
+            "type": "object",
+            "required": [
+              "account_number"
+            ],
+            "properties": {
+              "account_number": {
+                "type": "string",
+                "description": "Account number"
+              }
+            },
+            "example": {
+              "account_number": "A123456789"
+            }
+          },
+          "id": {
+            "type": "string",
+            "description": "The request ID"
+          }
+        },
+        "example": {
+          "result": {
+            "account_number": "A123456789"
+          }
+        }
+      },
+      "LoginParams": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "As described in 'Authentication'"
+          },
+          "account": {
+            "type": "string",
+            "description": "Number of an account to select for use in this session. Optional, if not specified,\ndefault account for the API key is selected.\n"
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "SetCancelOnDisconnectResult": {
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "properties": {
+          "result": {
+            "type": "object",
+            "required": [
+              "message_rate"
+            ],
+            "properties": {
+              "message_rate": {
+                "type": "integer",
+                "description": "Message rate"
+              }
+            },
+            "example": {
+              "message_rate": 50
+            }
+          },
+          "id": {
+            "type": "string",
+            "description": "The request ID"
+          }
+        },
+        "example": {
+          "result": {
+            "message_rate": 50
+          }
+        }
+      },
+      "SetCancelOnDisconnectParams": {
+        "type": "object",
+        "properties": {
+          "timeout_secs": {
+            "type": "integer",
+            "description": "Heartbeat interval"
+          }
+        },
+        "required": [
+          "timeout_secs"
+        ]
+      },
+      "InsertResult": {
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "properties": {
+          "result": {
+            "$ref": "#/components/schemas/OrderStatus",
+            "example": {
+              "order_id": "1728379719872",
+              "time_in_force": "good_till_cancelled",
+              "instrument_name": "BTC-PERPETUAL",
+              "price": 45000,
+              "amount": 1.1,
+              "order_type": "limit",
+              "direction": "buy",
+              "filled_amount": 0,
+              "remaining_amount": 1.1,
+              "status": "open",
+              "fills": [],
+              "change_reason": "insert",
+              "insert_reason": "client_request"
+            }
+          },
+          "id": {
+            "type": "string",
+            "description": "The request ID"
+          }
+        },
+        "example": {
+          "result": {
+            "order_id": "1728379719872",
+            "time_in_force": "good_till_cancelled",
+            "instrument_name": "BTC-PERPETUAL",
+            "price": 45000,
+            "amount": 1.1,
+            "order_type": "limit",
+            "direction": "buy",
+            "filled_amount": 0,
+            "remaining_amount": 1.1,
+            "status": "open",
+            "fills": [],
+            "change_reason": "insert",
+            "insert_reason": "client_request"
+          }
+        }
+      },
+      "InsertParams": {
+        "type": "object",
+        "properties": {
+          "direction": {
+            "type": "string",
+            "enum": [
+              "buy",
+              "sell"
+            ]
+          },
+          "client_order_id": {
+            "type": "integer",
+            "description": "Session-local identifier for this order. Only valid for websocket sessions. If set,\nmust be an integer between 0 and 2^64-1, inclusive. When using numbers larger than 2^32,\nplease beware of implicit floating point conversions in some JSON libraries.\n"
+          },
+          "instrument_name": {
+            "type": "string",
+            "description": "Name of the instrument to trade.\n\nThis field must not be present when inserting a combination order. Use `legs` field instead.\n"
+          },
+          "legs": {
+            "type": "array",
+            "description": "List of legs for a combination order.\n\nThere must be at least two and at most four legs specified. All leg instruments must be distinct.\n\nOther constraints apply, please check trading information page on combination orders.\n\nThis field must not be present when inserting single-leg orders. Use `instrument_name` field instead.\n",
+            "items": {
+              "type": "object",
+              "required": [
+                "instrument_name",
+                "quantity"
+              ],
+              "properties": {
+                "instrument_name": {
+                  "type": "string",
+                  "description": "Name of the instrument to trade on this leg.\n"
+                },
+                "quantity": {
+                  "type": "number",
+                  "description": "Quantity of this leg in a unit of the combination. Must be integer. Must not be zero. Use a negative number for short legs.\n\nResult of multiplication of `quantity` and order `amount` must be aligned to tick size for every leg.\n"
+                }
+              }
+            }
+          },
+          "price": {
+            "type": "number",
+            "description": "Limit price; required for limit orders.\n\nFor combination orders this specifies limit price per unit of the combination.\n"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Amount of currency to trade (e.g. BTC for futures).\n\nFor combination orders this specifies the amount of units of the combination to trade.\n"
+          },
+          "label": {
+            "type": "string"
+          },
+          "order_type": {
+            "type": "string",
+            "enum": [
+              "limit",
+              "market"
+            ],
+            "default": "limit"
+          },
+          "time_in_force": {
+            "type": "string",
+            "enum": [
+              "good_till_cancelled",
+              "immediate_or_cancel"
+            ],
+            "description": "Note that for limit orders, the default `time_in_force` is\n`good_till_cancelled`, while for market orders, the default is\n`immediate_or_cancel`. It is illegal to send a GTC market order, or an IOC post\norder.\n\nFor combination orders `time_in_force` must always be set to `immediate_or_cancel`.\n"
+          },
+          "post_only": {
+            "type": "boolean",
+            "description": "If the order price is in cross with the current best price on the opposite side in the\norder book, then the price is adjusted to one tick away from that price, ensuring that\nthe order will never trade on insert. If the adjusted price of a buy order falls at or\nbelow zero where not allowed, then the order is cancelled with delete reason 'immediate_cancel'.\n\nThis flag is not supported for combination orders.\n"
+          },
+          "reject_post_only": {
+            "type": "boolean",
+            "description": "This flag is only effective in combination with post_only. If set, then instead of adjusting\nthe order price, the order will be cancelled with delete reason 'immediate_cancel'. The\ncombination of post_only and reject_post_only is effectively a book-or-cancel order.\n\nThis flag is not supported for combination orders.\n"
+          },
+          "reduce_only": {
+            "type": "boolean",
+            "description": "An order marked `reduce_only` will have its amount reduced to the open position.\nIf there is no open position, or if the order direction would cause an increase\nof the open position, the order is rejected. If the order is placed in the book,\nit will be subsequently monitored, and reduced to the open position if the\nposition changes through other means (best effort). Multiple reduce-only orders\nwill all be reduced individually.\n\nThis flag is not supported for combination orders.\n"
+          },
+          "collar": {
+            "type": "string",
+            "enum": [
+              "ignore",
+              "reject",
+              "clamp"
+            ],
+            "description": "If the instrument has a safety price collar set, and the limit price of the order\n(infinite for market orders) is in cross with (more aggressive than) this collar,\nhow to handle. If set to `ignore`, the order will proceed as requested. If `reject`,\nthe order fails early. If `clamp`, the price is adjusted to the collar.\n\nThe default is `clamp` for market orders and `reject` for everything else.\n\nCollar `ignore` is forbidden for market orders.\n\nPrice collars are applied to combination orders. Price collar for a combination is a linear combination of the leg collars with their corresponding quantities as coefficients.\n"
+          }
+        },
+        "required": [
+          "direction",
+          "amount"
+        ]
+      },
+      "BuyResult": {
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "properties": {
+          "result": {
+            "$ref": "#/components/schemas/OrderStatus",
+            "example": {
+              "order_id": "1728379719872",
+              "time_in_force": "good_till_cancelled",
+              "instrument_name": "BTC-PERPETUAL",
+              "price": 45000,
+              "amount": 1.1,
+              "order_type": "limit",
+              "direction": "buy",
+              "filled_amount": 0,
+              "remaining_amount": 1.1,
+              "status": "open",
+              "fills": [],
+              "change_reason": "insert",
+              "insert_reason": "client_request"
+            }
+          },
+          "id": {
+            "type": "string",
+            "description": "The request ID"
+          }
+        },
+        "example": {
+          "result": {
+            "order_id": "1728379719872",
+            "time_in_force": "good_till_cancelled",
+            "instrument_name": "BTC-PERPETUAL",
+            "price": 45000,
+            "amount": 1.1,
+            "order_type": "limit",
+            "direction": "buy",
+            "filled_amount": 0,
+            "remaining_amount": 1.1,
+            "status": "open",
+            "fills": [],
+            "change_reason": "insert",
+            "insert_reason": "client_request"
+          }
+        }
+      },
+      "BuyParams": {
+        "type": "object",
+        "properties": {
+          "client_order_id": {
+            "type": "integer",
+            "description": "Session-local identifier for this order. Only valid for websocket sessions. If set,\nmust be an integer between 0 and 2^64-1, inclusive. When using numbers larger than 2^32,\nplease beware of implicit floating point conversions in some JSON libraries.\n"
+          },
+          "instrument_name": {
+            "type": "string",
+            "description": "Name of the instrument to trade.\n\nThis field must not be present when inserting a combination order. Use `legs` field instead.\n"
+          },
+          "legs": {
+            "type": "array",
+            "description": "List of legs for a combination order.\n\nThere must be at least two and at most four legs specified. All leg instruments must be distinct.\n\nOther constraints apply, please check trading information page on combination orders.\n\nThis field must not be present when inserting single-leg orders. Use `instrument_name` field instead.\n",
+            "items": {
+              "type": "object",
+              "required": [
+                "instrument_name",
+                "quantity"
+              ],
+              "properties": {
+                "instrument_name": {
+                  "type": "string",
+                  "description": "Name of the instrument to trade on this leg.\n"
+                },
+                "quantity": {
+                  "type": "number",
+                  "description": "Quantity of this leg in a unit of the combination. Must be integer. Must not be zero. Use a negative number for short legs.\n\nResult of multiplication of `quantity` and order `amount` must be aligned to tick size for every leg.\n"
+                }
+              }
+            }
+          },
+          "price": {
+            "type": "number",
+            "description": "Limit price; required for limit orders.\n\nFor combination orders this specifies limit price per unit of the combination.\n"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Amount of currency to trade (e.g. BTC for futures).\n\nFor combination orders this specifies the amount of units of the combination to trade.\n"
+          },
+          "label": {
+            "type": "string"
+          },
+          "order_type": {
+            "type": "string",
+            "enum": [
+              "limit",
+              "market"
+            ],
+            "default": "limit"
+          },
+          "time_in_force": {
+            "type": "string",
+            "enum": [
+              "good_till_cancelled",
+              "immediate_or_cancel"
+            ],
+            "description": "Note that for limit orders, the default `time_in_force` is\n`good_till_cancelled`, while for market orders, the default is\n`immediate_or_cancel`. It is illegal to send a GTC market order, or an IOC post\norder.\n\nFor combination orders `time_in_force` must always be set to `immediate_or_cancel`.\n"
+          },
+          "post_only": {
+            "type": "boolean",
+            "description": "If the order price is in cross with the current best price on the opposite side in the\norder book, then the price is adjusted to one tick away from that price, ensuring that\nthe order will never trade on insert. If the adjusted price of a buy order falls at or\nbelow zero where not allowed, then the order is cancelled with delete reason 'immediate_cancel'.\n\nThis flag is not supported for combination orders.\n"
+          },
+          "reject_post_only": {
+            "type": "boolean",
+            "description": "This flag is only effective in combination with post_only. If set, then instead of adjusting\nthe order price, the order will be cancelled with delete reason 'immediate_cancel'. The\ncombination of post_only and reject_post_only is effectively a book-or-cancel order.\n\nThis flag is not supported for combination orders.\n"
+          },
+          "reduce_only": {
+            "type": "boolean",
+            "description": "An order marked `reduce_only` will have its amount reduced to the open position.\nIf there is no open position, or if the order direction would cause an increase\nof the open position, the order is rejected. If the order is placed in the book,\nit will be subsequently monitored, and reduced to the open position if the\nposition changes through other means (best effort). Multiple reduce-only orders\nwill all be reduced individually.\n\nThis flag is not supported for combination orders.\n"
+          },
+          "collar": {
+            "type": "string",
+            "enum": [
+              "ignore",
+              "reject",
+              "clamp"
+            ],
+            "description": "If the instrument has a safety price collar set, and the limit price of the order\n(infinite for market orders) is in cross with (more aggressive than) this collar,\nhow to handle. If set to `ignore`, the order will proceed as requested. If `reject`,\nthe order fails early. If `clamp`, the price is adjusted to the collar.\n\nThe default is `clamp` for market orders and `reject` for everything else.\n\nCollar `ignore` is forbidden for market orders.\n\nPrice collars are applied to combination orders. Price collar for a combination is a linear combination of the leg collars with their corresponding quantities as coefficients.\n"
+          }
+        },
+        "required": [
+          "amount"
+        ]
+      },
+      "SellResult": {
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "properties": {
+          "result": {
+            "$ref": "#/components/schemas/OrderStatus",
+            "example": {
+              "order_id": "1728379719872",
+              "time_in_force": "good_till_cancelled",
+              "instrument_name": "BTC-PERPETUAL",
+              "price": 45000,
+              "amount": 1.1,
+              "order_type": "limit",
+              "direction": "sell",
+              "filled_amount": 0,
+              "remaining_amount": 1.1,
+              "status": "open",
+              "fills": [],
+              "change_reason": "insert",
+              "insert_reason": "client_request"
+            }
+          },
+          "id": {
+            "type": "string",
+            "description": "The request ID"
+          }
+        },
+        "example": {
+          "result": {
+            "order_id": "1728379719872",
+            "time_in_force": "good_till_cancelled",
+            "instrument_name": "BTC-PERPETUAL",
+            "price": 45000,
+            "amount": 1.1,
+            "order_type": "limit",
+            "direction": "sell",
+            "filled_amount": 0,
+            "remaining_amount": 1.1,
+            "status": "open",
+            "fills": [],
+            "change_reason": "insert",
+            "insert_reason": "client_request"
+          }
+        }
+      },
+      "SellParams": {
+        "type": "object",
+        "properties": {
+          "client_order_id": {
+            "type": "integer",
+            "description": "Session-local identifier for this order. Only valid for websocket sessions. If set,\nmust be an integer between 0 and 2^64-1, inclusive. When using numbers larger than 2^32,\nplease beware of implicit floating point conversions in some JSON libraries.\n"
+          },
+          "instrument_name": {
+            "type": "string",
+            "description": "Name of the instrument to trade.\n\nThis field must not be present when inserting a combination order. Use `legs` field instead.\n"
+          },
+          "legs": {
+            "type": "array",
+            "description": "List of legs for a combination order.\n\nThere must be at least two and at most four legs specified. All leg instruments must be distinct.\n\nOther constraints apply, please check trading information page on combination orders.\n\nThis field must not be present when inserting single-leg orders. Use `instrument_name` field instead.\n",
+            "items": {
+              "type": "object",
+              "required": [
+                "instrument_name",
+                "quantity"
+              ],
+              "properties": {
+                "instrument_name": {
+                  "type": "string",
+                  "description": "Name of the instrument to trade on this leg.\n"
+                },
+                "quantity": {
+                  "type": "number",
+                  "description": "Quantity of this leg in a unit of the combination. Must be integer. Must not be zero. Use a negative number for short legs.\n\nResult of multiplication of `quantity` and order `amount` must be aligned to tick size for every leg.\n"
+                }
+              }
+            }
+          },
+          "price": {
+            "type": "number",
+            "description": "Limit price; required for limit orders.\n\nFor combination orders this specifies limit price per unit of the combination.\n"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Amount of currency to trade (e.g. BTC for futures).\n\nFor combination orders this specifies the amount of units of the combination to trade.\n"
+          },
+          "label": {
+            "type": "string"
+          },
+          "order_type": {
+            "type": "string",
+            "enum": [
+              "limit",
+              "market"
+            ],
+            "default": "limit"
+          },
+          "time_in_force": {
+            "type": "string",
+            "enum": [
+              "good_till_cancelled",
+              "immediate_or_cancel"
+            ],
+            "description": "Note that for limit orders, the default `time_in_force` is\n`good_till_cancelled`, while for market orders, the default is\n`immediate_or_cancel`. It is illegal to send a GTC market order, or an IOC post\norder.\n\nFor combination orders `time_in_force` must always be set to `immediate_or_cancel`.\n"
+          },
+          "post_only": {
+            "type": "boolean",
+            "description": "If the order price is in cross with the current best price on the opposite side in the\norder book, then the price is adjusted to one tick away from that price, ensuring that\nthe order will never trade on insert. If the adjusted price of a buy order falls at or\nbelow zero where not allowed, then the order is cancelled with delete reason 'immediate_cancel'.\n\nThis flag is not supported for combination orders.\n"
+          },
+          "reject_post_only": {
+            "type": "boolean",
+            "description": "This flag is only effective in combination with post_only. If set, then instead of adjusting\nthe order price, the order will be cancelled with delete reason 'immediate_cancel'. The\ncombination of post_only and reject_post_only is effectively a book-or-cancel order.\n\nThis flag is not supported for combination orders.\n"
+          },
+          "reduce_only": {
+            "type": "boolean",
+            "description": "An order marked `reduce_only` will have its amount reduced to the open position.\nIf there is no open position, or if the order direction would cause an increase\nof the open position, the order is rejected. If the order is placed in the book,\nit will be subsequently monitored, and reduced to the open position if the\nposition changes through other means (best effort). Multiple reduce-only orders\nwill all be reduced individually.\n\nThis flag is not supported for combination orders.\n"
+          },
+          "collar": {
+            "type": "string",
+            "enum": [
+              "ignore",
+              "reject",
+              "clamp"
+            ],
+            "description": "If the instrument has a safety price collar set, and the limit price of the order\n(infinite for market orders) is in cross with (more aggressive than) this collar,\nhow to handle. If set to `ignore`, the order will proceed as requested. If `reject`,\nthe order fails early. If `clamp`, the price is adjusted to the collar.\n\nThe default is `clamp` for market orders and `reject` for everything else.\n\nCollar `ignore` is forbidden for market orders.\n\nPrice collars are applied to combination orders. Price collar for a combination is a linear combination of the leg collars with their corresponding quantities as coefficients.\n"
+          }
+        },
+        "required": [
+          "amount"
+        ]
+      },
+      "AmendResult": {
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "properties": {
+          "result": {
+            "$ref": "#/components/schemas/OrderStatus",
+            "example": {
+              "order_id": "1728379719872",
+              "time_in_force": "good_till_cancelled",
+              "instrument_name": "BTC-PERPETUAL",
+              "price": 40000,
+              "amount": 1.1,
+              "order_type": "limit",
+              "direction": "sell",
+              "filled_amount": 0,
+              "remaining_amount": 1.1,
+              "status": "open",
+              "fills": [],
+              "change_reason": "amend",
+              "insert_reason": "client_request"
+            }
+          },
+          "id": {
+            "type": "string",
+            "description": "The request ID"
+          }
+        },
+        "example": {
+          "result": {
+            "order_id": "1728379719872",
+            "time_in_force": "good_till_cancelled",
+            "instrument_name": "BTC-PERPETUAL",
+            "price": 40000,
+            "amount": 1.1,
+            "order_type": "limit",
+            "direction": "sell",
+            "filled_amount": 0,
+            "remaining_amount": 1.1,
+            "status": "open",
+            "fills": [],
+            "change_reason": "amend",
+            "insert_reason": "client_request"
+          }
+        }
+      },
+      "AmendParams": {
+        "type": "object",
+        "properties": {
+          "client_order_id": {
+            "type": "integer",
+            "description": "Exactly one of `client_order_id` or `order_id` must be specified."
+          },
+          "order_id": {
+            "type": "string",
+            "description": "Exactly one of `client_order_id` or `order_id` must be specified."
+          },
+          "price": {
+            "type": "number"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "collar": {
+            "type": "string",
+            "enum": [
+              "ignore",
+              "reject",
+              "clamp"
+            ],
+            "description": "If the instrument has a safety price collar set, and the new limit price\nis in cross with (more aggressive than) this collar,\nhow to handle. If set to `ignore`, the amend will proceed as requested. If `reject`,\nthe request fails early. If `clamp`, the price is adjusted to the collar.\n\nThe default is `reject`.\n"
+          }
+        },
+        "required": [
+          "price",
+          "amount"
+        ]
+      },
+      "CancelResult": {
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "properties": {
+          "result": {
+            "$ref": "#/components/schemas/OrderStatus",
+            "example": {
+              "order_id": "1728379719872",
+              "time_in_force": "good_till_cancelled",
+              "instrument_name": "BTC-PERPETUAL",
+              "price": 40000,
+              "amount": 1.1,
+              "order_type": "limit",
+              "direction": "sell",
+              "filled_amount": 0,
+              "remaining_amount": 1.1,
+              "status": "cancelled",
+              "fills": [],
+              "change_reason": "cancel",
+              "insert_reason": "client_request",
+              "delete_reason": "client_cancel",
+              "close_time": 1702583649.379417
+            }
+          },
+          "id": {
+            "type": "string",
+            "description": "The request ID"
+          }
+        },
+        "example": {
+          "result": {
+            "order_id": "1728379719872",
+            "time_in_force": "good_till_cancelled",
+            "instrument_name": "BTC-PERPETUAL",
+            "price": 40000,
+            "amount": 1.1,
+            "order_type": "limit",
+            "direction": "sell",
+            "filled_amount": 0,
+            "remaining_amount": 1.1,
+            "status": "cancelled",
+            "fills": [],
+            "change_reason": "cancel",
+            "insert_reason": "client_request",
+            "delete_reason": "client_cancel",
+            "close_time": 1702583649.379417
+          }
+        }
+      },
+      "CancelParams": {
+        "type": "object",
+        "properties": {
+          "client_order_id": {
+            "type": "integer",
+            "description": "Exactly one of `client_order_id` or `order_id` must be specified."
+          },
+          "order_id": {
+            "type": "string",
+            "description": "Exactly one of `client_order_id` or `order_id` must be specified."
+          }
+        },
+        "required": []
+      },
+      "CancelAllResult": {
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "properties": {
+          "result": {
+            "type": "number",
+            "description": "The number of orders successfully deleted.",
+            "example": 42
+          },
+          "id": {
+            "type": "string",
+            "description": "The request ID"
+          }
+        },
+        "example": {
+          "result": 42
+        }
+      },
+      "CancelAllParams": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "CancelSessionResult": {
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "properties": {
+          "result": {
+            "$ref": "#/components/schemas/EmptyObject"
+          },
+          "id": {
+            "type": "string",
+            "description": "The request ID"
+          }
+        }
+      },
+      "CancelSessionParams": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    }
+  },
+  "paths": {
+    "/public/login": {
+      "post": {
+        "summary": "Login",
+        "description": "See 'Authentication'",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginParams"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/LoginResult"
+                    },
+                    {
+                      "$ref": "#/components/schemas/RpcErrorResponse"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "RPC response, either success or error."
+          }
+        },
+        "servers": [
+          {
+            "url": "RPC: "
+          }
+        ]
+      }
+    },
+    "/private/set_cancel_on_disconnect": {
+      "post": {
+        "summary": "Set cancel on disconnect",
+        "description": "Sets the session to \"non-persistent\" mode. All subsequently inserted orders will\nbe non-persistent orders. Furthermore, the session should make sure to send a\nmessage at least every `timeout_secs` seconds or the connection will be\nconsidered dead. A WebSocket ping suffices.\n",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCancelOnDisconnectParams"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/SetCancelOnDisconnectResult"
+                    },
+                    {
+                      "$ref": "#/components/schemas/RpcErrorResponse"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "RPC response, either success or error."
+          }
+        },
+        "servers": [
+          {
+            "url": "RPC: "
+          }
+        ]
+      }
+    },
+    "/private/insert": {
+      "post": {
+        "summary": "Insert order",
+        "description": "Insert an order",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InsertParams"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/InsertResult"
+                    },
+                    {
+                      "$ref": "#/components/schemas/RpcErrorResponse"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "RPC response, either success or error."
+          }
+        },
+        "servers": [
+          {
+            "url": "RPC: "
+          }
+        ]
+      }
+    },
+    "/private/buy": {
+      "post": {
+        "summary": "Insert buy order",
+        "description": "Insert buy order",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BuyParams"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/BuyResult"
+                    },
+                    {
+                      "$ref": "#/components/schemas/RpcErrorResponse"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "RPC response, either success or error."
+          }
+        },
+        "servers": [
+          {
+            "url": "RPC: "
+          }
+        ]
+      }
+    },
+    "/private/sell": {
+      "post": {
+        "summary": "Insert sell order",
+        "description": "Insert sell order",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SellParams"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/SellResult"
+                    },
+                    {
+                      "$ref": "#/components/schemas/RpcErrorResponse"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "RPC response, either success or error."
+          }
+        },
+        "servers": [
+          {
+            "url": "RPC: "
+          }
+        ]
+      }
+    },
+    "/private/amend": {
+      "post": {
+        "summary": "Amend order",
+        "description": "Note that `amount` designates the new \"original\" amount, i.e. the amend is\nvolume-safe. If the specified amount is lower than the already executed amount,\nthe order is deleted.\n\nIf the price of the order is the same as the previous price, and the amount is\nless than the previous amount, book priority is preserved.\n\nIf the `amount` is amended to a value at or below the executed amount, the order is cancelled.\n",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AmendParams"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/AmendResult"
+                    },
+                    {
+                      "$ref": "#/components/schemas/RpcErrorResponse"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "RPC response, either success or error."
+          }
+        },
+        "servers": [
+          {
+            "url": "RPC: "
+          }
+        ]
+      }
+    },
+    "/private/cancel": {
+      "post": {
+        "summary": "Cancel order",
+        "description": "Cancel order",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelParams"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/CancelResult"
+                    },
+                    {
+                      "$ref": "#/components/schemas/RpcErrorResponse"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "RPC response, either success or error."
+          }
+        },
+        "servers": [
+          {
+            "url": "RPC: "
+          }
+        ]
+      }
+    },
+    "/private/cancel_all": {
+      "post": {
+        "summary": "Bulk cancel all orders",
+        "description": "Cancels all orders for the account. This may *not* match new orders in flight\n(see `private/cancel_session`).\n",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelAllParams"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/CancelAllResult"
+                    },
+                    {
+                      "$ref": "#/components/schemas/RpcErrorResponse"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "RPC response, either success or error."
+          }
+        },
+        "servers": [
+          {
+            "url": "RPC: "
+          }
+        ]
+      }
+    },
+    "/private/cancel_session": {
+      "post": {
+        "summary": "Bulk cancel all orders in session",
+        "description": "Cancels all non-persistent orders in the session. This method is allowed only on\nsessions that were set to `cancel_on_disconnect`, and has the same result as\nclosing the connection:\n\n- all non-persistent orders are deleted, including those still in flight, with\n  delete reason `session_end`.\n- market maker protection groups are reset and must be re-initialised.\n",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelSessionParams"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/CancelSessionResult"
+                    },
+                    {
+                      "$ref": "#/components/schemas/RpcErrorResponse"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "RPC response, either success or error."
+          }
+        },
+        "servers": [
+          {
+            "url": "RPC: "
+          }
+        ]
+      }
+    }
+  }
+}

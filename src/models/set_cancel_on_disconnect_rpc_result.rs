@@ -11,18 +11,15 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-/// ErrorResponseError : Error code and message.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ErrorResponseError {
-    #[serde(rename = "code")]
-    pub code: i32,
-    #[serde(rename = "message")]
-    pub message: String,
+pub struct SetCancelOnDisconnectRpcResult {
+    /// Message rate
+    #[serde(rename = "message_rate")]
+    pub message_rate: i32,
 }
 
-impl ErrorResponseError {
-    /// Error code and message.
-    pub fn new(code: i32, message: String) -> ErrorResponseError {
-        ErrorResponseError { code, message }
+impl SetCancelOnDisconnectRpcResult {
+    pub fn new(message_rate: i32) -> SetCancelOnDisconnectRpcResult {
+        SetCancelOnDisconnectRpcResult { message_rate }
     }
 }

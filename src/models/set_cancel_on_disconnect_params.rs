@@ -11,18 +11,15 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-/// ErrorResponseError : Error code and message.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ErrorResponseError {
-    #[serde(rename = "code")]
-    pub code: i32,
-    #[serde(rename = "message")]
-    pub message: String,
+pub struct SetCancelOnDisconnectParams {
+    /// Heartbeat interval
+    #[serde(rename = "timeout_secs")]
+    pub timeout_secs: i32,
 }
 
-impl ErrorResponseError {
-    /// Error code and message.
-    pub fn new(code: i32, message: String) -> ErrorResponseError {
-        ErrorResponseError { code, message }
+impl SetCancelOnDisconnectParams {
+    pub fn new(timeout_secs: i32) -> SetCancelOnDisconnectParams {
+        SetCancelOnDisconnectParams { timeout_secs }
     }
 }

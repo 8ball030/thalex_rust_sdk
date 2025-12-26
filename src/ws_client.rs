@@ -16,9 +16,6 @@ use std::sync::{
 use tokio::sync::{Mutex, mpsc, watch};
 use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
 
-use crate::models::{
-    Instrument, PortfolioEntry, PrivatePortfolio, PrivateTradeHistoryResult, PublicInstruments,
-};
 use crate::{
     auth_utils::make_auth_token,
     types::{
@@ -40,7 +37,7 @@ pub struct WsClient {
     pub subscriptions: Arc<Mutex<HashMap<String, mpsc::UnboundedSender<String>>>>,
     next_id: Arc<AtomicU64>,
     shutdown_tx: watch::Sender<bool>,
-    instruments_cache: Arc<Mutex<HashMap<String, Instrument>>>,
+    // instruments_cache: Arc<Mutex<HashMap<String, Instrument>>>,
     login_state: LoginState,
     connection_state_rx: watch::Receiver<ExternalEvent>,
 }
@@ -98,7 +95,7 @@ impl WsClient {
             subscriptions: subscriptions.clone(),
             next_id: next_id.clone(),
             shutdown_tx: shutdown_tx.clone(),
-            instruments_cache: Arc::new(Mutex::new(HashMap::new())),
+            // instruments_cache: Arc::new(Mutex::new(HashMap::new())),
             login_state,
             connection_state_rx,
         };
@@ -111,49 +108,49 @@ impl WsClient {
             subscriptions,
             connection_state_tx,
         ));
-        client.cache_instruments().await?;
+        // client.cache_instruments().await?;
         Ok(client)
     }
 
-    async fn cache_instruments(&self) -> Result<(), Error> {
-        let instruments = self.get_instruments().await?;
-        let mut cache = self.instruments_cache.lock().await;
-        cache.clear();
-        for instrument in &instruments {
-            cache.insert(
-                instrument.instrument_name.clone().unwrap(),
-                instrument.clone(),
-            );
-        }
-        Ok(())
-    }
+    // async fn cache_instruments(&self) -> Result<(), Error> {
+    //     let instruments = self.get_instruments().await?;
+    //     let mut cache = self.instruments_cache.lock().await;
+    //     cache.clear();
+    //     for instrument in &instruments {
+    //         cache.insert(
+    //             instrument.instrument_name.clone().unwrap(),
+    //             instrument.clone(),
+    //         );
+    //     }
+    //     Ok(())
+    // }
 
-    pub async fn check_and_refresh_instrument_cache(
-        &self,
-        instrument_name: &str,
-    ) -> Result<Instrument, Error> {
-        let instrument = self
-            .instruments_cache
-            .lock()
-            .await
-            .get(instrument_name)
-            .cloned();
-        // refresh cache if not found
-        if let Some(instr) = instrument {
-            Ok(instr)
-        } else {
-            self.cache_instruments().await?;
-            let cache = self.instruments_cache.lock().await;
-            if let Some(instr) = cache.get(instrument_name).cloned() {
-                Ok(instr)
-            } else {
-                Err(Box::new(std::io::Error::new(
-                    std::io::ErrorKind::NotFound,
-                    format!("Instrument not found: {instrument_name}"),
-                )))
-            }
-        }
-    }
+    // pub async fn check_and_refresh_instrument_cache(
+    //     &self,
+    //     instrument_name: &str,
+    // ) -> Result<Instrument, Error> {
+    //     let instrument = self
+    //         .instruments_cache
+    //         .lock()
+    //         .await
+    //         .get(instrument_name)
+    //         .cloned();
+    //     // refresh cache if not found
+    //     if let Some(instr) = instrument {
+    //         Ok(instr)
+    //     } else {
+    //         self.cache_instruments().await?;
+    //         let cache = self.instruments_cache.lock().await;
+    //         if let Some(instr) = cache.get(instrument_name).cloned() {
+    //             Ok(instr)
+    //         } else {
+    //             Err(Box::new(std::io::Error::new(
+    //                 std::io::ErrorKind::NotFound,
+    //                 format!("Instrument not found: {instrument_name}"),
+    //             )))
+    //         }
+    //     }
+    // }
 
     pub async fn send_rpc<T: DeserializeOwned>(
         &self,
@@ -280,54 +277,54 @@ impl WsClient {
         Ok(())
     }
 
-    /// Get instruments using the generic RPC method
-    pub async fn get_instruments(&self) -> Result<Vec<Instrument>, Error> {
-        let result: PublicInstruments = self
-            .send_rpc("public/instruments", serde_json::json!({}))
-            .await?;
+    // /// Get instruments using the generic RPC method
+    // pub async fn get_instruments(&self) -> Result<Vec<Instrument>, Error> {
+    //     let result: PublicInstruments = self
+    //         .send_rpc("public/instruments", serde_json::json!({}))
+    //         .await?;
 
-        match result {
-            PublicInstruments::PublicInstrumentsResult(v) => Ok(v),
-            PublicInstruments::ErrorResponse(err) => Err(Box::new(std::io::Error::other(format!(
-                "API error: {err:?}"
-            )))),
-        }
-    }
+    //     match result {
+    //         PublicInstruments::PublicInstrumentsResult(v) => Ok(v),
+    //         PublicInstruments::ErrorResponse(err) => Err(Box::new(std::io::Error::other(format!(
+    //             "API error: {err:?}"
+    //         )))),
+    //     }
+    // }
 
-    pub async fn get_trade_history(
-        &self,
-        bookmark: Option<String>,
-    ) -> Result<PrivateTradeHistoryResult, Error> {
-        let result: Value = self
-            .send_rpc(
-                "private/trade_history",
-                if let Some(bm) = bookmark {
-                    serde_json::json!({ "bookmark": bm })
-                } else {
-                    serde_json::json!({})
-                },
-            )
-            .await?;
-        let parsed: PrivateTradeHistoryResult = serde_json::from_value(result)?;
+    // pub async fn get_trade_history(
+    //     &self,
+    //     bookmark: Option<String>,
+    // ) -> Result<PrivateTradeHistoryResult, Error> {
+    //     let result: Value = self
+    //         .send_rpc(
+    //             "private/trade_history",
+    //             if let Some(bm) = bookmark {
+    //                 serde_json::json!({ "bookmark": bm })
+    //             } else {
+    //                 serde_json::json!({})
+    //             },
+    //         )
+    //         .await?;
+    //     let parsed: PrivateTradeHistoryResult = serde_json::from_value(result)?;
 
-        Ok(parsed)
-    }
+    //     Ok(parsed)
+    // }
 
-    pub async fn get_positions(&self) -> Result<Vec<PortfolioEntry>, Error> {
-        let result: Value = self
-            .send_rpc("private/portfolio", serde_json::json!({}))
-            .await?;
-        let parsed: PrivatePortfolio = serde_json::from_value(result)?;
-        let positions = match parsed {
-            PrivatePortfolio::PrivatePortfolioResult(v) => v,
-            PrivatePortfolio::ErrorResponse(err) => {
-                return Err(Box::new(std::io::Error::other(format!(
-                    "API error: {err:?}"
-                ))));
-            }
-        };
-        Ok(positions)
-    }
+    // pub async fn get_positions(&self) -> Result<Vec<PortfolioEntry>, Error> {
+    //     let result: Value = self
+    //         .send_rpc("private/portfolio", serde_json::json!({}))
+    //         .await?;
+    //     let parsed: PrivatePortfolio = serde_json::from_value(result)?;
+    //     let positions = match parsed {
+    //         PrivatePortfolio::PrivatePortfolioResult(v) => v,
+    //         PrivatePortfolio::ErrorResponse(err) => {
+    //             return Err(Box::new(std::io::Error::other(format!(
+    //                 "API error: {err:?}"
+    //             ))));
+    //         }
+    //     };
+    //     Ok(positions)
+    // }
 
     pub async fn set_cancel_on_disconnect(&self) -> Result<(), Error> {
         let result = self

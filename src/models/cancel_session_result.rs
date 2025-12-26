@@ -12,14 +12,17 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct RpcResponse {
-    /// Your request id, or null if not supplied.
+pub struct CancelSessionResult {
+    /// Empty object.
+    #[serde(rename = "result")]
+    pub result: serde_json::Value,
+    /// The request ID
     #[serde(rename = "id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<serde_json::Value>,
+    pub id: Option<String>,
 }
 
-impl RpcResponse {
-    pub fn new() -> RpcResponse {
-        RpcResponse { id: None }
+impl CancelSessionResult {
+    pub fn new(result: serde_json::Value) -> CancelSessionResult {
+        CancelSessionResult { result, id: None }
     }
 }

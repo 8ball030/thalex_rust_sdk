@@ -1225,7 +1225,7 @@
             "Mm": {
                 "type": "array",
                 "items": {
-                    "$ref": "./openapi_updated.json#/components/schemas/Rfq"
+                    "$ref": "./openapi.json#/components/schemas/Rfq"
                 },
                 "description": "Channel-specific content"
             },
@@ -1326,7 +1326,7 @@
                             "type": "object",
                             "properties": {
                                 "added": {
-                                    "$ref": "./openapi_updated.json#/components/schemas/Instrument"
+                                    "$ref": "./openapi.json#/components/schemas/Instrument"
                                 }
                             }
                         },
@@ -1334,7 +1334,7 @@
                             "type": "object",
                             "properties": {
                                 "removed": {
-                                    "$ref": "./openapi_updated.json#/components/schemas/Instrument"
+                                    "$ref": "./openapi.json#/components/schemas/Instrument"
                                 }
                             }
                         }
@@ -1361,7 +1361,7 @@
             "RfqsPayload": {
                 "type": "array",
                 "items": {
-                    "$ref": "./openapi_updated.json#/components/schemas/Rfq"
+                    "$ref": "./openapi.json#/components/schemas/Rfq"
                 },
                 "description": "Channel-specific content"
             },
@@ -1627,7 +1627,7 @@
                 }
             },
             "OrderStatus": {
-                "$ref": "./openapi_updated.json#/components/schemas/OrderStatus"
+                "$ref": "./openapi.json#/components/schemas/OrderStatus"
             },
             "SessionMmProtectionNotification": {
                 "type": "object",
@@ -1716,7 +1716,7 @@
             "MmRfqQuotesPayload": {
                 "type": "array",
                 "items": {
-                    "$ref": "./openapi_updated.json#/components/schemas/RfqOrder"
+                    "$ref": "./openapi.json#/components/schemas/RfqOrder"
                 },
                 "description": "Channel-specific content"
             },
@@ -1808,7 +1808,7 @@
             "AccountTradeHistoryPayload": {
                 "type": "array",
                 "items": {
-                    "$ref": "./openapi_updated.json#/components/schemas/Trade"
+                    "$ref": "./openapi.json#/components/schemas/Trade"
                 },
                 "description": "Channel-specific content"
             },
@@ -1831,7 +1831,7 @@
             "AccountPortfolioPayload": {
                 "type": "array",
                 "items": {
-                    "$ref": "./openapi_updated.json#/components/schemas/PortfolioEntry"
+                    "$ref": "./openapi.json#/components/schemas/PortfolioEntry"
                 },
                 "description": "Channel-specific content"
             },
@@ -1916,7 +1916,7 @@
             "AccountConditionalOrdersPayload": {
                 "type": "array",
                 "items": {
-                    "$ref": "./openapi_updated.json#/components/schemas/ConditionalOrder"
+                    "$ref": "./openapi.json#/components/schemas/ConditionalOrder"
                 },
                 "description": "Channel-specific content"
             },
@@ -2000,7 +2000,7 @@
                 }
             },
             "TickerPayload": {
-                "$ref": "./openapi_updated.json#/components/schemas/Ticker"
+                "$ref": "./openapi.json#/components/schemas/Ticker"
             },
             "LwtPayload": {
                 "type": "object",
@@ -2524,7 +2524,7 @@
                     "fills": {
                         "type": "array",
                         "items": {
-                            "$ref": "./openapi_updated.json#/components/schemas/OrderFill"
+                            "$ref": "./openapi.json#/components/schemas/OrderFill"
                         },
                         "description": "All fills for this order."
                     },
@@ -2759,7 +2759,7 @@
                 "description": "Channel-specific content"
             },
             "AccountSummaryPayload": {
-                "$ref": "./openapi_updated.json#/components/schemas/AccountSummary",
+                "$ref": "./openapi.json#/components/schemas/AccountSummary",
                 "description": "Channel-specific content"
             },
             "OrderFill": {
@@ -3019,7 +3019,7 @@
                 }
             },
             "UserInboxNotificationsPayload": {
-                "$ref": "./openapi_updated.json#/components/schemas/Notifications",
+                "$ref": "./openapi.json#/components/schemas/Notifications",
                 "description": "Channel-specific content"
             },
             "AccountBotsNotification": {
@@ -3041,7 +3041,7 @@
             "AccountBotsPayload": {
                 "type": "array",
                 "items": {
-                    "$ref": "./openapi_updated.json#/components/schemas/Bot"
+                    "$ref": "./openapi.json#/components/schemas/Bot"
                 },
                 "description": "Channel-specific content"
             },
@@ -3062,7 +3062,7 @@
                 }
             },
             "SystemPayload": {
-                "$ref": "./openapi_updated.json#/components/schemas/SystemEvent",
+                "$ref": "./openapi.json#/components/schemas/SystemEvent",
                 "description": "Channel-specific content"
             },
             "BannersNotification": {
@@ -3084,7 +3084,7 @@
             "BannersPayload": {
                 "type": "array",
                 "items": {
-                    "$ref": "./openapi_updated.json#/components/schemas/Banner"
+                    "$ref": "./openapi.json#/components/schemas/Banner"
                 },
                 "description": "Channel-specific content"
             },

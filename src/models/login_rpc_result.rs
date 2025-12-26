@@ -11,18 +11,15 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-/// ErrorResponseError : Error code and message.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ErrorResponseError {
-    #[serde(rename = "code")]
-    pub code: i32,
-    #[serde(rename = "message")]
-    pub message: String,
+pub struct LoginRpcResult {
+    /// Account number
+    #[serde(rename = "account_number")]
+    pub account_number: String,
 }
 
-impl ErrorResponseError {
-    /// Error code and message.
-    pub fn new(code: i32, message: String) -> ErrorResponseError {
-        ErrorResponseError { code, message }
+impl LoginRpcResult {
+    pub fn new(account_number: String) -> LoginRpcResult {
+        LoginRpcResult { account_number }
     }
 }

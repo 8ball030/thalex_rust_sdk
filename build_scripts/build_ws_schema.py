@@ -7,11 +7,11 @@ from pathlib import Path
 
 import re
 
-SCHEMA_PATH = Path("new_schema.json")
+SCHEMA_PATH = Path("openapi.json")
 
 TRANSIENT_WS_SPEC_PATH = Path("ws_spec.json")
 
-PROCESSED_OPENAPI_PATH = Path("openapi_updated.json")
+PROCESSED_OPENAPI_PATH = Path("openapi.json")
 
 CHANNEL_NAME_PATTERN = re.compile(r'Channel name: `([^`]+)`')
 SCHEMA_PATTERN = re.compile(r'Notification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/([^"]+)"')
@@ -95,7 +95,7 @@ def from_schema_ref_to_notification_schema_name_and_schema(schema_ref):
     processed_components = processed_spec.get("components", {})
     processed_schemas = processed_components.get("schemas", {})
     if extracted_payload_name in processed_schemas:
-        extracted_payload_schema = {"$ref": f"./openapi_updated.json#/components/schemas/{extracted_payload_name}"}
+        extracted_payload_schema = {"$ref": f"./openapi.json#/components/schemas/{extracted_payload_name}"}
     else:
         notification_schema["properties"]["notification"] = {"$ref": f"#/components/schemas/{extracted_payload_name}"}
 
@@ -194,7 +194,7 @@ def scan_ws_spec_for_existing_paths():
     # we now do a find and replace for all refs that were replaced
     updated_spec = TRANSIENT_WS_SPEC_PATH.read_text()
     for ref_name in replacements:
-        updated_spec = updated_spec.replace(f'"#/components/schemas/{ref_name}"', f'"./openapi_updated.json#/components/schemas/{ref_name}"')
+        updated_spec = updated_spec.replace(f'"#/components/schemas/{ref_name}"', f'"./openapi.json#/components/schemas/{ref_name}"')
     TRANSIENT_WS_SPEC_PATH.write_text(updated_spec)
 
 

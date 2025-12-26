@@ -13,18 +13,20 @@ run:
 	cargo run --all-features
 
 codegen:
-	curl https://thalex.com/docs/thalex_api.yaml | yq '.' > openapi.json
-	curl https://thalex.com/docs/api.yaml | yq '.' > new_schema.json
+	# curl https://thalex.com/docs/thalex_api.yaml | yq '.' > openapi.json
+	# curl https://thalex.com/docs/api.yaml | yq '.' > new_schema.json
+	curl https://thalex.com/docs/api.yaml | yq '.' > openapi.json
 
-	python build_scripts/pre-process.py
+	# python build_scripts/pre-process.py
 	python build_scripts/build_ws_schema.py
 	rm -rf ./generated
 
-	openapi-generator-cli generate \
-	  -i openapi_updated.json \
-	  -g rust \
-	  -o ./generated \
-	--additional-properties=supportAsync=false,useSingleRequestParameter=true
+	python build_scripts/build-rpc.py
+# 	openapi-generator-cli generate \
+# 	  -i openapi_updated.json \
+# 	  -g rust \
+# 	  -o ./generated \
+# 	--additional-properties=supportAsync=false,useSingleRequestParameter=true
 	rm -rf ./src/models/*
 	cp ./generated/src/models/* ./src/models/
 
@@ -44,6 +46,6 @@ codegen:
 	python build_scripts/fix_array_types.py ws_spec_updated.json src/models
 	python build_scripts/build-ws.py
 
-	rm openapi_updated.json ws_spec_updated.json openapi.json new_schema.json
+	rm ws_spec_updated.json
 
 all: codegen fmt lint build test

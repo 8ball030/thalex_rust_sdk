@@ -1,112 +1,133 @@
-#![allow(clippy::too_many_arguments)]
-use serde_json::Value;
-
-use crate::ws_client::WsClient;
 use crate::{
     models::{
-        OrderStatus,
-        order_status::{Direction, OrderType},
+        AmendParams, AmendResponse, BuyParams, BuyResponse, CancelAllResponse, CancelParams,
+        CancelResponse, CancelSessionResponse, InsertParams, InsertResponse, OrderStatus,
+        RpcErrorResponse, SellParams, SellResponse,
     },
-    types::Error,
-    utils::round_to_ticks,
+    ws_client::WsClient,
 };
+use serde_json::Value;
 
 pub struct TradingRpc<'a> {
     pub client: &'a WsClient,
 }
 impl<'a> TradingRpc<'a> {
-    pub async fn insert_order(
-        &self,
-        instrument_name: &str,
-        amount: f64,
-        price: f64,
-        direction: Direction,
-        order_type: OrderType,
-        post_only: bool,
-        reject_post_only: bool,
-    ) -> Result<OrderStatus, Error> {
-        let instrument = self
-            .client
-            .check_and_refresh_instrument_cache(instrument_name)
-            .await?;
-        let tick_size = instrument.tick_size.unwrap();
-
-        let result: Value = self
+    /// Insert order
+    /// returns: OrderStatus
+    pub async fn insert(&self, params: InsertParams) -> Result<OrderStatus, RpcErrorResponse> {
+        let result: InsertResponse = self
             .client
             .send_rpc(
                 "private/insert",
-                serde_json::json!({
-                    "instrument_name": instrument_name,
-                    "amount": amount,
-                    "price": round_to_ticks(price, tick_size),
-                    "direction": direction,
-                    "order_type": order_type,
-                    "post_only": post_only,
-                    "reject_post_only": reject_post_only
-
-                }),
+                serde_json::to_value(params).expect("Failed to serialize params"),
             )
-            .await?;
-
-        let order_status: OrderStatus = serde_json::from_value(result)?;
-        Ok(order_status)
+            .await
+            .expect("Failed to send RPC request");
+        match result {
+            InsertResponse::InsertResult(res) => Ok(res.result),
+            InsertResponse::RpcErrorResponse(err) => Err(err),
+        }
     }
 
-    pub async fn amend_order(
-        &self,
-        order_id: String,
-        instrument_name: &str,
-        amount: f64,
-        price: f64,
-    ) -> Result<OrderStatus, Error> {
-        let instrument = self
+    /// Insert buy order
+    /// returns: OrderStatus
+    pub async fn buy(&self, params: BuyParams) -> Result<OrderStatus, RpcErrorResponse> {
+        let result: BuyResponse = self
             .client
-            .check_and_refresh_instrument_cache(instrument_name)
-            .await?;
-        let tick_size = instrument.tick_size.unwrap();
-        let result: Value = self
+            .send_rpc(
+                "private/buy",
+                serde_json::to_value(params).expect("Failed to serialize params"),
+            )
+            .await
+            .expect("Failed to send RPC request");
+        match result {
+            BuyResponse::BuyResult(res) => Ok(res.result),
+            BuyResponse::RpcErrorResponse(err) => Err(err),
+        }
+    }
+
+    /// Insert sell order
+    /// returns: OrderStatus
+    pub async fn sell(&self, params: SellParams) -> Result<OrderStatus, RpcErrorResponse> {
+        let result: SellResponse = self
+            .client
+            .send_rpc(
+                "private/sell",
+                serde_json::to_value(params).expect("Failed to serialize params"),
+            )
+            .await
+            .expect("Failed to send RPC request");
+        match result {
+            SellResponse::SellResult(res) => Ok(res.result),
+            SellResponse::RpcErrorResponse(err) => Err(err),
+        }
+    }
+
+    /// Amend order
+    /// returns: OrderStatus
+    pub async fn amend(&self, params: AmendParams) -> Result<OrderStatus, RpcErrorResponse> {
+        let result: AmendResponse = self
             .client
             .send_rpc(
                 "private/amend",
-                serde_json::json!({
-                    "order_id": order_id,
-                    "amount": amount,
-                    "price": round_to_ticks(price, tick_size)
-                }),
+                serde_json::to_value(params).expect("Failed to serialize params"),
             )
-            .await?;
-
-        let order_status: OrderStatus = serde_json::from_value(result)?;
-        Ok(order_status)
+            .await
+            .expect("Failed to send RPC request");
+        match result {
+            AmendResponse::AmendResult(res) => Ok(res.result),
+            AmendResponse::RpcErrorResponse(err) => Err(err),
+        }
     }
-    pub async fn cancel_order(&self, order_id: String) -> Result<OrderStatus, Error> {
-        let result: Value = self
+
+    /// Cancel order
+    /// returns: OrderStatus
+    pub async fn cancel(&self, params: CancelParams) -> Result<OrderStatus, RpcErrorResponse> {
+        let result: CancelResponse = self
             .client
             .send_rpc(
                 "private/cancel",
-                serde_json::json!({
-                    "order_id": order_id
-                }),
+                serde_json::to_value(params).expect("Failed to serialize params"),
             )
-            .await?;
-
-        let order_status: OrderStatus = serde_json::from_value(result)?;
-        Ok(order_status)
+            .await
+            .expect("Failed to send RPC request");
+        match result {
+            CancelResponse::CancelResult(res) => Ok(res.result),
+            CancelResponse::RpcErrorResponse(err) => Err(err),
+        }
     }
-    pub async fn cancel_all_orders(&self) -> Result<Vec<OrderStatus>, Error> {
-        let result: Value = self
-            .client
-            .send_rpc("private/cancel_all", serde_json::json!({}))
-            .await?;
 
-        let orders_status: Vec<OrderStatus> = serde_json::from_value(result)?;
-        Ok(orders_status)
-    }
-    pub async fn cancel_session(&self) -> Result<(), Error> {
-        let _ = self
+    /// Bulk cancel all orders
+    /// returns: f64
+    pub async fn cancel_all(&self) -> Result<f64, RpcErrorResponse> {
+        let result: CancelAllResponse = self
             .client
-            .send_rpc::<Value>("private/cancel_session", serde_json::json!({}))
-            .await;
-        Ok(())
+            .send_rpc(
+                "private/cancel_all",
+                serde_json::to_value(()).expect("Failed to serialize params"),
+            )
+            .await
+            .expect("Failed to send RPC request");
+        match result {
+            CancelAllResponse::CancelAllResult(res) => Ok(res.result),
+            CancelAllResponse::RpcErrorResponse(err) => Err(err),
+        }
+    }
+
+    /// Bulk cancel all orders in session
+    /// returns: Value
+    pub async fn cancel_session(&self) -> Result<Value, RpcErrorResponse> {
+        let result: CancelSessionResponse = self
+            .client
+            .send_rpc(
+                "private/cancel_session",
+                serde_json::to_value(()).expect("Failed to serialize params"),
+            )
+            .await
+            .expect("Failed to send RPC request");
+        match result {
+            CancelSessionResponse::CancelSessionResult(res) => Ok(res.result),
+            CancelSessionResponse::RpcErrorResponse(err) => Err(err),
+        }
     }
 }

@@ -11,18 +11,18 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-/// ErrorResponseError : Error code and message.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ErrorResponseError {
-    #[serde(rename = "code")]
-    pub code: i32,
-    #[serde(rename = "message")]
-    pub message: String,
+pub struct CancelAllResult {
+    /// The number of orders successfully deleted.
+    #[serde(rename = "result")]
+    pub result: f64,
+    /// The request ID
+    #[serde(rename = "id", skip_serializing_if = "Option::is_none")]
+    pub id: Option<String>,
 }
 
-impl ErrorResponseError {
-    /// Error code and message.
-    pub fn new(code: i32, message: String) -> ErrorResponseError {
-        ErrorResponseError { code, message }
+impl CancelAllResult {
+    pub fn new(result: f64) -> CancelAllResult {
+        CancelAllResult { result, id: None }
     }
 }
