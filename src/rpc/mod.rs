@@ -1,10 +1,12 @@
 use crate::{
     rpc::{
-        market_data::MarketDataRpc, session_management::SessionManagementRpc, trading::TradingRpc,
+        accounting::AccountingRpc, market_data::MarketDataRpc,
+        session_management::SessionManagementRpc, trading::TradingRpc,
     },
     ws_client::WsClient,
 };
 
+pub mod accounting;
 pub mod market_data;
 pub mod session_management;
 pub mod trading;
@@ -27,6 +29,12 @@ impl<'a> Rpc<'a> {
 
     pub fn market_data(&self) -> MarketDataRpc<'a> {
         MarketDataRpc {
+            client: self.client,
+        }
+    }
+
+    pub fn accounting(&self) -> accounting::AccountingRpc<'a> {
+        AccountingRpc {
             client: self.client,
         }
     }

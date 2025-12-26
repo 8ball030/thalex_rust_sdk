@@ -27,13 +27,6 @@ use crate::{
     utils::round_to_ticks,
 };
 
-// #[derive(Deserialize)]
-// #[serde(untagged)]
-// enum RpcEnvelope<T> {
-//     Ok { id: u64, result: T },
-//     Err { id: u64, error: RpcErrorResponse },
-// }
-
 #[derive(Deserialize)]
 #[serde(untagged)]
 enum SubscribeResponse {
@@ -229,8 +222,6 @@ impl WsClient {
 
         let envelope: T = serde_json::from_str(&response)?;
         Ok(envelope)
-
-        // print the keys and types in the response for debugging
     }
 
     pub async fn shutdown(&self, reason: &'static str) -> Result<(), Error> {
@@ -326,9 +317,9 @@ impl WsClient {
             .await?;
         info!("Sent login message, received response: {result:?}");
         if let Some(error) = result.get("error") {
-            Err(Box::new(std::io::Error::other(
-                format!("Login error: {error:?}"),
-            )))
+            Err(Box::new(std::io::Error::other(format!(
+                "Login error: {error:?}"
+            ))))
         } else {
             info!("Login successful");
             Ok(())
