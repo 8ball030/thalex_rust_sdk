@@ -277,9 +277,7 @@ impl WsClient {
                 });
                 Ok(channel)
             }
-            SubscribeResponse::Err { error, id: _id } => {
-                Err(ClientError::Rpc(error))
-            }
+            SubscribeResponse::Err { error, id: _id } => Err(ClientError::Rpc(error)),
         }
     }
 
