@@ -4,7 +4,9 @@ use log::{Level::Info, info};
 use simple_logger::init_with_level;
 use thalex_rust_sdk::{
     models::{
-        AmendParams, Delay, InsertParams, OrderStatus, insert_params::{Direction, OrderType}, instrument, order_status::Status
+        AmendParams, Delay, InsertParams, OrderStatus,
+        insert_params::{Direction, OrderType},
+        order_status::Status,
     },
     types::ExternalEvent,
     ws_client::WsClient,
@@ -56,7 +58,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 let raw_bid_price = best_bid_price * (1.0 - ORDER_OFFSET_BPS / 10000.0);
                 let bid_price = client
-                    .round_price_to_ticks(raw_bid_price, MARKET_NAME, )
+                    .round_price_to_ticks(raw_bid_price, MARKET_NAME)
                     .await
                     .unwrap();
 
@@ -68,12 +70,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 // Check if we have active orders
                 let mut state = state.lock().await;
                 if state.bid_order.is_none() {
-
                     let bid_order = client
                         .rpc()
                         .trading()
-                        .insert(InsertParams { 
-                            direction: Direction::Buy, 
+                        .insert(InsertParams {
+                            direction: Direction::Buy,
                             amount: ORDER_SIZE,
                             price: Some(bid_price),
                             instrument_name: Some(MARKET_NAME.to_string()),
@@ -81,7 +82,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                             post_only: Some(true),
                             reject_post_only: Some(true),
                             ..Default::default()
-                         })
+                        })
                         .await
                         .unwrap();
                     info!("Placed bid order: {bid_price:?}");
@@ -91,8 +92,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     let ask_order = client
                         .rpc()
                         .trading()
-                        .insert(InsertParams { 
-                            direction: Direction::Sell, 
+                        .insert(InsertParams {
+                            direction: Direction::Sell,
                             amount: ORDER_SIZE,
                             price: Some(ask_price),
                             instrument_name: Some(MARKET_NAME.to_string()),
@@ -100,7 +101,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                             post_only: Some(true),
                             reject_post_only: Some(true),
                             ..Default::default()
-                         })
+                        })
                         .await
                         .unwrap();
                     info!("Placed ask order: {ask_price:?}");
@@ -119,14 +120,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         let updated_bid_order = client
                             .rpc()
                             .trading()
-                            .amend(
-                                AmendParams { 
+                            .amend(AmendParams {
                                 order_id: Some(bid_order.order_id.clone()),
                                 amount: ORDER_SIZE,
                                 price: bid_price,
                                 ..Default::default()
-                                }
-                            )
+                            })
                             .await
                             .unwrap();
                         info!(
@@ -147,14 +146,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         let updated_ask_order = client
                             .rpc()
                             .trading()
-                            .amend(
-                                AmendParams {
-                                    order_id: Some(ask_order.order_id.clone()),
-                                    price: ask_price,
-                                    amount: ORDER_SIZE,
-                                    ..Default::default()
-                                }
-                            )
+                            .amend(AmendParams {
+                                order_id: Some(ask_order.order_id.clone()),
+                                price: ask_price,
+                                amount: ORDER_SIZE,
+                                ..Default::default()
+                            })
                             .await
                             .unwrap();
                         info!(

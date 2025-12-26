@@ -20,10 +20,11 @@ use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
 
 use crate::{
     auth_utils::make_auth_token,
-    models::{Instrument, LoginParams, RpcErrorResponse, RpcResponse},
+    models::{Instrument, RpcErrorResponse, RpcResponse},
     types::{
         Error, ExternalEvent, InternalCommand, LoginState, RequestScope, ResponseSender, WsStream,
-    }, utils::round_to_ticks,
+    },
+    utils::round_to_ticks,
 };
 
 // #[derive(Deserialize)]
@@ -145,7 +146,6 @@ impl WsClient {
         Ok(client)
     }
 
-
     async fn cache_instruments(&self) -> Result<(), Error> {
         let instruments = self.get_instruments().await.unwrap();
         let mut cache = self.instruments_cache.lock().await;
@@ -172,12 +172,12 @@ impl WsClient {
             .cloned();
         // refresh cache if not found
         if let Some(instr) = instrument {
-            Ok(round_to_ticks(price,instr.tick_size.unwrap()))
+            Ok(round_to_ticks(price, instr.tick_size.unwrap()))
         } else {
             self.cache_instruments().await?;
             let cache = self.instruments_cache.lock().await;
             if let Some(instr) = cache.get(instrument_name).cloned() {
-                Ok(round_to_ticks(price,instr.tick_size.unwrap()))
+                Ok(round_to_ticks(price, instr.tick_size.unwrap()))
             } else {
                 Err(Box::new(std::io::Error::new(
                     std::io::ErrorKind::NotFound,
@@ -326,8 +326,7 @@ impl WsClient {
             .await?;
         info!("Sent login message, received response: {result:?}");
         if let Some(error) = result.get("error") {
-            Err(Box::new(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            Err(Box::new(std::io::Error::other(
                 format!("Login error: {error:?}"),
             )))
         } else {
