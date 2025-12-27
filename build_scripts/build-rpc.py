@@ -29,6 +29,7 @@ TAGS_TO_PROCESS = [
     "rpc_trading",
     "rpc_market_data",
     "rpc_accounting",
+    "rpc_historical_data",
 ]
 
 
