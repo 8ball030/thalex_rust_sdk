@@ -1068,7 +1068,6 @@
           "status",
           "create_time",
           "update_time",
-          "reject_reason",
           "reduce_only",
           "target"
         ],

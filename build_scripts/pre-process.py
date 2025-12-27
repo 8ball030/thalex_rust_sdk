@@ -64,6 +64,11 @@ def fix_schema(spec: Dict[str, Any]) -> Dict[str, Any]:
     updated_spec['paths']['private/account_breakdown']['rpc']['responses']['default']['content']['application/json']['schema'] \
             ['oneOf'][0]['allOf'][1]['properties']['result']['properties']['cash']['items']['required'] \
             .remove('collateral_index_price')
+    
+
+    # make `reject_reason` optional for `ConditionalOrder` model
+    updated_spec['components']['schemas']['ConditionalOrder']['required'].remove('reject_reason')
+
     return updated_spec
 
 

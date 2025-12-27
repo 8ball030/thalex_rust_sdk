@@ -2315,117 +2315,6 @@
                 },
                 "description": "Channel-specific content"
             },
-            "ConditionalOrder": {
-                "type": "object",
-                "required": [
-                    "order_id",
-                    "instrument_name",
-                    "direction",
-                    "amount",
-                    "stop_price",
-                    "status",
-                    "create_time",
-                    "update_time",
-                    "reject_reason",
-                    "reduce_only",
-                    "target"
-                ],
-                "properties": {
-                    "order_id": {
-                        "type": "string",
-                        "description": "Unique ID, use to identify in cancel"
-                    },
-                    "instrument_name": {
-                        "type": "string"
-                    },
-                    "direction": {
-                        "type": "string",
-                        "enum": [
-                            "buy",
-                            "sell"
-                        ]
-                    },
-                    "amount": {
-                        "type": "number",
-                        "description": "Size of the order when activated"
-                    },
-                    "target": {
-                        "type": "string",
-                        "enum": [
-                            "last",
-                            "mark",
-                            "index"
-                        ],
-                        "description": "The trigger type that `stop_price` and `bracket_price` will refer to."
-                    },
-                    "stop_price": {
-                        "type": "number",
-                        "description": "Trigger price at which the order will be activated"
-                    },
-                    "limit_price": {
-                        "type": "number",
-                        "description": "For stop limit order, the price at which the order will be placed"
-                    },
-                    "bracket_price": {
-                        "type": "number",
-                        "description": "For bracket order, the price at which profit will be taken (upper activation price)"
-                    },
-                    "trailing_stop_callback_rate": {
-                        "type": "number",
-                        "description": "For trailing stop loss, the callback rate as a ratio (e.g. 0.05 for 5%)"
-                    },
-                    "label": {
-                        "type": "string",
-                        "description": "Optional user label"
-                    },
-                    "status": {
-                        "type": "string",
-                        "enum": [
-                            "created",
-                            "active",
-                            "converted",
-                            "rejected",
-                            "cancel requested",
-                            "cancelled"
-                        ]
-                    },
-                    "create_time": {
-                        "type": "number"
-                    },
-                    "update_time": {
-                        "type": "number",
-                        "description": "Time of last update (conversion or change of trailing stop price)"
-                    },
-                    "convert_time": {
-                        "type": "number",
-                        "description": "Time of trigger"
-                    },
-                    "converted_order_id": {
-                        "type": "string",
-                        "description": "System order ID of the created order."
-                    },
-                    "reject_reason": {
-                        "type": "string",
-                        "description": "If conversion failed, the reason"
-                    },
-                    "reduce_only": {
-                        "type": "boolean"
-                    }
-                },
-                "example": {
-                    "order_id": "00011E570000004B",
-                    "instrument_name": "BTC-PERPETUAL",
-                    "direction": "buy",
-                    "amount": 1,
-                    "stop_price": 50000,
-                    "limit_price": 45000,
-                    "status": "created",
-                    "create_time": 1630062311.3324597,
-                    "update_time": 1630062311.3324597,
-                    "reduce_only": false,
-                    "target": "mark"
-                }
-            },
             "OrderHistory": {
                 "type": "object",
                 "description": "Historical order.",
@@ -3796,6 +3685,116 @@
                     "margin": 1000000004994.1586,
                     "required_margin": 13123.880458333333,
                     "remaining_margin": 999999991870.2781
+                }
+            },
+            "ConditionalOrder": {
+                "type": "object",
+                "required": [
+                    "order_id",
+                    "instrument_name",
+                    "direction",
+                    "amount",
+                    "stop_price",
+                    "status",
+                    "create_time",
+                    "update_time",
+                    "reduce_only",
+                    "target"
+                ],
+                "properties": {
+                    "order_id": {
+                        "type": "string",
+                        "description": "Unique ID, use to identify in cancel"
+                    },
+                    "instrument_name": {
+                        "type": "string"
+                    },
+                    "direction": {
+                        "type": "string",
+                        "enum": [
+                            "buy",
+                            "sell"
+                        ]
+                    },
+                    "amount": {
+                        "type": "number",
+                        "description": "Size of the order when activated"
+                    },
+                    "target": {
+                        "type": "string",
+                        "enum": [
+                            "last",
+                            "mark",
+                            "index"
+                        ],
+                        "description": "The trigger type that `stop_price` and `bracket_price` will refer to."
+                    },
+                    "stop_price": {
+                        "type": "number",
+                        "description": "Trigger price at which the order will be activated"
+                    },
+                    "limit_price": {
+                        "type": "number",
+                        "description": "For stop limit order, the price at which the order will be placed"
+                    },
+                    "bracket_price": {
+                        "type": "number",
+                        "description": "For bracket order, the price at which profit will be taken (upper activation price)"
+                    },
+                    "trailing_stop_callback_rate": {
+                        "type": "number",
+                        "description": "For trailing stop loss, the callback rate as a ratio (e.g. 0.05 for 5%)"
+                    },
+                    "label": {
+                        "type": "string",
+                        "description": "Optional user label"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "created",
+                            "active",
+                            "converted",
+                            "rejected",
+                            "cancel requested",
+                            "cancelled"
+                        ]
+                    },
+                    "create_time": {
+                        "type": "number"
+                    },
+                    "update_time": {
+                        "type": "number",
+                        "description": "Time of last update (conversion or change of trailing stop price)"
+                    },
+                    "convert_time": {
+                        "type": "number",
+                        "description": "Time of trigger"
+                    },
+                    "converted_order_id": {
+                        "type": "string",
+                        "description": "System order ID of the created order."
+                    },
+                    "reject_reason": {
+                        "type": "string",
+                        "description": "If conversion failed, the reason"
+                    },
+                    "reduce_only": {
+                        "type": "boolean"
+                    }
+                },
+                "example": {
+                    "order_id": "00011E570000004B",
+                    "instrument_name": "BTC-PERPETUAL",
+                    "direction": "buy",
+                    "amount": 1,
+                    "stop_price": 50000,
+                    "limit_price": 45000,
+                    "status": "created",
+                    "create_time": 1630062311.3324597,
+                    "update_time": 1630062311.3324597,
+                    "reduce_only": false,
+                    "target": "mark"
                 }
             }
         }
