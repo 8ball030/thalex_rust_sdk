@@ -17,7 +17,7 @@ codegen:
 	# curl https://thalex.com/docs/api.yaml | yq '.' > new_schema.json
 	curl https://thalex.com/docs/api.yaml | yq '.' > openapi.json
 
-	# python build_scripts/pre-process.py
+	python build_scripts/pre-process.py
 	python build_scripts/build_ws_schema.py
 	rm -rf ./generated
 

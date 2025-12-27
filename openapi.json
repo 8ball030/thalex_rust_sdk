@@ -2014,7 +2014,6 @@
                 "currency",
                 "balance",
                 "collateral_factor",
-                "collateral_index_price",
                 "transactable"
               ],
               "properties": {
@@ -10520,8 +10519,6 @@
                                       "instrument_name",
                                       "position",
                                       "mark_price",
-                                      "start_price",
-                                      "average_price",
                                       "unrealised_pnl_positional",
                                       "unrealised_pnl_perpetual",
                                       "unrealised_pnl",
@@ -10572,10 +10569,10 @@
                                       "session_position_pnl": {
                                         "type": "number"
                                       },
-                                      "session_perpetual_funding": {
+                                      "session_fees": {
                                         "type": "number"
                                       },
-                                      "session_fees": {
+                                      "realised_perpetual_funding": {
                                         "type": "number"
                                       }
                                     }
@@ -10590,7 +10587,6 @@
                                       "currency",
                                       "balance",
                                       "collateral_factor",
-                                      "collateral_index_price",
                                       "applied_collateral",
                                       "transactable"
                                     ],
@@ -10609,7 +10605,8 @@
                                       },
                                       "collateral_index_price": {
                                         "type": "number",
-                                        "description": "Index price used to calculate collateral effect of this position.\nCan be `null` for assets that are not converted using an index, e.g. for stable coins.\n"
+                                        "description": "Index price used to calculate collateral effect of this position.\nCan be `null` for assets that are not converted using an index, e.g. for stable coins.\n",
+                                        "nullable": true
                                       },
                                       "applied_collateral": {
                                         "type": "number",
