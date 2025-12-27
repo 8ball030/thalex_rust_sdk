@@ -29,6 +29,7 @@ TAGS_TO_PROCESS = [
     "rpc_trading",
     "rpc_market_data",
     "rpc_accounting",
+    "rpc_conditional",
 ]
 
 
@@ -51,6 +52,8 @@ RPC_RESULT_IMPORT_ALIASES = {
     "AccountSummaryRpcResult": "AccountSummary",
     "PortfolioRpcResult": "PortfolioEntry",
     "RequiredMarginForOrderRpcResult": "MarginBreakdownWithOrder",
+    # conditional order
+    "CreateConditionalOrderRpcResult": "ConditionalOrder",
 }
 
 RETURN_MODEL_TO_VECTOR_ALIASES = {
@@ -61,6 +64,12 @@ RETURN_MODEL_TO_VECTOR_ALIASES = {
     "OpenOrdersRpcResult": "Vec<OrderStatus>",
     "PortfolioRpcResult": "Vec<PortfolioEntry>",
     "RequiredMarginForOrderRpcResult": "MarginBreakdownWithOrder",
+    # conditional order
+    "CreateConditionalOrderRpcResult": "ConditionalOrder",
+    "ConditionalOrdersRpcResult": "Vec<ConditionalOrder>",
+    "CancelConditionalOrderRpcResult": "Value", 
+    "CancelAllConditionalOrdersRpcResult": "Value",
+
 }
 
 MODELS_TO_LIFT = [
@@ -83,7 +92,9 @@ MODELS_TO_LIFT = [
     "DailyMark",
     "AccountSummary",
     "PortfolioMarginBreakdown",
-    "MarginBreakdownWithOrder"
+    "MarginBreakdownWithOrder",
+    # Conditional order
+    "ConditionalOrder"
 ]
 
 
@@ -99,7 +110,12 @@ IMPORTS_TO_SKIP = [
     "OpenOrdersRpcResult",
     "PortfolioRpcResult",
     "RequiredMarginForOrderRpcResult",
-    "AccountSummaryRpcResult"
+    "AccountSummaryRpcResult",
+    # Conditional order
+    "CancelAllConditionalOrdersRpcResult",
+    "CreateConditionalOrderRpcResult",
+    "ConditionalOrdersRpcResult",
+    "CancelConditionalOrderRpcResult"
 ]
 base_imports = [
         "RpcErrorResponse",
