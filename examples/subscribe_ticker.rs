@@ -8,7 +8,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let client = WsClient::new_public().await.unwrap();
 
-    let instruments = client.get_instruments().await.unwrap();
+    let instruments = client.rpc().market_data().instruments().await.unwrap();
     info!("Total Instruments: {}", instruments.len());
 
     let _ = client

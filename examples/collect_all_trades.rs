@@ -1,6 +1,9 @@
 use log::{Level::Info, info};
 use simple_logger::init_with_level;
-use thalex_rust_sdk::{models::Trade, ws_client::WsClient};
+use thalex_rust_sdk::{
+    models::{Trade, TradeHistoryParams},
+    ws_client::WsClient,
+};
 
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 
@@ -48,7 +51,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = WsClient::from_env().await.unwrap();
 
     let mut all_trades = Vec::new();
-    let trade_result = client.get_trade_history(None).await.unwrap();
+
+    let all_trades_params = TradeHistoryParams {
+        ..Default::default()
+    };
+    let trade_result = client
+        .rpc()
+        .accounting()
+        .trade_history(all_trades_params)
+        .await
+        .unwrap();
 
     all_trades.extend(trade_result.trades.unwrap_or_default());
     let mut total_trades = all_trades.len();
@@ -56,7 +68,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // While there is a bookmark, keep fetching more trades
     let mut bookmark = trade_result.bookmark;
     while let Some(bm) = bookmark {
-        let trade_result = client.get_trade_history(Some(bm.clone())).await.unwrap();
+        let params = TradeHistoryParams {
+            bookmark: Some(bm),
+            ..Default::default()
+        };
+        let trade_result = client
+            .rpc()
+            .accounting()
+            .trade_history(params)
+            .await
+            .unwrap();
         bookmark = trade_result.bookmark;
         let new_trades = trade_result.trades.unwrap_or_default();
         total_trades += new_trades.len();

@@ -28,6 +28,7 @@ TAGS_TO_PROCESS = [
     "rpc_session_management",
     "rpc_trading",
     "rpc_market_data",
+    "rpc_accounting",
 ]
 
 
@@ -45,14 +46,45 @@ RPC_RESULT_IMPORT_ALIASES = {
     "InstrumentsRpcResult": "Instrument",
     "InstrumentRpcResult": "Instrument",
     "AllInstrumentsRpcResult": "Instrument",
+    # accounting
+    "RequiredMarginBreakdownRpcResult": "PortfolioMarginBreakdown",
+    "AccountSummaryRpcResult": "AccountSummary",
+    "PortfolioRpcResult": "PortfolioEntry",
+    "RequiredMarginForOrderRpcResult": "MarginBreakdownWithOrder",
 }
 
 RETURN_MODEL_TO_VECTOR_ALIASES = {
     "InstrumentsRpcResult": "Vec<Instrument>",
     "TickersRpcResult": "Vec<Ticker>",
     "AllInstrumentsRpcResult": "Vec<Instrument>",
+    # accounting
+    "OpenOrdersRpcResult": "Vec<OrderStatus>",
+    "PortfolioRpcResult": "Vec<PortfolioEntry>",
+    "RequiredMarginForOrderRpcResult": "MarginBreakdownWithOrder",
 }
 
+MODELS_TO_LIFT = [
+    "RpcResponse",
+    "RpcRequest",
+    "RpcErrorResponse",
+    "ErrorResponse",
+    "EmptyObject",
+    "InsertRequest",
+    "OrderStatus",
+    "OrderFill",
+    "Index",
+    "Ticker",
+    "Instrument",
+    # accounting
+    "Rfq",
+    "OrderHistory",
+    "Trade",
+    "PortfolioEntry",
+    "DailyMark",
+    "AccountSummary",
+    "PortfolioMarginBreakdown",
+    "MarginBreakdownWithOrder"
+]
 
 
 IMPORTS_TO_SKIP = [
@@ -63,6 +95,11 @@ IMPORTS_TO_SKIP = [
     "CancelAllRpcResult",
     "f64",
     "Value",
+    # accounting
+    "OpenOrdersRpcResult",
+    "PortfolioRpcResult",
+    "RequiredMarginForOrderRpcResult",
+    "AccountSummaryRpcResult"
 ]
 base_imports = [
         "RpcErrorResponse",
@@ -192,6 +229,7 @@ def build_function_code(method,
             # params_json="{" + params_json_string + "}"
         )
     else:
+        IMPORTS_TO_SKIP.append(params)
         function_code = no_param_method_template.substitute(
             response_model=response_model,
             description=description,
@@ -268,19 +306,6 @@ def generate_rpc_spec(original_spec):
     RPC_SPEC_PATH.write_text(json.dumps(new_spec, indent=2))
 
 
-MODELS_TO_LIFT = [
-    "RpcResponse",
-    "RpcRequest",
-    "RpcErrorResponse",
-    "ErrorResponse",
-    "EmptyObject",
-    "InsertRequest",
-    "OrderStatus",
-    "OrderFill",
-    "Index",
-    "Ticker",
-    "Instrument",
-]
 
 def process_tag(spec, tag):
     print(f" Building RPC for tag: {tag}")

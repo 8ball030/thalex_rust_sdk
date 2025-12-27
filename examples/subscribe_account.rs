@@ -1,6 +1,6 @@
 use log::{Level::Info, info};
 use simple_logger::init_with_level;
-use thalex_rust_sdk::ws_client::WsClient;
+use thalex_rust_sdk::{types::ExternalEvent, ws_client::WsClient};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -8,6 +8,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv::dotenv().ok();
 
     let client = WsClient::from_env().await.unwrap();
+    client.wait_for_connection().await;
 
     let _ = client
         .subscriptions()
@@ -38,18 +39,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         })
         .await;
-
+    info!("Starting receive loop!");
     loop {
-        // Catch ctrl-c to exit
-        tokio::select! {
-            _ = tokio::time::sleep(tokio::time::Duration::from_secs(1)) => {}
-            _ = tokio::signal::ctrl_c() => {
-                println!("Ctrl-C received, shutting down");
-                break;
+        match client.run_till_event().await {
+            ExternalEvent::Connected => {
+                client.resubscribe_all().await.ok();
             }
+            ExternalEvent::Disconnected => continue,
+            ExternalEvent::Exited => break,
         }
     }
-
     client.shutdown("Time to go!").await.unwrap();
     Ok(())
 }

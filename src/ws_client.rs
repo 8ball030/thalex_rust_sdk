@@ -20,18 +20,12 @@ use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
 
 use crate::{
     auth_utils::make_auth_token,
-    models::{RpcErrorResponse, RpcResponse},
+    models::{Instrument, RpcErrorResponse, RpcResponse},
     types::{
         Error, ExternalEvent, InternalCommand, LoginState, RequestScope, ResponseSender, WsStream,
     },
+    utils::round_to_ticks,
 };
-
-// #[derive(Deserialize)]
-// #[serde(untagged)]
-// enum RpcEnvelope<T> {
-//     Ok { id: u64, result: T },
-//     Err { id: u64, error: RpcErrorResponse },
-// }
 
 #[derive(Deserialize)]
 #[serde(untagged)]
@@ -68,7 +62,7 @@ pub struct WsClient {
     pub subscriptions: Arc<Mutex<HashMap<String, mpsc::UnboundedSender<String>>>>,
     next_id: Arc<AtomicU64>,
     shutdown_tx: watch::Sender<bool>,
-    // instruments_cache: Arc<Mutex<HashMap<String, Instrument>>>,
+    instruments_cache: Arc<Mutex<HashMap<String, Instrument>>>,
     login_state: LoginState,
     connection_state_rx: watch::Receiver<ExternalEvent>,
 }
@@ -87,6 +81,8 @@ impl WsClient {
         let key_id = var("THALEX_KEY_ID").unwrap();
         let account_id = var("THALEX_ACCOUNT_ID").unwrap();
         let client = WsClient::new(URL, key_id, account_id, key_path).await?;
+        info!("WsClient created from environment variables Logging in...");
+        client.login().await.expect("Login failed");
         Ok(client)
     }
 
@@ -126,7 +122,7 @@ impl WsClient {
             subscriptions: subscriptions.clone(),
             next_id: next_id.clone(),
             shutdown_tx: shutdown_tx.clone(),
-            // instruments_cache: Arc::new(Mutex::new(HashMap::new())),
+            instruments_cache: Arc::new(Mutex::new(HashMap::new())),
             login_state,
             connection_state_rx,
         };
@@ -143,45 +139,50 @@ impl WsClient {
         Ok(client)
     }
 
-    // async fn cache_instruments(&self) -> Result<(), Error> {
-    //     let instruments = self.get_instruments().await?;
-    //     let mut cache = self.instruments_cache.lock().await;
-    //     cache.clear();
-    //     for instrument in &instruments {
-    //         cache.insert(
-    //             instrument.instrument_name.clone().unwrap(),
-    //             instrument.clone(),
-    //         );
-    //     }
-    //     Ok(())
-    // }
+    async fn cache_instruments(&self) -> Result<(), Error> {
+        let instruments = self.get_instruments().await.unwrap();
+        let mut cache = self.instruments_cache.lock().await;
+        cache.clear();
+        for instrument in &instruments {
+            cache.insert(
+                instrument.instrument_name.clone().unwrap(),
+                instrument.clone(),
+            );
+        }
+        Ok(())
+    }
 
-    // pub async fn check_and_refresh_instrument_cache(
-    //     &self,
-    //     instrument_name: &str,
-    // ) -> Result<Instrument, Error> {
-    //     let instrument = self
-    //         .instruments_cache
-    //         .lock()
-    //         .await
-    //         .get(instrument_name)
-    //         .cloned();
-    //     // refresh cache if not found
-    //     if let Some(instr) = instrument {
-    //         Ok(instr)
-    //     } else {
-    //         self.cache_instruments().await?;
-    //         let cache = self.instruments_cache.lock().await;
-    //         if let Some(instr) = cache.get(instrument_name).cloned() {
-    //             Ok(instr)
-    //         } else {
-    //             Err(Box::new(std::io::Error::new(
-    //                 std::io::ErrorKind::NotFound,
-    //                 format!("Instrument not found: {instrument_name}"),
-    //             )))
-    //         }
-    //     }
-    // }
+    pub async fn round_price_to_ticks(
+        &self,
+        price: f64,
+        instrument_name: &str,
+    ) -> Result<f64, Error> {
+        let instrument = self
+            .instruments_cache
+            .lock()
+            .await
+            .get(instrument_name)
+            .cloned();
+        // refresh cache if not found
+        if let Some(instr) = instrument {
+            Ok(round_to_ticks(price, instr.tick_size.unwrap()))
+        } else {
+            self.cache_instruments().await?;
+            let cache = self.instruments_cache.lock().await;
+            if let Some(instr) = cache.get(instrument_name).cloned() {
+                Ok(round_to_ticks(price, instr.tick_size.unwrap()))
+            } else {
+                Err(Box::new(std::io::Error::new(
+                    std::io::ErrorKind::NotFound,
+                    format!("Instrument not found: {instrument_name}"),
+                )))
+            }
+        }
+    }
+
+    async fn get_instruments(&self) -> Result<Vec<Instrument>, RpcErrorResponse> {
+        self.rpc().market_data().instruments().await
+    }
 
     pub async fn send_rpc<T>(
         &self,
@@ -218,11 +219,10 @@ impl WsClient {
         }
 
         let response = rx.await?;
+        // println!("RPC Response: {response}");
 
         let envelope: T = serde_json::from_str(&response)?;
         Ok(envelope)
-
-        // print the keys and types in the response for debugging
     }
 
     pub async fn shutdown(&self, reason: &'static str) -> Result<(), Error> {
@@ -277,7 +277,10 @@ impl WsClient {
                 });
                 Ok(channel)
             }
-            SubscribeResponse::Err { error, id: _id } => Err(ClientError::Rpc(error)),
+            SubscribeResponse::Err { error, id: _id } => {
+                warn!("Subscription error: {error:?}");
+                Err(ClientError::Rpc(error))
+            }
         }
     }
 
@@ -302,8 +305,6 @@ impl WsClient {
     }
 
     pub async fn login(&self) -> Result<(), Error> {
-        // Store login state for reconnections
-
         let private_key_pem = tokio::fs::read_to_string(&self.login_state.key_path).await?;
         let token = make_auth_token(&self.login_state.key_id, private_key_pem)?;
         let result: Value = self
@@ -315,59 +316,16 @@ impl WsClient {
                 }),
             )
             .await?;
-
         info!("Sent login message, received response: {result:?}");
-        Ok(())
+        if let Some(error) = result.get("error") {
+            Err(Box::new(std::io::Error::other(format!(
+                "Login error: {error:?}"
+            ))))
+        } else {
+            info!("Login successful");
+            Ok(())
+        }
     }
-
-    // /// Get instruments using the generic RPC method
-    // pub async fn get_instruments(&self) -> Result<Vec<Instrument>, Error> {
-    //     let result: PublicInstruments = self
-    //         .send_rpc("public/instruments", serde_json::json!({}))
-    //         .await?;
-
-    //     match result {
-    //         PublicInstruments::PublicInstrumentsResult(v) => Ok(v),
-    //         PublicInstruments::ErrorResponse(err) => Err(Box::new(std::io::Error::other(format!(
-    //             "API error: {err:?}"
-    //         )))),
-    //     }
-    // }
-
-    // pub async fn get_trade_history(
-    //     &self,
-    //     bookmark: Option<String>,
-    // ) -> Result<PrivateTradeHistoryResult, Error> {
-    //     let result: Value = self
-    //         .send_rpc(
-    //             "private/trade_history",
-    //             if let Some(bm) = bookmark {
-    //                 serde_json::json!({ "bookmark": bm })
-    //             } else {
-    //                 serde_json::json!({})
-    //             },
-    //         )
-    //         .await?;
-    //     let parsed: PrivateTradeHistoryResult = serde_json::from_value(result)?;
-
-    //     Ok(parsed)
-    // }
-
-    // pub async fn get_positions(&self) -> Result<Vec<PortfolioEntry>, Error> {
-    //     let result: Value = self
-    //         .send_rpc("private/portfolio", serde_json::json!({}))
-    //         .await?;
-    //     let parsed: PrivatePortfolio = serde_json::from_value(result)?;
-    //     let positions = match parsed {
-    //         PrivatePortfolio::PrivatePortfolioResult(v) => v,
-    //         PrivatePortfolio::ErrorResponse(err) => {
-    //             return Err(Box::new(std::io::Error::other(format!(
-    //                 "API error: {err:?}"
-    //             ))));
-    //         }
-    //     };
-    //     Ok(positions)
-    // }
 
     pub async fn set_cancel_on_disconnect(&self) -> Result<(), Error> {
         let result: RpcResponse = self

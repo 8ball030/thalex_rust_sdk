@@ -4,8 +4,9 @@ use log::{Level::Info, info};
 use simple_logger::init_with_level;
 use thalex_rust_sdk::{
     models::{
-        Delay, OrderStatus,
-        order_status::{Direction, OrderType, Status},
+        AmendParams, Delay, InsertParams, OrderStatus,
+        insert_params::{Direction, OrderType},
+        order_status::Status,
     },
     types::ExternalEvent,
     ws_client::WsClient,
@@ -55,41 +56,52 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let best_bid_price: f64 = msg.best_bid_price.unwrap();
                 let best_ask_price: f64 = msg.best_ask_price.unwrap();
 
+                let raw_bid_price = best_bid_price * (1.0 - ORDER_OFFSET_BPS / 10000.0);
+                let bid_price = client
+                    .round_price_to_ticks(raw_bid_price, MARKET_NAME)
+                    .await
+                    .unwrap();
+
+                let raw_ask_price = best_ask_price * (1.0 + ORDER_OFFSET_BPS / 10000.0);
+                let ask_price = client
+                    .round_price_to_ticks(raw_ask_price, MARKET_NAME)
+                    .await
+                    .unwrap();
                 // Check if we have active orders
                 let mut state = state.lock().await;
                 if state.bid_order.is_none() {
-                    let bid_price = best_bid_price * (1.0 - ORDER_OFFSET_BPS / 10000.0);
                     let bid_order = client
                         .rpc()
                         .trading()
-                        .insert_order(
-                            MARKET_NAME,
-                            ORDER_SIZE,
-                            bid_price,
-                            Direction::Buy,
-                            OrderType::Limit,
-                            true,
-                            true,
-                        )
+                        .insert(InsertParams {
+                            direction: Direction::Buy,
+                            amount: ORDER_SIZE,
+                            price: Some(bid_price),
+                            instrument_name: Some(MARKET_NAME.to_string()),
+                            order_type: Some(OrderType::Limit),
+                            post_only: Some(true),
+                            reject_post_only: Some(true),
+                            ..Default::default()
+                        })
                         .await
                         .unwrap();
                     info!("Placed bid order: {bid_price:?}");
                     state.bid_order = Some(bid_order);
                 }
                 if state.ask_order.is_none() {
-                    let ask_price = best_ask_price * (1.0 + ORDER_OFFSET_BPS / 10000.0);
                     let ask_order = client
                         .rpc()
                         .trading()
-                        .insert_order(
-                            MARKET_NAME,
-                            ORDER_SIZE,
-                            ask_price,
-                            Direction::Sell,
-                            OrderType::Limit,
-                            true,
-                            true,
-                        )
+                        .insert(InsertParams {
+                            direction: Direction::Sell,
+                            amount: ORDER_SIZE,
+                            price: Some(ask_price),
+                            instrument_name: Some(MARKET_NAME.to_string()),
+                            order_type: Some(OrderType::Limit),
+                            post_only: Some(true),
+                            reject_post_only: Some(true),
+                            ..Default::default()
+                        })
                         .await
                         .unwrap();
                     info!("Placed ask order: {ask_price:?}");
@@ -98,7 +110,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 // We check if we need to do updates on existing orders
                 if state.bid_order.is_some() {
-                    let bid_price = best_bid_price * (1.0 - ORDER_OFFSET_BPS / 10000.0);
                     let bid_order = state.bid_order.as_ref().unwrap();
                     let price_diff_bps = ((bid_price - bid_order.price.unwrap())
                         / bid_order.price.unwrap())
@@ -109,12 +120,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         let updated_bid_order = client
                             .rpc()
                             .trading()
-                            .amend_order(
-                                bid_order.order_id.clone(),
-                                MARKET_NAME,
-                                ORDER_SIZE,
-                                bid_price,
-                            )
+                            .amend(AmendParams {
+                                order_id: Some(bid_order.order_id.clone()),
+                                amount: ORDER_SIZE,
+                                price: bid_price,
+                                ..Default::default()
+                            })
                             .await
                             .unwrap();
                         info!(
@@ -125,7 +136,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                 }
                 if state.ask_order.is_some() {
-                    let ask_price = best_ask_price * (1.0 + ORDER_OFFSET_BPS / 10000.0);
                     let ask_order = state.ask_order.as_ref().unwrap();
                     let price_diff_bps = ((ask_price - ask_order.price.unwrap())
                         / ask_order.price.unwrap())
@@ -136,12 +146,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         let updated_ask_order = client
                             .rpc()
                             .trading()
-                            .amend_order(
-                                ask_order.order_id.clone(),
-                                MARKET_NAME,
-                                ORDER_SIZE,
-                                ask_price,
-                            )
+                            .amend(AmendParams {
+                                order_id: Some(ask_order.order_id.clone()),
+                                price: ask_price,
+                                amount: ORDER_SIZE,
+                                ..Default::default()
+                            })
                             .await
                             .unwrap();
                         info!(
