@@ -23,8 +23,11 @@ pub struct AccountBreakdownRpcResultCashInner {
     #[serde(rename = "collateral_factor")]
     pub collateral_factor: f64,
     /// Index price used to calculate collateral effect of this position. Can be `null` for assets that are not converted using an index, e.g. for stable coins.
-    #[serde(rename = "collateral_index_price")]
-    pub collateral_index_price: f64,
+    #[serde(
+        rename = "collateral_index_price",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub collateral_index_price: Option<f64>,
     /// Total collateral effect of this position.
     #[serde(rename = "applied_collateral")]
     pub applied_collateral: f64,
@@ -38,7 +41,6 @@ impl AccountBreakdownRpcResultCashInner {
         currency: String,
         balance: f64,
         collateral_factor: f64,
-        collateral_index_price: f64,
         applied_collateral: f64,
         transactable: bool,
     ) -> AccountBreakdownRpcResultCashInner {
@@ -46,7 +48,7 @@ impl AccountBreakdownRpcResultCashInner {
             currency,
             balance,
             collateral_factor,
-            collateral_index_price,
+            collateral_index_price: None,
             applied_collateral,
             transactable,
         }
