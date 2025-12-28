@@ -23,11 +23,8 @@ pub struct AccountSummaryCashInner {
     #[serde(rename = "collateral_factor")]
     pub collateral_factor: f64,
     /// Index price used to calculate collateral effect of this position. Can be `null` for assets that are not converted using an index, e.g. for stable coins.
-    #[serde(
-        rename = "collateral_index_price",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub collateral_index_price: Option<f64>,
+    #[serde(rename = "collateral_index_price")]
+    pub collateral_index_price: f64,
     /// If this flag is `true`, this currency can be deposited and withdrawn.
     #[serde(rename = "transactable")]
     pub transactable: bool,
@@ -38,13 +35,14 @@ impl AccountSummaryCashInner {
         currency: String,
         balance: f64,
         collateral_factor: f64,
+        collateral_index_price: f64,
         transactable: bool,
     ) -> AccountSummaryCashInner {
         AccountSummaryCashInner {
             currency,
             balance,
             collateral_factor,
-            collateral_index_price: None,
+            collateral_index_price,
             transactable,
         }
     }

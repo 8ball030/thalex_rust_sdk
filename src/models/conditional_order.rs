@@ -58,8 +58,8 @@ pub struct ConditionalOrder {
     #[serde(rename = "converted_order_id", skip_serializing_if = "Option::is_none")]
     pub converted_order_id: Option<String>,
     /// If conversion failed, the reason
-    #[serde(rename = "reject_reason", skip_serializing_if = "Option::is_none")]
-    pub reject_reason: Option<String>,
+    #[serde(rename = "reject_reason")]
+    pub reject_reason: String,
     #[serde(rename = "reduce_only")]
     pub reduce_only: bool,
 }
@@ -75,6 +75,7 @@ impl ConditionalOrder {
         status: Status,
         create_time: f64,
         update_time: f64,
+        reject_reason: String,
         reduce_only: bool,
     ) -> ConditionalOrder {
         ConditionalOrder {
@@ -93,7 +94,7 @@ impl ConditionalOrder {
             update_time,
             convert_time: None,
             converted_order_id: None,
-            reject_reason: None,
+            reject_reason,
             reduce_only,
         }
     }

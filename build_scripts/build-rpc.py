@@ -30,6 +30,7 @@ TAGS_TO_PROCESS = [
     "rpc_market_data",
     "rpc_accounting",
     "rpc_conditional",
+    "rpc_historical_data",
 ]
 
 
@@ -148,6 +149,7 @@ def main():
         output_path = Path("src/rpc") / f"{tag.replace('rpc_', '')}.rs"
         print(f" Writing RPC file to: {output_path}")
         output_path.write_text(file_content)
+    generate_rpc_spec(spec)
 
 def extract_method_from_path_spec(path_spec):
     method = path_spec.get("requestBody", {}).get("content", {}).get("application/json", {}).get("schema", {}).get("allOf", {})[0]['properties']['method']['const']
@@ -307,9 +309,16 @@ def generate_new_path_spec(response_model_name, path_spec, param_schema_name):
     return {"post": new_path_spec}
 
 
-
+ADDITIONAL_SCHEMA_PATH = Path("additional_schemas.json")
 
 def generate_rpc_spec(original_spec):
+
+    additional_schemas = json.loads(ADDITIONAL_SCHEMA_PATH.read_text())
+    for model_name, model_schema in additional_schemas.items():
+        NEW_MODELS[model_name] = model_schema
+
+    # replace specific response_model.
+    update_paths_with_custom_models()
     new_spec = original_spec.copy()
     new_spec["paths"] = NEW_PATHS
     new_spec["components"]["schemas"] = NEW_MODELS
@@ -320,7 +329,15 @@ def generate_rpc_spec(original_spec):
     del new_spec['tags']
     del new_spec['x-tagGroups']
     RPC_SPEC_PATH.write_text(json.dumps(new_spec, indent=2))
+    # breakpoint()
 
+
+def update_paths_with_custom_models():
+    # We have to replace specific response models with custom ones
+    # breakpoint()
+    NEW_MODELS["MarkPriceHistoricalDataResult"]['properties']['result']['properties']['mark']['oneOf'] = [
+        {"$ref": "#/components/schemas/PerpetualMarkPriceHistoricalData"},
+    ]
 
 
 def process_tag(spec, tag):
@@ -376,7 +393,6 @@ def process_tag(spec, tag):
             has_params = len(params['properties']) > 0,
         )
         functions.append(function_code)
-    generate_rpc_spec(spec)
     return functions, model_imports
 
 

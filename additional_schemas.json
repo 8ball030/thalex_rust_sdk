@@ -1,0 +1,80 @@
+{
+      "TopOfBookPerpetual": {
+        "type": "object",
+        "description": "Top of book data, null for resolutions other than 1 minute",
+        "properties": {
+          "bidPrice": {
+            "type": ["number", "null"],
+            "description": "Top bid price, or null if bid order book is empty"
+          },
+          "bidSize": {
+            "type": ["number", "null"],
+            "description": "Top bid size, or null if bid order book is empty"
+          },
+          "askPrice": {
+            "type": ["number", "null"],
+            "description": "Top ask price, or null if ask order book is empty"
+          },
+          "askSize": {
+            "type": ["number", "null"],
+            "description": "Top ask size, or null if ask order book is empty"
+          }
+        },
+        "required": ["bidPrice", "bidSize", "askPrice", "askSize"]
+      },
+
+      "PerpetualDataPoint": {
+        "type": "object",
+        "description": "A single OHLC data point with funding payment and top of book",
+        "required": [
+          "timestamp",
+          "open",
+          "high",
+          "low",
+          "close",
+          "funding"
+        ],
+        "properties": {
+          "timestamp": {
+            "type": "number",
+            "description": "Unix timestamp (seconds) of the start of the data point"
+          },
+          "open": {
+            "type": "number",
+            "description": "Open (first) value of the interval"
+          },
+          "high": {
+            "type": "number",
+            "description": "High (maximum) value of the interval"
+          },
+          "low": {
+            "type": "number",
+            "description": "Low (minimum) value of the interval"
+          },
+          "close": {
+            "type": "number",
+            "description": "Close (last) value of the interval"
+          },
+          "funding": {
+            "type": "number",
+            "description": "Funding payment during the interval"
+          },
+          "topOfBook": {
+            "description": "Top of book data; null for resolutions other than 1 minute",
+            "oneOf": [
+              { "$ref": "#/components/schemas/TopOfBookPerpetual" },
+              { "type": "null" }
+            ]
+          }
+        }
+      },
+
+      "PerpetualMarkPriceHistoricalData": {
+        "type": "array",
+        "description": "Array of PerpetualDataPoint objects",
+        "items": {
+          "$ref": "#/components/schemas/PerpetualDataPoint"
+        }
+    }
+}
+      

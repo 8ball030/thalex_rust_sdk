@@ -19,10 +19,10 @@ pub struct AccountBreakdownRpcResultPortfolioInner {
     pub position: f64,
     #[serde(rename = "mark_price")]
     pub mark_price: f64,
-    #[serde(rename = "start_price", skip_serializing_if = "Option::is_none")]
-    pub start_price: Option<f64>,
-    #[serde(rename = "average_price", skip_serializing_if = "Option::is_none")]
-    pub average_price: Option<f64>,
+    #[serde(rename = "start_price")]
+    pub start_price: f64,
+    #[serde(rename = "average_price")]
+    pub average_price: f64,
     #[serde(rename = "unrealised_pnl_positional")]
     pub unrealised_pnl_positional: f64,
     #[serde(rename = "unrealised_pnl_perpetual")]
@@ -43,13 +43,13 @@ pub struct AccountBreakdownRpcResultPortfolioInner {
         skip_serializing_if = "Option::is_none"
     )]
     pub session_position_pnl: Option<f64>,
-    #[serde(rename = "session_fees")]
-    pub session_fees: f64,
     #[serde(
-        rename = "realised_perpetual_funding",
+        rename = "session_perpetual_funding",
         skip_serializing_if = "Option::is_none"
     )]
-    pub realised_perpetual_funding: Option<f64>,
+    pub session_perpetual_funding: Option<f64>,
+    #[serde(rename = "session_fees")]
+    pub session_fees: f64,
 }
 
 impl AccountBreakdownRpcResultPortfolioInner {
@@ -57,6 +57,8 @@ impl AccountBreakdownRpcResultPortfolioInner {
         instrument_name: String,
         position: f64,
         mark_price: f64,
+        start_price: f64,
+        average_price: f64,
         unrealised_pnl_positional: f64,
         unrealised_pnl_perpetual: f64,
         unrealised_pnl: f64,
@@ -70,8 +72,8 @@ impl AccountBreakdownRpcResultPortfolioInner {
             instrument_name,
             position,
             mark_price,
-            start_price: None,
-            average_price: None,
+            start_price,
+            average_price,
             unrealised_pnl_positional,
             unrealised_pnl_perpetual,
             unrealised_pnl,
@@ -80,8 +82,8 @@ impl AccountBreakdownRpcResultPortfolioInner {
             open_sell_amount,
             session_realised_pnl,
             session_position_pnl: None,
+            session_perpetual_funding: None,
             session_fees,
-            realised_perpetual_funding: None,
         }
     }
 }

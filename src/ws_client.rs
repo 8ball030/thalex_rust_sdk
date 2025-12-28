@@ -223,7 +223,7 @@ impl WsClient {
         }
 
         let response = rx.await?;
-        // println!("RPC Response: {response}");
+        println!("RPC Response: {response}");
 
         let envelope: T = serde_json::from_str(&response)?;
         Ok(envelope)

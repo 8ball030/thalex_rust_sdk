@@ -14,6 +14,7 @@ simple_logger = "5.1.0"
 jsonwebtoken = { version = "10.2.0", features = ["rust_crypto"] }
 dotenv = "0.15.0"
 thiserror = "2.0.17"
+serde_with = "3.16.1"
 # We have dev dependencies
 
 [dev-dependencies]
