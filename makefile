@@ -13,8 +13,6 @@ run:
 	cargo run --all-features
 
 codegen:
-	# curl https://thalex.com/docs/thalex_api.yaml | yq '.' > openapi.json
-	# curl https://thalex.com/docs/api.yaml | yq '.' > new_schema.json
 	curl https://thalex.com/docs/api.yaml | yq '.' > openapi.json
 
 	python build_scripts/pre-process.py
@@ -22,11 +20,6 @@ codegen:
 	rm -rf ./generated
 
 	python build_scripts/build-rpc.py
-# 	openapi-generator-cli generate \
-# 	  -i openapi_updated.json \
-# 	  -g rust \
-# 	  -o ./generated \
-# 	--additional-properties=supportAsync=false,useSingleRequestParameter=true
 	rm -rf ./src/models/*
 	cp ./generated/src/models/* ./src/models/
 
