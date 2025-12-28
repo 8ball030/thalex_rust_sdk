@@ -1,20 +1,7 @@
 #!/usr/bin/env python3
 """
 Pre-process an OpenAPI spec to produce codegen-friendly response schemas.
-
-What it does (generalised):
-- Extracts "Success.result" and "Error" schemas from response oneOf wrappers.
-- Interns (deduplicates) extracted schemas into components/schemas.
-- Converts JSON-Schema tuple arrays (type=array + prefixItems) into objects so Rust generators emit structs.
-- Hoists inline schemas found inside unions (oneOf/anyOf/allOf), including inline array items, into components and replaces with $ref.
-- Rewrites a common problematic pattern for Rust generators:
-    object property X is oneOf of arrays (or other complex schemas) and the object has a discriminator-like string field D.
-  It lifts the union to the object level using a discriminator on D, producing stable, valid enums.
-- PRESERVES existing component $refs to avoid breaking existing schema relationships.
-
-Usage:
-  ./pre-process.py            # reads openapi.json, writes openapi_updated.json
-  ./pre-process.py in.json out.json
+Resolves small issues with the original spec.
 """
 
 import copy
