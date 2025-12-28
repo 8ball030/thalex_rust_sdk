@@ -1,6 +1,6 @@
 mod auth_utils;
 pub mod channels;
-pub mod historic_data_models;
+pub mod manual_models;
 pub mod models;
 pub mod rpc;
 pub mod types;

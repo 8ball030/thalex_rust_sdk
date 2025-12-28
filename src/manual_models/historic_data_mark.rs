@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-use crate::models::RpcErrorResponse;
+use crate::{manual_models::Resolution, models::RpcErrorResponse};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct TopOfBookPerpetual(
+pub struct TopOfBook(
     pub Option<f64>, // bid_price
     pub Option<f64>, // bid_size
     pub Option<f64>, // ask_price
@@ -12,37 +12,37 @@ pub struct TopOfBookPerpetual(
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PerpetualDataPoint(
-    pub f64,                                                                          // time
-    pub f64,                                                                          // open
-    pub f64,                                                                          // high
-    pub f64,                                                                          // low
-    pub f64,                                                                          // close
-    pub f64, // funding_payment
-    #[serde(skip_serializing_if = "Option::is_none")] pub Option<TopOfBookPerpetual>, // top_of_book
+    pub f64,                                                                 // time
+    pub f64,                                                                 // open
+    pub f64,                                                                 // high
+    pub f64,                                                                 // low
+    pub f64,                                                                 // close
+    pub f64,                                                                 // funding_payment
+    #[serde(skip_serializing_if = "Option::is_none")] pub Option<TopOfBook>, // top_of_book
 );
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct FuturesAndCombosDataPoint(
-    pub f64,                                                                          // time
-    pub f64,                                                                          // open
-    pub f64,                                                                          // high
-    pub f64,                                                                          // low
-    pub f64,                                                                          // close
-    #[serde(skip_serializing_if = "Option::is_none")] pub Option<TopOfBookPerpetual>, // top_of_book
+    pub f64,                                                                 // time
+    pub f64,                                                                 // open
+    pub f64,                                                                 // high
+    pub f64,                                                                 // low
+    pub f64,                                                                 // close
+    #[serde(skip_serializing_if = "Option::is_none")] pub Option<TopOfBook>, // top_of_book
 );
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct OptionsDataPoint(
-    pub f64,                                                                          // time
-    pub f64,                                                                          // open
-    pub f64,                                                                          // high
-    pub f64,                                                                          // low
-    pub f64,                                                                          // close
-    pub f64,                                                                          // open_iv
-    pub f64,                                                                          // high_iv
-    pub f64,                                                                          // low_iv
-    pub f64,                                                                          // close_iv
-    #[serde(skip_serializing_if = "Option::is_none")] pub Option<TopOfBookPerpetual>, // top_of_book
+    pub f64,                                                                 // time
+    pub f64,                                                                 // open
+    pub f64,                                                                 // high
+    pub f64,                                                                 // low
+    pub f64,                                                                 // close
+    pub f64,                                                                 // open_iv
+    pub f64,                                                                 // high_iv
+    pub f64,                                                                 // low_iv
+    pub f64,                                                                 // close_iv
+    #[serde(skip_serializing_if = "Option::is_none")] pub Option<TopOfBook>, // top_of_book
 );
 
 pub type PerpetualMarkPriceHistoricalData = Vec<PerpetualDataPoint>;
@@ -134,29 +134,5 @@ impl MarkPriceHistoricalDataParams {
             to,
             resolution,
         }
-    }
-}
-/// Each data point will be aggregated using OHLC according to the specified resolution.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Resolution {
-    #[serde(rename = "1m")]
-    Variant1m,
-    #[serde(rename = "5m")]
-    Variant5m,
-    #[serde(rename = "15m")]
-    Variant15m,
-    #[serde(rename = "30m")]
-    Variant30m,
-    #[serde(rename = "1h")]
-    Variant1h,
-    #[serde(rename = "1d")]
-    Variant1d,
-    #[serde(rename = "1w")]
-    Variant1w,
-}
-
-impl Default for Resolution {
-    fn default() -> Resolution {
-        Self::Variant1m
     }
 }
