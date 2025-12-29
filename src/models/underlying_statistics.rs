@@ -11,7 +11,6 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-/// UnderlyingStatistics : Channel-specific content
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct UnderlyingStatistics {
     /// Total amount traded in 24 hours, including futures and options.
@@ -43,7 +42,6 @@ pub struct UnderlyingStatistics {
 }
 
 impl UnderlyingStatistics {
-    /// Channel-specific content
     pub fn new() -> UnderlyingStatistics {
         UnderlyingStatistics {
             trade_volume_24h: None,

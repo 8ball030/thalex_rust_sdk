@@ -18,3 +18,6 @@ simple_logger = "5.1.0"
 dotenv = "0.15.0"
 csv = "1.4.0"
 serial_test = { version = "3.2.0", features = ["async"] }
+rust_decimal_macros = "1.39.0"
+rust_decimal = "1.39.0"
+chrono = "0.4.42"

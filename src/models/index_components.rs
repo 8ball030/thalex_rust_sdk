@@ -11,7 +11,6 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-/// IndexComponents : Channel-specific content
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct IndexComponents {
     /// Price of the index.
@@ -23,7 +22,6 @@ pub struct IndexComponents {
 }
 
 impl IndexComponents {
-    /// Channel-specific content
     pub fn new() -> IndexComponents {
         IndexComponents {
             index_price: None,

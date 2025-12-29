@@ -11,7 +11,6 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-/// BookPayload : Channel-specific content
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BookPayload {
     /// List of `[price, amount, direction, timestamp, implied_taker]`. Note that the snapshot of this feed may contain older trades that happened since the last restart of the gateway.  The `implied_taker` is a boolean flag, set to `true` when the actual taker trade happened on another order book, and the maker trade on this book is the result of implied matching.  Trades are not sent for combination order books.
@@ -35,7 +34,6 @@ pub struct BookPayload {
 }
 
 impl BookPayload {
-    /// Channel-specific content
     pub fn new() -> BookPayload {
         BookPayload {
             trades: None,

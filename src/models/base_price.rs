@@ -11,7 +11,6 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-/// BasePrice : Channel-specific content
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BasePrice {
     /// Instrument name of future, or \"synthetic\".
@@ -29,7 +28,6 @@ pub struct BasePrice {
 }
 
 impl BasePrice {
-    /// Channel-specific content
     pub fn new(base_name: String, price: f64, index: f64) -> BasePrice {
         BasePrice {
             base_name,

@@ -821,8 +821,7 @@
                     "total_bid_amount": 45,
                     "total_ask_amount": 30,
                     "time": 1683901254.785744
-                },
-                "description": "Channel-specific content"
+                }
             },
             "LwtNotification": {
                 "type": "object",
@@ -909,8 +908,7 @@
                     ],
                     "l": 47252.64143906124,
                     "m": 65536.16
-                },
-                "description": "Channel-specific content"
+                }
             },
             "RecentTradesNotification": {
                 "type": "object",
@@ -973,8 +971,7 @@
                 }
             },
             "PriceIndex": {
-                "$ref": "#/components/schemas/Index",
-                "description": "Channel-specific content"
+                "$ref": "#/components/schemas/Index"
             },
             "UnderlyingStatisticsNotification": {
                 "type": "object",
@@ -1125,8 +1122,7 @@
                             "delta_one": 811.789
                         }
                     }
-                },
-                "description": "Channel-specific content"
+                }
             },
             "Index": {
                 "type": "object",
@@ -1203,8 +1199,7 @@
                 "type": "array",
                 "items": {
                     "$ref": "#/components/schemas/OrderStatus"
-                },
-                "description": "Channel-specific content"
+                }
             },
             "MmNotification": {
                 "type": "object",
@@ -1226,8 +1221,7 @@
                 "type": "array",
                 "items": {
                     "$ref": "./openapi.json#/components/schemas/Rfq"
-                },
-                "description": "Channel-specific content"
+                }
             },
             "AccountNotification": {
                 "type": "object",
@@ -1249,8 +1243,7 @@
                 "type": "array",
                 "items": {
                     "$ref": "#/components/schemas/OrderStatus"
-                },
-                "description": "Channel-specific content"
+                }
             },
             "BasePriceNotification": {
                 "type": "object",
@@ -1298,8 +1291,7 @@
                     "price": 47433.658803891754,
                     "index": 47172.69166666667,
                     "index_delta": 1
-                },
-                "description": "Channel-specific content"
+                }
             },
             "InstrumentsPayloadNotification": {
                 "type": "object",
@@ -1339,8 +1331,7 @@
                             }
                         }
                     ]
-                },
-                "description": "Channel-specific content"
+                }
             },
             "RfqsPayloadNotification": {
                 "type": "object",
@@ -1362,8 +1353,7 @@
                 "type": "array",
                 "items": {
                     "$ref": "./openapi.json#/components/schemas/Rfq"
-                },
-                "description": "Channel-specific content"
+                }
             },
             "IndexComponentsNotification": {
                 "type": "object",
@@ -1399,8 +1389,7 @@
                         "coinbase": "19998,",
                         "bitstamp": 20002
                     }
-                },
-                "description": "Channel-specific content"
+                }
             },
             "Instrument": {
                 "type": "object",
@@ -1671,8 +1660,7 @@
                             "description": "Detailed reason of the protection group status update.\n\nThe following reasons are possible:\n- `refill`: Remaining amount was updated by the client, e.g. with a call to `private/set_mm_protection`.\n\n- `executions`: Remaining amount was updated after a trade.\n\n- `client_cancel`: Protection group was deleted by the client, e.g. with a call to `private/cancel_mass_quote`.\n\n- `session_end`: Protection group was automatically deleted when a WebSocket session ended.\n\n- `failover`: Protection group was automatically deleted on matching engine failover.\n"
                         }
                     }
-                },
-                "description": "Channel-specific content"
+                }
             },
             "MmRfqsNotification": {
                 "type": "object",
@@ -1694,8 +1682,7 @@
                 "type": "array",
                 "items": {
                     "$ref": "#/components/schemas/Rfq"
-                },
-                "description": "Channel-specific content"
+                }
             },
             "MmRfqQuotesNotification": {
                 "type": "object",
@@ -1717,8 +1704,7 @@
                 "type": "array",
                 "items": {
                     "$ref": "./openapi.json#/components/schemas/RfqOrder"
-                },
-                "description": "Channel-specific content"
+                }
             },
             "AccountOrdersNotification": {
                 "type": "object",
@@ -1740,8 +1726,7 @@
                 "type": "array",
                 "items": {
                     "$ref": "#/components/schemas/OrderStatus"
-                },
-                "description": "Channel-specific content"
+                }
             },
             "AccountPersistentOrdersNotification": {
                 "type": "object",
@@ -1763,8 +1748,7 @@
                 "type": "array",
                 "items": {
                     "$ref": "#/components/schemas/OrderStatus"
-                },
-                "description": "Channel-specific content"
+                }
             },
             "SessionOrdersNotification": {
                 "type": "object",
@@ -1786,8 +1770,7 @@
                 "type": "array",
                 "items": {
                     "$ref": "#/components/schemas/OrderStatus"
-                },
-                "description": "Channel-specific content"
+                }
             },
             "AccountTradeHistoryNotification": {
                 "type": "object",
@@ -1809,8 +1792,7 @@
                 "type": "array",
                 "items": {
                     "$ref": "./openapi.json#/components/schemas/Trade"
-                },
-                "description": "Channel-specific content"
+                }
             },
             "AccountPortfolioNotification": {
                 "type": "object",
@@ -1832,8 +1814,7 @@
                 "type": "array",
                 "items": {
                     "$ref": "./openapi.json#/components/schemas/PortfolioEntry"
-                },
-                "description": "Channel-specific content"
+                }
             },
             "AccountSummaryNotification": {
                 "type": "object",
@@ -1871,8 +1852,7 @@
                 "type": "array",
                 "items": {
                     "$ref": "#/components/schemas/Rfq"
-                },
-                "description": "Channel-specific content"
+                }
             },
             "AccountRfqHistoryNotification": {
                 "type": "object",
@@ -1894,8 +1874,7 @@
                 "type": "array",
                 "items": {
                     "$ref": "#/components/schemas/Rfq"
-                },
-                "description": "Channel-specific content"
+                }
             },
             "AccountConditionalOrdersNotification": {
                 "type": "object",
@@ -1917,8 +1896,7 @@
                 "type": "array",
                 "items": {
                     "$ref": "./openapi.json#/components/schemas/ConditionalOrder"
-                },
-                "description": "Channel-specific content"
+                }
             },
             "BookPayload": {
                 "type": "object",
@@ -1980,8 +1958,7 @@
                     "total_bid_amount": 45,
                     "total_ask_amount": 30,
                     "time": 1683901254.785744
-                },
-                "description": "Channel-specific content"
+                }
             },
             "TickerNotification": {
                 "type": "object",
@@ -2071,8 +2048,7 @@
                     ],
                     "l": 47252.64143906124,
                     "m": 65536.16
-                },
-                "description": "Channel-specific content"
+                }
             },
             "RecentTradesPayload": {
                 "type": "array",
@@ -2090,8 +2066,7 @@
                 }
             },
             "PriceIndexPayload": {
-                "$ref": "#/components/schemas/Index",
-                "description": "Channel-specific content"
+                "$ref": "#/components/schemas/Index"
             },
             "UnderlyingStatisticsPayload": {
                 "type": "object",
@@ -2226,8 +2201,7 @@
                             "delta_one": 811.789
                         }
                     }
-                },
-                "description": "Channel-specific content"
+                }
             },
             "BasePricePayload": {
                 "type": "object",
@@ -2259,8 +2233,7 @@
                     "price": 47433.658803891754,
                     "index": 47172.69166666667,
                     "index_delta": 1
-                },
-                "description": "Channel-specific content"
+                }
             },
             "InstrumentsNotification": {
                 "type": "object",
@@ -2312,8 +2285,7 @@
                         "coinbase": "19998,",
                         "bitstamp": 20002
                     }
-                },
-                "description": "Channel-specific content"
+                }
             },
             "OrderHistory": {
                 "type": "object",
@@ -2644,12 +2616,10 @@
                 "type": "array",
                 "items": {
                     "$ref": "#/components/schemas/OrderHistory"
-                },
-                "description": "Channel-specific content"
+                }
             },
             "AccountSummaryPayload": {
-                "$ref": "./openapi.json#/components/schemas/AccountSummary",
-                "description": "Channel-specific content"
+                "$ref": "./openapi.json#/components/schemas/AccountSummary"
             },
             "OrderFill": {
                 "type": "object",
@@ -2817,8 +2787,7 @@
                 }
             },
             "UserInboxNotificationsPayload": {
-                "$ref": "./openapi.json#/components/schemas/Notifications",
-                "description": "Channel-specific content"
+                "$ref": "./openapi.json#/components/schemas/Notifications"
             },
             "AccountBotsNotification": {
                 "type": "object",
@@ -2840,8 +2809,7 @@
                 "type": "array",
                 "items": {
                     "$ref": "./openapi.json#/components/schemas/Bot"
-                },
-                "description": "Channel-specific content"
+                }
             },
             "SystemNotification": {
                 "type": "object",
@@ -2860,8 +2828,7 @@
                 }
             },
             "SystemPayload": {
-                "$ref": "./openapi.json#/components/schemas/SystemEvent",
-                "description": "Channel-specific content"
+                "$ref": "./openapi.json#/components/schemas/SystemEvent"
             },
             "BannersNotification": {
                 "type": "object",
@@ -2883,8 +2850,7 @@
                 "type": "array",
                 "items": {
                     "$ref": "./openapi.json#/components/schemas/Banner"
-                },
-                "description": "Channel-specific content"
+                }
             },
             "Notifications": {
                 "type": "object",
