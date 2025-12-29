@@ -11,7 +11,6 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-/// Lwt : Channel-specific content
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Lwt {
     /// Best bid (if any).
@@ -32,7 +31,6 @@ pub struct Lwt {
 }
 
 impl Lwt {
-    /// Channel-specific content
     pub fn new() -> Lwt {
         Lwt {
             b: None,

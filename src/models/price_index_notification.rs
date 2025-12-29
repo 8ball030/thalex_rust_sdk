@@ -16,7 +16,6 @@ pub struct PriceIndexNotification {
     /// Channel name as in subscription.
     #[serde(rename = "channel_name")]
     pub channel_name: String,
-    /// Channel-specific content
     #[serde(rename = "notification")]
     pub notification: models::Index,
 }

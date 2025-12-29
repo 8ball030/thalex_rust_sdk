@@ -11,12 +11,10 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-/// InstrumentsPayload : Channel-specific content
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InstrumentsPayload {}
 
 impl InstrumentsPayload {
-    /// Channel-specific content
     pub fn new() -> InstrumentsPayload {
         InstrumentsPayload {}
     }

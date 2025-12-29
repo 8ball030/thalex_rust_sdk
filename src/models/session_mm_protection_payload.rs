@@ -11,12 +11,10 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-/// SessionMmProtectionPayload : Channel-specific content
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SessionMmProtectionPayload {}
 
 impl SessionMmProtectionPayload {
-    /// Channel-specific content
     pub fn new() -> SessionMmProtectionPayload {
         SessionMmProtectionPayload {}
     }
