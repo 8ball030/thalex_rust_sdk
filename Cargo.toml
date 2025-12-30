@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 description = "Trading client for Thalex exchange"
 repository = "https://github.com/8ball030/thalex_rust_sdk"
+license = "MIT OR Apache-2.0"
 
 [dependencies]
 tokio = { version = "1", features = ["full"] }
