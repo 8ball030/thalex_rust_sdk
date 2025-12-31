@@ -16,6 +16,10 @@ NEW_VERSION ?= $(PATCH_VERSION)
 
 version:
 	@echo "Current version: $(VERSION)"
+	# Update version in Cargo.toml
+	@sed -i.bak 's/^version *= *".*"/version = "$(NEW_VERSION)"/' $(TOML_FILE)
+	@rm -f $(TOML_FILE).bak
+	git add $(TOML_FILE) && git commit -m "Bump version to v$(NEW_VERSION)"
 	@echo "Release version: $(NEW_VERSION)"
 
 tag:
