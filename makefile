@@ -19,19 +19,23 @@ version:
 	# Update version in Cargo.toml
 	@sed -i.bak 's/^version *= *".*"/version = "$(NEW_VERSION)"/' $(TOML_FILE)
 	@rm -f $(TOML_FILE).bak
-	git add $(TOML_FILE) && git commit -m "Bump version to v$(NEW_VERSION)"
 	@echo "Release version: $(NEW_VERSION)"
 
 tag:
 	@git tag -a v$(NEW_VERSION) -m "Release v$(NEW_VERSION)"
 	@git push origin v$(NEW_VERSION)
 
-release: version tag
+package:
+	@cargo package
+
+release: version package tag
 	@echo "Creating GitHub release v$(NEW_VERSION)"
 	@gh release create v$(NEW_VERSION) \
 		--title "v$(NEW_VERSION)" \
 		--notes "Release v$(NEW_VERSION)"
 	@echo "Creating crate release v$(NEW_VERSION)"
+	@git add $(TOML_FILE) 
+	@git commit -m "Bump version to v$(NEW_VERSION)"
 	@cargo publish
 
 lint: 
