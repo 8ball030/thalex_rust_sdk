@@ -29,6 +29,7 @@ package:
 	@echo packaging crate
 	git add $(TOML_FILE) Cargo.lock
 	@git commit -m "Bump version to v$(NEW_VERSION)"
+	@git push
 	echo added git
 	@cargo package
 
