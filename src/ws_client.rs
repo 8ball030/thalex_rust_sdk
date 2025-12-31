@@ -54,7 +54,7 @@ use crate::rpc::Rpc;
 
 const URL: &str = "wss://thalex.com/ws/api/v2";
 const PING_INTERVAL: Duration = Duration::from_secs(5);
-const READ_TIMEOUT: Duration = Duration::from_secs(10);
+const READ_TIMEOUT: Duration = Duration::from_secs(7);
 
 pub struct WsClient {
     write_tx: mpsc::UnboundedSender<InternalCommand>,
@@ -66,6 +66,7 @@ pub struct WsClient {
     instruments_cache: Arc<Mutex<HashMap<String, Instrument>>>,
     login_state: LoginState,
     connection_state_rx: watch::Receiver<ExternalEvent>,
+    current_connection_state: Arc<Mutex<ExternalEvent>>,
 }
 
 impl WsClient {
@@ -128,6 +129,7 @@ impl WsClient {
             instruments_cache: Arc::new(Mutex::new(HashMap::new())),
             login_state,
             connection_state_rx,
+            current_connection_state: Arc::new(Mutex::new(ExternalEvent::Disconnected)),
         };
 
         tokio::spawn(connection_supervisor(
@@ -377,23 +379,6 @@ impl WsClient {
         Ok(())
     }
 
-    pub async fn run_till_event(&self) -> ExternalEvent {
-        let mut rx = self.connection_state_rx.clone();
-        let current_state = *rx.borrow();
-        loop {
-            if rx.changed().await.is_ok() {
-                let event = *rx.borrow();
-                if current_state != event {
-                    return event;
-                }
-            }
-        }
-    }
-
-    pub async fn is_connected(&self) -> bool {
-        *self.connection_state_rx.borrow() == ExternalEvent::Connected
-    }
-
     pub async fn resubscribe_all(&self) -> Result<(), Error> {
         let public_channels: Vec<String> = {
             let subs = self.public_subscriptions.lock().await;
@@ -427,12 +412,43 @@ impl WsClient {
         }
         Ok(())
     }
-    pub async fn wait_for_connection(&self) {
+    pub async fn run_till_event(&self) -> ExternalEvent {
+        let mut rx = self.connection_state_rx.clone();
+        // ONLY return when state changes
         loop {
-            if self.is_connected().await {
-                break;
+            if rx.changed().await.is_ok() {
+                let state = *rx.borrow_and_update();
+                if state != *self.current_connection_state.lock().await {
+                    let mut current_state = self.current_connection_state.lock().await;
+                    *current_state = state;
+                    return state;
+                }
             }
-            tokio::time::sleep(Duration::from_millis(100)).await;
+        }
+    }
+
+    pub fn is_connected(&self) -> bool {
+        // Remove async - this is just reading a value
+        *self.connection_state_rx.borrow() == ExternalEvent::Connected
+    }
+
+    pub async fn wait_for_connection(&self) {
+        let mut rx = self.connection_state_rx.clone();
+
+        // If already connected, return immediately
+        if *rx.borrow_and_update() == ExternalEvent::Connected {
+            let mut current_state = self.current_connection_state.lock().await;
+            *current_state = ExternalEvent::Connected;
+            return;
+        }
+
+        // Otherwise wait for state changes until connected
+        while rx.changed().await.is_ok() {
+            if *rx.borrow_and_update() == ExternalEvent::Connected {
+                let mut current_state = self.current_connection_state.lock().await;
+                *current_state = ExternalEvent::Connected;
+                return;
+            }
         }
     }
 }
@@ -456,11 +472,8 @@ async fn connection_supervisor(
 
         match connect_async(&url).await {
             Ok((ws_stream, _)) => {
-                let current = *connection_state_tx.borrow();
-                if current != ExternalEvent::Connected {
-                    info!("WebSocket connected to {url}");
-                    connection_state_tx.send(ExternalEvent::Connected).ok();
-                }
+                connection_state_tx.send(ExternalEvent::Connected).ok();
+                info!("Connected to {url}");
                 let result = run_single_connection(
                     &url,
                     ws_stream,
@@ -471,8 +484,16 @@ async fn connection_supervisor(
                     &private_subscriptions,
                 )
                 .await;
+                info!("Connection to {url} ended with result: {result:?}");
 
+                if result.is_ok() {
+                    connection_state_tx.send(ExternalEvent::Exited).ok();
+                    info!("Connection exited normally for {url}");
+                    break;
+                }
                 if let Err(e) = result {
+                    connection_state_tx.send(ExternalEvent::Disconnected).ok();
+
                     error!("Connection error on {url}: {e}");
                 }
 
@@ -483,11 +504,13 @@ async fn connection_supervisor(
                 }
 
                 if *shutdown_rx.borrow() {
+                    connection_state_tx.send(ExternalEvent::Exited).ok();
                     info!("Shutdown after connection end for {url}");
                     break;
                 }
 
                 if cmd_rx.is_closed() {
+                    connection_state_tx.send(ExternalEvent::Exited).ok();
                     info!("Command channel closed for {url}, stopping supervisor");
                     break;
                 }
@@ -497,13 +520,11 @@ async fn connection_supervisor(
             }
             Err(e) => {
                 error!("Failed to connect to {url}: {e}");
-                connection_state_tx
-                    .send(ExternalEvent::Disconnected)
-                    .unwrap();
                 if *shutdown_rx.borrow() || cmd_rx.is_closed() {
                     break;
                 }
                 tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+                connection_state_tx.send(ExternalEvent::Disconnected).ok();
             }
         }
     }
