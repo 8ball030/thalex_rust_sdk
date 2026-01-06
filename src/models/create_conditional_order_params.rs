@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct CreateConditionalOrderParams {
     #[serde(rename = "direction")]
-    pub direction: Direction,
+    pub direction: models::DirectionEnum,
     #[serde(rename = "instrument_name")]
     pub instrument_name: String,
     #[serde(rename = "amount")]
@@ -22,9 +22,8 @@ pub struct CreateConditionalOrderParams {
     /// If set, creates a stop limit order
     #[serde(rename = "limit_price", skip_serializing_if = "Option::is_none")]
     pub limit_price: Option<f64>,
-    /// The trigger target that `stop_price` and `bracket_price` refer to.
     #[serde(rename = "target", skip_serializing_if = "Option::is_none")]
-    pub target: Option<Target>,
+    pub target: Option<models::TargetEnum>,
     /// Trigger price
     #[serde(rename = "stop_price")]
     pub stop_price: f64,
@@ -47,7 +46,7 @@ pub struct CreateConditionalOrderParams {
 
 impl CreateConditionalOrderParams {
     pub fn new(
-        direction: Direction,
+        direction: models::DirectionEnum,
         instrument_name: String,
         amount: f64,
         stop_price: f64,
@@ -64,35 +63,5 @@ impl CreateConditionalOrderParams {
             label: None,
             reduce_only: None,
         }
-    }
-}
-///
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Direction {
-    #[serde(rename = "buy")]
-    Buy,
-    #[serde(rename = "sell")]
-    Sell,
-}
-
-impl Default for Direction {
-    fn default() -> Direction {
-        Self::Buy
-    }
-}
-/// The trigger target that `stop_price` and `bracket_price` refer to.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Target {
-    #[serde(rename = "last")]
-    Last,
-    #[serde(rename = "mark")]
-    Mark,
-    #[serde(rename = "index")]
-    Index,
-}
-
-impl Default for Target {
-    fn default() -> Target {
-        Self::Last
     }
 }

@@ -23,9 +23,8 @@ pub struct AmendParams {
     pub price: f64,
     #[serde(rename = "amount")]
     pub amount: f64,
-    /// If the instrument has a safety price collar set, and the new limit price is in cross with (more aggressive than) this collar, how to handle. If set to `ignore`, the amend will proceed as requested. If `reject`, the request fails early. If `clamp`, the price is adjusted to the collar.  The default is `reject`.
     #[serde(rename = "collar", skip_serializing_if = "Option::is_none")]
-    pub collar: Option<Collar>,
+    pub collar: Option<models::CollarEnum>,
 }
 
 impl AmendParams {
@@ -37,21 +36,5 @@ impl AmendParams {
             amount,
             collar: None,
         }
-    }
-}
-/// If the instrument has a safety price collar set, and the new limit price is in cross with (more aggressive than) this collar, how to handle. If set to `ignore`, the amend will proceed as requested. If `reject`, the request fails early. If `clamp`, the price is adjusted to the collar.  The default is `reject`.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Collar {
-    #[serde(rename = "ignore")]
-    Ignore,
-    #[serde(rename = "reject")]
-    Reject,
-    #[serde(rename = "clamp")]
-    Clamp,
-}
-
-impl Default for Collar {
-    fn default() -> Collar {
-        Self::Ignore
     }
 }

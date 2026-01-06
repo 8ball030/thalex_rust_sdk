@@ -4,9 +4,8 @@ use log::{Level::Info, info};
 use simple_logger::init_with_level;
 use thalex_rust_sdk::{
     models::{
-        AmendParams, CancelParams, Delay, InsertParams, OrderStatus, SetCancelOnDisconnectParams,
-        insert_params::{Direction, OrderType},
-        order_status::Status,
+        AmendParams, CancelParams, Delay, DirectionEnum, InsertParams, OrderStatus, OrderTypeEnum,
+        SetCancelOnDisconnectParams, order_status::Status,
     },
     types::ExternalEvent,
     ws_client::WsClient,
@@ -86,11 +85,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         .rpc()
                         .trading()
                         .insert(InsertParams {
-                            direction: Direction::Buy,
+                            direction: DirectionEnum::Buy,
                             amount: ORDER_SIZE,
                             price: Some(bid_price),
                             instrument_name: Some(MARKET_NAME.to_string()),
-                            order_type: Some(OrderType::Limit),
+                            order_type: Some(OrderTypeEnum::Limit),
                             post_only: Some(true),
                             reject_post_only: Some(true),
                             ..Default::default()
@@ -107,11 +106,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         .rpc()
                         .trading()
                         .insert(InsertParams {
-                            direction: Direction::Sell,
+                            direction: DirectionEnum::Sell,
                             amount: ORDER_SIZE,
                             price: Some(ask_price),
                             instrument_name: Some(MARKET_NAME.to_string()),
-                            order_type: Some(OrderType::Limit),
+                            order_type: Some(OrderTypeEnum::Limit),
                             post_only: Some(true),
                             reject_post_only: Some(true),
                             ..Default::default()

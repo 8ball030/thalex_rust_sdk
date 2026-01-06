@@ -25,9 +25,8 @@ pub struct TradeHistoryParams {
     /// Set to bookmark from previous call to get next page.
     #[serde(rename = "bookmark", skip_serializing_if = "Option::is_none")]
     pub bookmark: Option<String>,
-    /// Sort direction by trade time. Defaults to `descending` (i.e. newest trades first).
     #[serde(rename = "sort", skip_serializing_if = "Option::is_none")]
-    pub sort: Option<Sort>,
+    pub sort: Option<models::SortEnum>,
     /// Comma-separated list of instrument names to request trade history for. If omitted, trades for all instruments are returned.
     #[serde(rename = "instrument_names", skip_serializing_if = "Option::is_none")]
     pub instrument_names: Option<String>,
@@ -47,19 +46,5 @@ impl TradeHistoryParams {
             instrument_names: None,
             bot_ids: None,
         }
-    }
-}
-/// Sort direction by trade time. Defaults to `descending` (i.e. newest trades first).
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Sort {
-    #[serde(rename = "ascending")]
-    Ascending,
-    #[serde(rename = "descending")]
-    Descending,
-}
-
-impl Default for Sort {
-    fn default() -> Sort {
-        Self::Ascending
     }
 }

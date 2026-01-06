@@ -148,6 +148,10 @@ def main():
         output_path = Path("src/rpc") / f"{tag.replace('rpc_', '')}.rs"
         print(f" Writing RPC file to: {output_path}")
         output_path.write_text(file_content)
+    extract_all_enums()
+    generate_rpc_spec(spec)
+
+
 
 def extract_method_from_path_spec(path_spec):
     method = path_spec.get("requestBody", {}).get("content", {}).get("application/json", {}).get("schema", {}).get("allOf", {})[0]['properties']['method']['const']
@@ -322,6 +326,29 @@ def generate_rpc_spec(original_spec):
     RPC_SPEC_PATH.write_text(json.dumps(new_spec, indent=2))
 
 
+def extract_all_enums():
+    new_enums = dict()
+    for model_name, model_schema in NEW_MODELS.items():
+        for prop_name, prop_schema in model_schema.get("properties", {}).items():
+            if prop_schema.get("type") == "string" and "enum" in prop_schema:
+                enum_name = f"{to_camel_case(prop_name)}Enum"
+                if enum_name not in new_enums:
+                    new_enums[enum_name] = prop_schema["enum"]
+                else:
+                    if new_enums[enum_name] != prop_schema["enum"]:
+                        enum_name = f"{model_name}{enum_name}"
+                        assert enum_name not in new_enums, f"Enum name collision for {enum_name}"
+                    new_enums[enum_name] = prop_schema["enum"]
+                # Update the property to reference the new enum
+                prop_schema.clear()
+                prop_schema["$ref"] = f"#/components/schemas/{enum_name}"
+    for enum_name, enum_values in new_enums.items():
+        NEW_MODELS[enum_name] = {
+            "type": "string",
+            "enum": enum_values
+        }
+
+
 
 def process_tag(spec, tag):
     print(f" Building RPC for tag: {tag}")
@@ -376,7 +403,7 @@ def process_tag(spec, tag):
             has_params = len(params['properties']) > 0,
         )
         functions.append(function_code)
-    generate_rpc_spec(spec)
+    # generate_rpc_spec(spec)
     return functions, model_imports
 
 

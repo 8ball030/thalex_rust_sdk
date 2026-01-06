@@ -2,8 +2,7 @@ mod common;
 
 use thalex_rust_sdk::{
     models::{
-        CancelConditionalOrderParams, CreateConditionalOrderParams,
-        create_conditional_order_params::{Direction, Target},
+        CancelConditionalOrderParams, CreateConditionalOrderParams, DirectionEnum, TargetEnum,
     },
     ws_client::WsClient,
 };
@@ -56,8 +55,8 @@ params_private_conditional_rpc_test!(
         stop_price: 30000.0,
         trailing_stop_callback_rate: Some(0.05), // 5%
         reduce_only: Some(true),
-        direction: Direction::Sell,
-        target: Some(Target::Index),
+        direction: DirectionEnum::Sell,
+        target: Some(TargetEnum::Index),
         label: Some("test_order".to_string()),
         ..Default::default()
     },
