@@ -17,10 +17,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install deps
+        run: | 
+          sudo apt-get update && \
+          sudo apt-get install yq jq -y
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      
+      - name: Install openapi-generator-cli
+        run: npm i -g @openapitools/openapi-generator-cli @redocly/cli
+      
+      - name: Pin generator version
+        run: openapi-generator-cli version-manager set 7.9.0
+
       - name: Install Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          toolchain: stable
+          toolchain: 1.88.0
           components: rustfmt, clippy
 
       - name: Cache cargo
@@ -34,6 +49,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
 
+      - name: Codegen
+        run: make codegen
+
       - name: Format
         run: make fmt
 
@@ -45,3 +63,6 @@ jobs:
 
       - name: Test
         run: make test
+
+      - name: Check generated code is up to date
+        run: git diff --exit-code

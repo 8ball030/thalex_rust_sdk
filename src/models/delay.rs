@@ -1,7 +1,7 @@
 /*
- * Ticker Feed Schemas
+ * Websocket Subscription Schemas
  *
- * Schema definitions for ticker feed data types
+ * Schema definitions Websocket API subscriptions for Thalex exchange.
  *
  * The version of the OpenAPI document: 1.0.0
  *
