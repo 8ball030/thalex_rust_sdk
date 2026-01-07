@@ -33,7 +33,8 @@ def fix_schema(spec: Dict[str, Any]) -> Dict[str, Any]:
     
     for item in [
         "start_price",
-        "average_price"
+        "average_price",
+        "unrealised_pnl_perpetual",
     ]:
         updated_spec['paths']['private/account_breakdown']['rpc']['responses']['default']['content']['application/json']['schema'] \
             ['oneOf'][0]['allOf'][1]['properties']['result']['properties']['portfolio']['items']['required'] \
@@ -44,6 +45,7 @@ def fix_schema(spec: Dict[str, Any]) -> Dict[str, Any]:
             ['oneOf'][0]['allOf'][1]['properties']['result']['properties']['portfolio']['items']['properties'].pop(specced)
         updated_spec['paths']['private/account_breakdown']['rpc']['responses']['default']['content']['application/json']['schema'] \
             ['oneOf'][0]['allOf'][1]['properties']['result']['properties']['portfolio']['items']['properties'][actual] = definition
+        
     
     # make `collateral_index_price` optional for `private/account_breakdown` RPC and remove from required
     updated_spec['paths']['private/account_breakdown']['rpc']['responses']['default']['content']['application/json']['schema'] \

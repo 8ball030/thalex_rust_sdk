@@ -25,8 +25,11 @@ pub struct AccountBreakdownRpcResultPortfolioInner {
     pub average_price: Option<f64>,
     #[serde(rename = "unrealised_pnl_positional")]
     pub unrealised_pnl_positional: f64,
-    #[serde(rename = "unrealised_pnl_perpetual")]
-    pub unrealised_pnl_perpetual: f64,
+    #[serde(
+        rename = "unrealised_pnl_perpetual",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub unrealised_pnl_perpetual: Option<f64>,
     #[serde(rename = "unrealised_pnl")]
     pub unrealised_pnl: f64,
     /// Position profit or loss in current session.
@@ -58,7 +61,6 @@ impl AccountBreakdownRpcResultPortfolioInner {
         position: f64,
         mark_price: f64,
         unrealised_pnl_positional: f64,
-        unrealised_pnl_perpetual: f64,
         unrealised_pnl: f64,
         realised_position_pnl: f64,
         open_buy_amount: f64,
@@ -73,7 +75,7 @@ impl AccountBreakdownRpcResultPortfolioInner {
             start_price: None,
             average_price: None,
             unrealised_pnl_positional,
-            unrealised_pnl_perpetual,
+            unrealised_pnl_perpetual: None,
             unrealised_pnl,
             realised_position_pnl,
             open_buy_amount,

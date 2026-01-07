@@ -10521,7 +10521,6 @@
                                       "position",
                                       "mark_price",
                                       "unrealised_pnl_positional",
-                                      "unrealised_pnl_perpetual",
                                       "unrealised_pnl",
                                       "open_buy_amount",
                                       "open_sell_amount",
