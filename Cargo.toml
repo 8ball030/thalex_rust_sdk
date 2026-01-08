@@ -26,3 +26,22 @@ serial_test = { version = "3.2.0", features = ["async"] }
 rust_decimal_macros = "1.39.0"
 rust_decimal = "1.39.0"
 chrono = "0.4.42"
+criterion = { version = "0.5", features = ["async_tokio", "html_reports"] }
+tokio-test = "0.4"
+
+[[bench]]
+name = "json_parsing"
+harness = false
+
+[[bench]]
+name = "handle_incoming"
+harness = false
+
+[[bench]]
+name = "mutex_contention"
+harness = false
+
+[[bench]]
+name = "subscription_throughput"
+harness = false
+
