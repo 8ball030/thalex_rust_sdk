@@ -30,6 +30,26 @@ class PostProcessor:
             self.process_file(file_path)
             self.rename_file_if_needed(file_path)
         self.update_mod_file()
+        self.add_error_enums()
+
+    def add_error_enums(self):
+        """
+        Update the;
+        src/models/error_response_error.rs
+        Need to:
+            - replace `code: i32` with `code: ErrorCode`
+            - replace `use crate::models;` with `use crate::{manual_models::error_code::ErrorCode, models};`
+        """
+        file_path = OUTPUT_FOLDER / "error_response_error.rs"
+        content = file_path.read_text()
+        original_content = content
+
+        content = content.replace("code: i32,", "code: ErrorCode,")
+        content = content.replace("use crate::models;", "use crate::{manual_models::error_code::ErrorCode, models};")
+
+        if content != original_content:
+            print(f"Updating {file_path} to use ErrorCode enum.")
+            file_path.write_text(content)
 
     def process_file(self, file_path: Path):
         """

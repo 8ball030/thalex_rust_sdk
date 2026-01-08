@@ -1,7 +1,9 @@
-use serde::{Deserialize, Serialize};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[repr(u8)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Serialize_repr, Deserialize_repr)]
 pub enum ErrorCode {
+    #[default]
     OrderNotFound = 1,
     DuplicateOrderId = 2,
     TooManyPendingRequests = 3,
