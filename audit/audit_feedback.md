@@ -11,6 +11,8 @@ Based on the audit feedback, the following changes have been implemented to enha
 
 [x] Mutex removal for dashmaps where applicable to enhance performance and reduce contention.
 
+[x] Resubscribe in batch for both public and private channels to minimize the number of RPC calls during reconnection.
+
 [ ] Optimized JSON parsing benchmarks to reduce overhead and improve performance.
 
 [ ] Enhanced WebSocket client to handle high-throughput scenarios more efficiently.

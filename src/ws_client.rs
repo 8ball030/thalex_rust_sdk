@@ -349,34 +349,30 @@ impl WsClient {
                 .map(|e| e.key().clone())
                 .collect()
         };
-        for channel in public_channels {
-            let _: RpcResponse = self
-                .send_rpc(
-                    "public/subscribe",
-                    serde_json::json!({
-                        "channels": [channel.clone()]
-                    }),
-                )
-                .await?;
-            info!("Re-subscribed to channel: {channel}");
-        }
+        let _: RpcResponse = self
+            .send_rpc(
+                "public/subscribe",
+                serde_json::json!({
+                    "channels": public_channels
+                }),
+            )
+            .await?;
+        info!("Re-subscribed to public channels: {public_channels:?}");
         let private_channels: Vec<String> = {
             self.private_subscriptions
                 .iter()
                 .map(|e| e.key().clone())
                 .collect()
         };
-        for channel in private_channels {
-            let _: RpcResponse = self
-                .send_rpc(
-                    "private/subscribe",
-                    serde_json::json!({
-                        "channels": [channel.clone()]
-                    }),
-                )
-                .await?;
-            info!("Re-subscribed to channel: {channel}");
-        }
+        let _: RpcResponse = self
+            .send_rpc(
+                "private/subscribe",
+                serde_json::json!({
+                    "channels": private_channels
+                }),
+            )
+            .await?;
+        info!("Re-subscribed to private channels: {private_channels:?}");
         Ok(())
     }
     pub async fn run_till_event(&self) -> ExternalEvent {
