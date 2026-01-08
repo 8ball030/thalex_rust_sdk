@@ -444,7 +444,7 @@ async fn connection_supervisor(
                 }
 
                 // Fail all pending RPCs on this connection.
-                // ✅ Optimization: collect all under lock, send outside lock
+                // Optimization: collect all under lock, send outside lock
                 let failed_requests: Vec<_> = {
                     let mut pending = pending_requests.lock().await;
                     pending.drain().collect()  // Collect all in Vec
@@ -452,7 +452,7 @@ async fn connection_supervisor(
                 // Lock released here
                 
                 for (_, tx) in failed_requests {
-                    let _ = tx.send(r#"{"error":"connection closed"}"#.to_string());  // ✅ Send outside lock
+                    let _ = tx.send(r#"{"error":"connection closed"}"#.to_string());  // Send outside lock
                 }
 
                 if *shutdown_rx.borrow() {

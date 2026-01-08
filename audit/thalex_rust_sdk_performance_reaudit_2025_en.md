@@ -1,6 +1,6 @@
-# Thalex Rust SDK - Performance Reaudit (2025)
+# Thalex Rust SDK - Performance Reaudit (2025-2026)
 
-**Date:** January 2025  
+**Date:** January 2026  
 **Version:** 2.0  
 **Status:** Completed
 
@@ -37,9 +37,9 @@ After the merge, the main architecture remained the same, but a modular structur
 | Conditional parsing (after check) | 339.75 ns | ~337 ns | ⚠️ +0.8% (minor) |
 
 **Conclusions:**
-- ✅ JSON parsing performance improved by 1-12% (possibly due to rustc update)
-- ✅ Fast key checking remains 44-220x faster than full parsing
-- ✅ Optimization recommendation remains relevant
+- OK. JSON parsing performance improved by 1-12% (possibly due to rustc update)
+- OK. Fast key checking remains 44-220x faster than full parsing
+- OK. Optimization recommendation remains relevant
 
 ### 2. Incoming Message Processing (`handle_incoming`)
 
@@ -56,9 +56,9 @@ After the merge, the main architecture remained the same, but a modular structur
 | Many pending (1-100) | 324.98-333.38 ns | ~307-314 ns | ⚠️ +5-6% |
 
 **Conclusions:**
-- ⚠️ Slight performance degradation (5-21%), possibly due to code or environment changes
-- ⚠️ **Critical:** Ticker with subscription became 21% slower (959ns vs 792ns)
-- ✅ Scalability remains good - no degradation with growth in subscription count
+- Warning. Slight performance degradation (5-21%), possibly due to code or environment changes
+- Warning. **Critical:** Ticker with subscription became 21% slower (959ns vs 792ns)
+- OK. Scalability remains good - no degradation with growth in subscription count
 
 **Note:** Degradation may be related to:
 - Changes in Rust compiler
@@ -78,9 +78,9 @@ After the merge, the main architecture remained the same, but a modular structur
 | Concurrent access (4 tasks) | 64.325 µs | ~61 µs | ⚠️ +5.5% |
 
 **Conclusions:**
-- ⚠️ Slight degradation in write-heavy operations (6-9%)
-- ✅ Read-heavy operations remain stable
-- ✅ Scaling remains linear
+- Warning. Slight degradation in write-heavy operations (6-9%)
+- OK. Read-heavy operations remain stable
+- OK. Scaling remains linear
 
 ---
 
@@ -92,7 +92,7 @@ After the merge, the main architecture remained the same, but a modular structur
 
 #### Identified Issues:
 
-1. **🔴 Excessive String Copying (line 592)**
+1. **Excessive String Copying (line 592)**
    ```rust
    Some(Ok(Message::Text(text))) => {
        handle_incoming(
@@ -103,7 +103,7 @@ After the merge, the main architecture remained the same, but a modular structur
    ```
    **Impact:** Unnecessary allocation for every text message
 
-2. **🔴 Excessive Binary Data Copying (line 599)**
+2. **Excessive Binary Data Copying (line 599)**
    ```rust
    Some(Ok(Message::Binary(bin))) => {
        if let Ok(text) = String::from_utf8(bin.to_vec()) {  // ❌ to_vec() copies
@@ -113,7 +113,7 @@ After the merge, the main architecture remained the same, but a modular structur
    ```
    **Impact:** Unnecessary buffer copy before conversion
 
-3. **🟡 Full JSON Parsing for Every Message (line 648)**
+3. **Full JSON Parsing for Every Message (line 648)**
    ```rust
    let parsed: Value = match serde_json::from_str(&text) {
        Ok(v) => v,
@@ -123,13 +123,13 @@ After the merge, the main architecture remained the same, but a modular structur
    **Impact:** Parsing occurs even when only certain fields are needed
    **Optimization:** Fast check `contains("\"id\":")` or `contains("\"channel_name\":")` before full parsing
 
-4. **🟡 Mutex Locks in Hot Path**
+4. **Mutex Locks in Hot Path**
    - Line 671: `pending_requests.lock().await` - for every RPC response
    - Line 682: `route.lock().await` - for every subscription
    **Impact:** Lock contention at high message frequency
    **Optimization:** DashMap for subscriptions (read-heavy), clone sender outside lock
 
-5. **🟢 Handling `id: null` (lines 659-666)**
+5. **Handling `id: null` (lines 659-666)**
    ```rust
    if id_value.is_null() {
        // Check if it's a subscription result or error
@@ -138,7 +138,7 @@ After the merge, the main architecture remained the same, but a modular structur
    ```
    **Impact:** Additional check, but necessary for correct operation
 
-6. **🟡 pending_requests.drain() + send under lock (line 501-503)**
+6. **pending_requests.drain() + send under lock (line 501-503)**
    ```rust
    let mut pending = pending_requests.lock().await;
    for (_, tx) in pending.drain() {
@@ -150,14 +150,14 @@ After the merge, the main architecture remained the same, but a modular structur
 
 ### Other Bottlenecks:
 
-6. **🟡 Reconnection with Fixed Delay (line 519)**
+6. **Reconnection with Fixed Delay (line 519)**
    ```rust
    tokio::time::sleep(std::time::Duration::from_secs(3)).await;
    ```
    **Impact:** No exponential backoff
    **Optimization:** Exponential backoff with jitter
 
-7. **🟡 No Subscription Batching (lines 382-413)**
+7. **No Subscription Batching (lines 382-413)**
    ```rust
    for channel in public_channels {
        let _: RpcResponse = self.send_rpc("public/subscribe", ...).await?;
@@ -165,9 +165,9 @@ After the merge, the main architecture remained the same, but a modular structur
    ```
    **Impact:** Separate RPC request for each channel
    **Optimization:** Send all channels in one request
-   **Note:** ✅ In current code, the "lock across await" issue is already fixed - snapshot of keys is taken under lock, then await is performed without lock. The remaining issue is batching.
+   **Note:** !!! In current code, the "lock across await" issue is already fixed - snapshot of keys is taken under lock, then await is performed without lock. The remaining issue is batching.
 
-8. **🟡 Mutex Locks for instruments_cache (lines 66, 150, 167-170, 177)**
+8. **Mutex Locks for instruments_cache (lines 66, 150, 167-170, 177)**
    ```rust
    instruments_cache: Arc<Mutex<HashMap<String, Instrument>>>
    ```
@@ -183,15 +183,15 @@ After the merge, the main architecture remained the same, but a modular structur
 
 ### What Remained Unchanged:
 
-✅ **Critical path architecture** - `handle_incoming` works similarly  
-✅ **Main bottlenecks** - same performance issues  
-✅ **Optimization recommendations** - remain relevant  
+**Critical path architecture** - `handle_incoming` works similarly  
+**Main bottlenecks** - same performance issues  
+**Optimization recommendations** - remain relevant  
 
 ### What Changed:
 
-⚠️ **Performance** - slight degradation (5-21%) in some operations  
-✅ **Modularity** - added convenient wrappers `channels` and `rpc`, but they don't affect critical path  
-✅ **Edge case handling** - added handling of `id: null`  
+**Performance** - slight degradation (5-21%) in some operations  
+OK. **Modularity** - added convenient wrappers `channels` and `rpc`, but they don't affect critical path  
+OK. **Edge case handling** - added handling of `id: null`  
 
 ---
 
@@ -226,7 +226,7 @@ Some(Ok(Message::Binary(bin)) => {
 
 ```rust
 async fn handle_incoming(
-    text: String,  // ✅ Accept String directly
+    text: String,  // Accept String directly
     ...
 ) {
     // Fast check before full parsing
@@ -285,24 +285,24 @@ if let Some(tx) = sender {
 
 **Expected Effect:** Faster recovery after reconnection
 
-**Note:** ✅ In current code, the "lock across await" issue is already fixed - snapshot of keys is taken under lock (lines 383-386, 398-401), then await is performed without lock. The remaining issue is batching.
+**Note:** !!!! In current code, the "lock across await" issue is already fixed - snapshot of keys is taken under lock (lines 383-386, 398-401), then await is performed without lock. The remaining issue is batching.
 
 ```rust
 // Current code (lines 382-413):
-// ✅ Already fixed: snapshot under lock, await without lock
+// !!! Already fixed: snapshot under lock, await without lock
 let public_channels: Vec<String> = {
     let subs = self.public_subscriptions.lock().await;
     subs.keys().cloned().collect()  // Snapshot under lock
 };
 // Lock released here
 
-// ❌ But sends one channel at a time:
+// But sends one channel at a time:
 for channel in public_channels {
     let _: RpcResponse = self.send_rpc("public/subscribe", 
         serde_json::json!({ "channels": [channel.clone()] })).await?;
 }
 
-// ✅ Correctly: send all channels in one request
+// Correctly: send all channels in one request
 if !public_channels.is_empty() {
     let _: RpcResponse = self.send_rpc(
         "public/subscribe",
@@ -347,32 +347,13 @@ loop {
 
 ---
 
-## Implementation Plan
-
-### Phase 1: Quick Wins (1-2 days)
-1. ✅ Remove unnecessary text cloning in the WebSocket reader loop (pass `text` directly into `handle_incoming()`)
-2. ✅ Optimize `String::from_utf8(bin.to_vec())`
-3. ✅ Add fast key checking before parsing
-
-### Phase 2: Lock Optimization (2-3 days)
-1. ✅ Replace `Arc<Mutex<HashMap>>` with `Arc<DashMap>` for subscriptions
-2. ✅ Clone sender outside lock for pending_requests
-3. ✅ Update all subscription usage locations
-
-### Phase 3: Additional Optimizations (1-2 days)
-1. ✅ Subscription batching
-2. ✅ Exponential backoff
-3. ✅ Update benchmarks and verify results
-
----
-
 ## Conclusion
 
 The reaudit showed that:
-- ✅ Main bottlenecks remained the same
-- ⚠️ Performance slightly degraded (5-21%), but this may be related to environment
-- ✅ Optimization recommendations remain relevant
-- ✅ New `channels` and `rpc` modules do not affect critical path
+- OK. Main bottlenecks remained the same
+- Warning. Performance slightly degraded (5-21%), but this may be related to environment
+- OK. Optimization recommendations remain relevant
+- OK. New `channels` and `rpc` modules do not affect critical path
 
 **Next Steps:**
 1. Implement optimizations in priority order

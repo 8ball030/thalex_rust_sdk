@@ -94,9 +94,9 @@ Thalex Rust SDK is an asynchronous WebSocket client for the Thalex exchange that
 2. **Subscription batching** - simple optimization with big impact
 3. **JSON parsing optimization** - fast key checking before full parsing
 
-## 📄 Final Report for Client
+## Final Report for Client
 
-**👉 [FINAL_REPORT_en.md](./FINAL_REPORT_en.md)** - comprehensive report with all key information:
+** [FINAL_REPORT_en.md](./FINAL_REPORT_en.md)** - comprehensive report with all key information:
 - Executive Summary
 - Functionality analysis
 - Identified bottlenecks
@@ -105,55 +105,38 @@ Thalex Rust SDK is an asynchronous WebSocket client for the Thalex exchange that
 - Expected improvements
 - Implementation plan
 
-## 📋 Files Index
+## Files Index
 
-**👉 [FILES_INDEX_en.md](./FILES_INDEX_en.md)** - complete list of all reports with description of each file's purpose.
+**[FILES_INDEX_en.md](./FILES_INDEX_en.md)** - complete list of all reports with description of each file's purpose.
 
-## 📝 Reviews and Addendums
+## Reviews and Addendums
 
 During the report preparation process, technical reviews were conducted:
 
-- **[thalex_rust_sdk_perf_addendum.md](./thalex_rust_sdk_perf_addendum.md)** / **[thalex_rust_sdk_perf_addendum_en.md](./thalex_rust_sdk_perf_addendum_en.md)** - additional report with 6 point optimizations (from ChatGPT-5)
-- **[thalex_rust_sdk_audit_recheck_report_v2.md](./thalex_rust_sdk_audit_recheck_report_v2.md)** / **[thalex_rust_sdk_audit_recheck_report_v2_en.md](./thalex_rust_sdk_audit_recheck_report_v2_en.md)** - second review with identified inconsistencies (from ChatGPT-5)
-- **[thalex_rust_sdk_audit_recheck_report_v3.md](./thalex_rust_sdk_audit_recheck_report_v3.md)** - final review confirming report readiness (from ChatGPT-5)
+- **[thalex_rust_sdk_perf_addendum_en.md](./thalex_rust_sdk_perf_addendum_en.md)** - additional report with 6 point optimizations (from ChatGPT-5)
 
-**Note:** These files contain internal reviews of the report preparation process and may be useful for understanding the evolution of recommendations. Available in Russian and English versions.
+**Note:** These files contain internal reviews of the report preparation process and may be useful for understanding the evolution of recommendations. 
 
-## 🔄 Performance Reaudit (2025)
+## 🔄 Performance Reaudit (2025-2026)
 
 After merging the latest main update and updating rustc, a performance reaudit was conducted:
 
-- **[thalex_rust_sdk_performance_reaudit_2025.md](./thalex_rust_sdk_performance_reaudit_2025.md)** - full performance reaudit report
+- **[thalex_rust_sdk_performance_reaudit_2025_en.md](./thalex_rust_sdk_performance_reaudit_2025_en.md)** - full performance reaudit report
   - Comparison of benchmark results before and after changes
   - Analysis of new modules (channels, rpc)
   - Updated optimization recommendations
   - Implementation plan for optimizations
 
-## Language Versions
-
-All reports are available in two languages:
-- **English** - files with `_en.md` suffix (this document)
-- **Russian** - original files without suffix (see [README.md](./README.md))
-
-Both versions contain identical information and structure.
-
-## Next Steps
-
-1. ✅ Added benchmark tests for performance measurement
-2. ✅ Executed benchmarks and analyzed results
-3. ✅ Created final report for client
-4. Implement optimizations in priority order (see [FINAL_REPORT_en.md](./FINAL_REPORT_en.md))
-5. Re-run benchmarks after optimizations to measure improvements
 
 ## Benchmark Results
 
 See [benchmark_results_analysis_en.md](./benchmark_results_analysis_en.md) for detailed analysis of performance results.
 
-**Key findings (updated 2025):**
-- ✅ RPC processing: 335 ns (slight degradation +5.7%)
-- ⚠️ Ticker processing with subscription: 959 ns (degradation +21.1%)
-- 🚨 Concurrent processing of 20 channels: ~1.1 ms (bottleneck persists)
-- 🚀 Fast JSON key checking: 44-200x faster than full parsing
+**Key findings (updated 2026):**
+- RPC processing: 335 ns (slight degradation +5.7%)
+- Ticker processing with subscription: 959 ns (degradation +21.1%)
+- Concurrent processing of 20 channels: ~1.1 ms (bottleneck persists)
+- Fast JSON key checking: 44-200x faster than full parsing
 
-**See [thalex_rust_sdk_performance_reaudit_2025.md](./thalex_rust_sdk_performance_reaudit_2025.md) for detailed analysis.**
+**See [thalex_rust_sdk_performance_reaudit_2025_en.md](./thalex_rust_sdk_performance_reaudit_2025_en.md) for detailed analysis.**
 

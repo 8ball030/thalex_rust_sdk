@@ -1,7 +1,7 @@
 # Final Thalex Rust SDK Code Audit Report
 
-**Date:** December 2024 (updated: January 2025)  
-**Version:** 1.1  
+**Date:** December 2025 (updated: January 2026)  
+**Version:** 2.0  
 **Status:** Completed
 
 **See also:** [thalex_rust_sdk_performance_reaudit_2025_en.md](./thalex_rust_sdk_performance_reaudit_2025_en.md) - performance reaudit after merging main
@@ -14,18 +14,18 @@ A comprehensive audit of the Thalex Rust SDK source code has been conducted - a 
 
 ### Key Findings
 
-✅ **Strengths:**
+**Strengths:**
 - Architecture is well-designed using modern patterns
 - RPC request processing is very efficient (~300 ns)
 - System automatically reconnects and restores subscriptions
 - Sequential processing has high throughput (~3.8M messages/sec)
 
-⚠️ **Identified Issues:**
+**Identified Issues:**
 - Concurrent processing of many channels degrades linearly (critical)
 - JSON parsing is performed fully for every message (can be optimized)
 - Mutex locks create contention under high competition
 
-🚀 **Recommendations:**
+**Recommendations:**
 1. Replace Mutex with DashMap for subscriptions (eliminates bottleneck)
 2. Optimize JSON parsing through fast key checking
 3. Add subscription batching on reconnection
@@ -85,7 +85,7 @@ The project uses modern design patterns:
 
 ### 2.1 Critical Issues
 
-#### 🔴 Issue #1: Mutex Locks in Hot Path
+#### Issue #1: Mutex Locks in Hot Path
 
 **Description:**
 - In `handle_incoming` function, Mutex lock occurs for every incoming message
@@ -103,7 +103,7 @@ The project uses modern design patterns:
 - Degradation with large number of concurrent operations
 - Contention between incoming message processing and subscription management
 
-#### 🔴 Issue #2: JSON Parsing for Every Message
+#### Issue #2: JSON Parsing for Every Message
 
 **Description:**
 - Every incoming text is fully parsed into `serde_json::Value`
@@ -116,7 +116,7 @@ The project uses modern design patterns:
 
 ### 2.2 Medium Priority Issues
 
-#### 🟡 Issue #3: No Subscription Batching
+#### Issue #3: No Subscription Batching
 
 **Description:**
 - On reconnection, separate message is sent for each channel
@@ -128,13 +128,13 @@ The project uses modern design patterns:
 
 **Note:** In the current code, `resubscribe_all()` snapshots channel names under a lock and releases the lock **before** awaiting network sends. This avoids holding a lock across `.await` during re-subscription.
 
-#### 🟡 Issue #4: Excessive String Cloning
+#### Issue #4: Excessive String Cloning
 
 **Description:**
 - Multiple places where new strings are created instead of reuse
 - Unnecessary memory allocations
 
-#### 🟡 Issue #5: Fixed Reconnection Delay
+#### Issue #5: Fixed Reconnection Delay
 
 **Description:**
 - Fixed 3-second delay is used
@@ -168,11 +168,11 @@ The `criterion` library was used for statistically significant results.
 
 | Scenario | Time | Assessment |
 |----------|------|------------|
-| RPC response | ~306-317 ns | ✅ Excellent |
-| Ticker without subscription | ~459 ns | ✅ Good |
-| Ticker with subscription | ~792 ns | ⚠️ Can be improved |
-| Many subscriptions (1-100) | ~464-481 ns | ✅ Scales well |
-| Many pending (1-100) | ~307-314 ns | ✅ Stable |
+| RPC response | ~306-317 ns | Excellent |
+| Ticker without subscription | ~459 ns | Good |
+| Ticker with subscription | ~792 ns | Can be improved |
+| Many subscriptions (1-100) | ~464-481 ns | Scales well |
+| Many pending (1-100) | ~307-314 ns | Stable |
 
 **Conclusion:** RPC processing is very efficient, but ticker processing with subscription is 2.5x slower.
 
@@ -192,8 +192,8 @@ The `criterion` library was used for statistically significant results.
 | Operation | Time | Scaling |
 |----------|------|---------|
 | Insert/remove 100 | ~13.4 µs | Baseline |
-| Insert/remove 1000 | ~134 µs | ✅ Linear |
-| Concurrent access (4 tasks) | ~61 µs | ⚠️ +50% overhead |
+| Insert/remove 1000 | ~134 µs | Linear |
+| Concurrent access (4 tasks) | ~61 µs | +50% overhead |
 
 **Conclusion:** Lock contention adds significant overhead.
 
@@ -201,10 +201,10 @@ The `criterion` library was used for statistically significant results.
 
 | Scenario | Throughput | Assessment |
 |----------|------------|------------|
-| Sequential processing | ~3.8M msg/s | ✅ Excellent |
-| Concurrent 5 channels | ~365K msg/s | ⚠️ Degradation |
-| Concurrent 10 channels | ~182K msg/s | ⚠️ Linear degradation |
-| Concurrent 20 channels | ~91K msg/s | 🚨 **Critical problem** |
+| Sequential processing | ~3.8M msg/s | Excellent |
+| Concurrent 5 channels | ~365K msg/s | Degradation |
+| Concurrent 10 channels | ~182K msg/s | Linear degradation |
+| Concurrent 20 channels | ~91K msg/s |  **Critical problem** |
 
 **Critical Conclusion:** Concurrent processing degrades linearly with number of channels. With 20 channels, processing time for 100 messages = 1.1 ms, which can be a problem for ticker with 100ms delay.
 
@@ -302,9 +302,9 @@ use dashmap::DashMap;
 
 pub struct WsClient {
     // ...
-    public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,  // ✅ Two maps
-    private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,  // ✅ Two maps
-    instruments_cache: Arc<DashMap<String, Instrument>>,  // ✅ Can also be optimized
+    public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,  // Two maps
+    private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,  // Two maps
+    instruments_cache: Arc<DashMap<String, Instrument>>,  // Can also be optimized
     // ...
 }
 
@@ -355,7 +355,7 @@ let public_channels: Vec<String> = {
 };
 // Lock released here
 
-// ✅ Correctly: send all channels in one request
+// Correctly: send all channels in one request
 if !public_channels.is_empty() {
     let _: RpcResponse = self.send_rpc(
         "public/subscribe",
@@ -415,15 +415,15 @@ if !public_channels.is_empty() {
 ## 6. Implementation Plan
 
 ### Phase 1: Quick Wins (1-2 days)
-1. ✅ JSON parsing optimization (Priority 1)
-2. ✅ Subscription batching (Priority 3)
-3. ✅ Exponential backoff (Priority 4)
+1. JSON parsing optimization (Priority 1)
+2. Subscription batching (Priority 3)
+3. Exponential backoff (Priority 4)
 
 **Expected Effect:** 20-30% improvement
 
 ### Phase 2: Critical Optimizations (3-5 days)
-1. ✅ DashMap for subscriptions (Priority 2)
-2. ✅ Testing and validation
+1. DashMap for subscriptions (Priority 2)
+2. Testing and validation
 
 **Expected Effect:** 50-80% improvement for concurrent processing
 
@@ -455,10 +455,10 @@ if !public_channels.is_empty() {
 ### Summary
 
 A comprehensive audit of Thalex Rust SDK code has been conducted, including:
-- ✅ Functionality and architecture analysis
-- ✅ Identification of 8 performance bottlenecks
-- ✅ Benchmark creation and execution
-- ✅ Development of specific optimization recommendations
+- Functionality and architecture analysis
+- Identification of 8 performance bottlenecks
+- Benchmark creation and execution
+- Development of specific optimization recommendations
 
 ### Key Achievements
 

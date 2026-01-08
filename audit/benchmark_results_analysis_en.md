@@ -6,7 +6,7 @@ Benchmarks have been successfully executed. Below is the analysis of results and
 
 **Last update:** January 2025 (after merging main and updating rustc)
 
-**See also:** [thalex_rust_sdk_performance_reaudit_2025.md](./thalex_rust_sdk_performance_reaudit_2025.md) - full reaudit report
+**See also:** [thalex_rust_sdk_performance_reaudit_2025_en.md](./thalex_rust_sdk_performance_reaudit_2025_en.md) - full reaudit report
 
 ## Key Metrics
 

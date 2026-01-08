@@ -77,7 +77,7 @@ if let Some(mut sender) = sender_opt {
 // Current: lock held during send
 let mut pending = pending_requests.lock().await;
 if let Some(tx) = pending.remove(&id) {
-    let _ = tx.send(text);  // ❌ send under lock
+    let _ = tx.send(text);  // -> send under lock
 }
 
 // After optimization: remove under lock, send outside lock
@@ -88,7 +88,7 @@ let tx_opt = {
 // Lock released here
 
 if let Some(tx) = tx_opt {
-    let _ = tx.send(text);  // ✅ Send outside lock
+    let _ = tx.send(text);  // -> Send outside lock
 }
 ```
 
@@ -97,7 +97,7 @@ if let Some(tx) = tx_opt {
 // Current: drain and send under lock
 let mut pending = pending_requests.lock().await;
 for (_, tx) in pending.drain() {
-    let _ = tx.send(r#"{"error":"connection closed"}"#.to_string());  // ❌ send under lock
+    let _ = tx.send(r#"{"error":"connection closed"}"#.to_string());  // -> send under lock
 }
 
 // After optimization: drain under lock, send outside lock
@@ -108,7 +108,7 @@ let failed_requests: Vec<_> = {
 // Lock released here
 
 for (_, tx) in failed_requests {
-    let _ = tx.send(r#"{"error":"connection closed"}"#.to_string());  // ✅ Send outside lock
+    let _ = tx.send(r#"{"error":"connection closed"}"#.to_string());  // -> Send outside lock
 }
 ```
 
@@ -127,9 +127,9 @@ use dashmap::DashMap;
 pub struct WsClient {
     // ...
     pending_requests: Arc<DashMap<u64, ResponseSender>>,
-    public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,  // ✅ Two maps
-    private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,  // ✅ Two maps
-    instruments_cache: Arc<DashMap<String, Instrument>>,  // ✅ Can also be optimized
+    public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,  // Two maps
+    private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,  // Two maps
+    instruments_cache: Arc<DashMap<String, Instrument>>,  // Can also be optimized
     // ...
 }
 ```

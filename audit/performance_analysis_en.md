@@ -1,11 +1,11 @@
 # Performance Analysis and Bottlenecks
 
-**Last update:** January 2025  
+**Last update:** January 2026  
 **See also:** 
-- [thalex_rust_sdk_performance_reaudit_2025.md](./thalex_rust_sdk_performance_reaudit_2025.md) - **current full reaudit report**
-- [FINAL_REPORT.md](./FINAL_REPORT.md) - final report with recommendations
+- [thalex_rust_sdk_performance_reaudit_2025.md](./thalex_rust_sdk_performance_reaudit_2025_en.md) - **current full reaudit report**
+- [FINAL_REPORT.md](./FINAL_REPORT_en.md) - final report with recommendations
 
-**Note:** This document describes general performance patterns. For current details and specific recommendations, see `thalex_rust_sdk_performance_reaudit_2025.md`. Files `*_recheck_report_*` and `*_perf_addendum_*` are historical documents.
+**Note:** This document describes general performance patterns. For current details and specific recommendations, see `thalex_rust_sdk_performance_reaudit_2025_en.md`. Files `*_recheck_report_*` and `*_perf_addendum_*` are historical documents.
 
 ## Identified Bottlenecks
 
@@ -74,7 +74,7 @@
 - More JSON serialization
 - Slower subscription recovery
 
-**Note:** ✅ In current code, the "lock across await" issue is already fixed - snapshot of keys is taken under lock (for `public_subscriptions` and `private_subscriptions` separately), then await is performed without lock. The remaining issue is batching - sending one channel at a time instead of one request with all channels.
+**Note:**  In current code, the "lock across await" issue is already fixed - snapshot of keys is taken under lock (for `public_subscriptions` and `private_subscriptions` separately), then await is performed without lock. The remaining issue is batching - sending one channel at a time instead of one request with all channels.
 
 ### 6. Fixed Reconnection Delay
 
