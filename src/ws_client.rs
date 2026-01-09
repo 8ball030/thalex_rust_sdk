@@ -557,7 +557,7 @@ async fn run_single_connection(
                 match msg {
                     Some(Ok(Message::Text(text))) => {
                         handle_incoming(
-                            text.as_ref(),
+                            &text,
                             pending_requests,
                             public_subscriptions,
                             private_subscriptions,
