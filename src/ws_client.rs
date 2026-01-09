@@ -1,5 +1,5 @@
 use dashmap::DashMap;
-use serde::de::DeserializeOwned;
+use serde::de::{DeserializeOwned, Deserializer};
 
 use tokio::{
     sync::oneshot,
@@ -20,6 +20,7 @@ use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
 use crate::{
     auth_utils::make_auth_token,
     models::{Instrument, RpcErrorResponse, RpcResponse},
+    routing::RoutingVisitor,
     types::{
         ClientError, Error, ExternalEvent, InternalCommand, LoginState, RequestScope,
         ResponseSender, SubscribeResponse, WsStream,
@@ -556,7 +557,7 @@ async fn run_single_connection(
                 match msg {
                     Some(Ok(Message::Text(text))) => {
                         handle_incoming(
-                            text.to_string(),
+                            text.as_ref(),
                             pending_requests,
                             public_subscriptions,
                             private_subscriptions,
@@ -565,7 +566,7 @@ async fn run_single_connection(
                     Some(Ok(Message::Binary(bin))) => {
                         if let Ok(text) = String::from_utf8(bin.to_vec()) {
                             handle_incoming(
-                                text,
+                                &text,
                                 pending_requests,
                                 public_subscriptions,
                                 private_subscriptions,
@@ -606,55 +607,22 @@ async fn run_single_connection(
     }
 }
 
-async fn handle_incoming(
-    text: String,
+pub async fn handle_incoming(
+    text: &str,
     pending_requests: &Arc<DashMap<u64, ResponseSender>>,
     public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
     private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
 ) {
-    let parsed: Value = match serde_json::from_str(&text) {
-        Ok(v) => v,
-        Err(e) => {
-            warn!("Failed to parse incoming message as JSON: {e}; raw: {text}");
-            return;
-        }
-    };
+    let mut deserializer = serde_json::Deserializer::from_str(text);
 
-    // RPC response: has "id" (including null)
-    if let Some(id_value) = parsed.get("id") {
-        // Handle messages with id: null (like subscription responses/errors)
-        if id_value.is_null() {
-            // Check if it's a subscription result or error
-            if let Some(result) = parsed.get("result") {
-                info!("Subscription confirmed: {result}");
-            } else if let Some(error) = parsed.get("error") {
-                warn!("Subscription error: {error}");
-            }
-            return;
-        }
+    let res = deserializer.deserialize_map(RoutingVisitor {
+        text,
+        pending_requests,
+        public_subscriptions,
+        private_subscriptions,
+    });
 
-        // Handle messages with numeric IDs
-        if let Some(id) = id_value.as_u64() {
-            if let Some((_, tx)) = pending_requests.remove(&id) {
-                let _ = tx.send(text);
-            }
-            return;
-        }
+    if let Err(e) = res {
+        warn!("Failed to parse incoming message as JSON: {e}; raw: {text}");
     }
-
-    // Subscription notification: has "channel_name"
-    if let Some(channel_name) = parsed.get("channel_name").and_then(|v| v.as_str()) {
-        for route in [&private_subscriptions, &public_subscriptions] {
-            if let Some(sender) = route.get_mut(channel_name) {
-                if sender.send(text).is_err() {
-                    // Receiver dropped; cleanup this subscription entry.
-                    route.remove(channel_name);
-                }
-                return;
-            }
-        }
-        warn!("No subscription handler for channel: {channel_name}");
-    }
-
-    warn!("Received unhandled message: {text}");
 }
