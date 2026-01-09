@@ -22,9 +22,13 @@ fn bench_handle_incoming(c: &mut Criterion) {
     // Sample RPC response message
     let rpc_response = r#"{"jsonrpc":"2.0","id":42,"result":"ok"}"#.to_string();
 
+    let rpc_response_str = &rpc_response;
     // Sample subscription message
     let sub_message =
         r#"{"channel_name":"ticker.BTCUSD","data":{"price":42000}}"#.to_string();
+
+    let sub_message_str = &sub_message;
+
 
 
     c.bench_function("handle_incoming_rpc_response", |b| {
@@ -32,7 +36,7 @@ fn bench_handle_incoming(c: &mut Criterion) {
             // we need to add a pending request to match the id in rpc_response
             pending_requests.insert(42, tokio::sync::oneshot::channel().0);
             handle_incoming(
-                black_box(rpc_response.clone()),
+                black_box(rpc_response_str),
                 black_box(&pending_requests),
                 black_box(&public_subscriptions),
                 black_box(&private_subscriptions),
@@ -43,7 +47,7 @@ fn bench_handle_incoming(c: &mut Criterion) {
     c.bench_function("handle_incoming_subscription", |b| {
         b.to_async(&rt).iter(|| {
             handle_incoming(
-                black_box(sub_message.clone()),
+                black_box(sub_message_str),
                 black_box(&pending_requests),
                 black_box(&public_subscriptions),
                 black_box(&private_subscriptions),
