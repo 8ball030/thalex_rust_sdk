@@ -3,6 +3,8 @@ use serde_json::{Value, json};
 
 /// Бенчмарк для измерения производительности JSON парсинга
 /// Тестирует различные размеры сообщений и типы данных
+/// Eng: Benchmark to measure JSON parsing performance
+/// Tests various message sizes and data types
 fn bench_json_parsing(c: &mut Criterion) {
     let mut group = c.benchmark_group("json_parsing");
 

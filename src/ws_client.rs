@@ -1,5 +1,5 @@
 use dashmap::DashMap;
-use serde::de::DeserializeOwned;
+use serde::de::{DeserializeOwned, MapAccess, Deserializer};
 
 use tokio::{
     sync::oneshot,
@@ -37,8 +37,8 @@ const READ_TIMEOUT: Duration = Duration::from_secs(7);
 pub struct WsClient {
     write_tx: mpsc::UnboundedSender<InternalCommand>,
     pending_requests: Arc<DashMap<u64, ResponseSender>>,
-    pub public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
-    pub private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    pub public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
+    pub private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
     next_id: Arc<AtomicU64>,
     shutdown_tx: watch::Sender<bool>,
     instruments_cache: Arc<DashMap<String, Instrument>>,
@@ -46,6 +46,95 @@ pub struct WsClient {
     connection_state_rx: watch::Receiver<ExternalEvent>,
     current_connection_state: Arc<Mutex<ExternalEvent>>,
 }
+
+
+
+use serde::de::{self, Visitor};
+use std::fmt;
+
+
+struct RoutingVisitor<'a> {
+    shared_text: Arc<str>,
+    pending_requests: &'a Arc<DashMap<u64, ResponseSender>>,
+    public_subscriptions: &'a Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
+    private_subscriptions: &'a Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
+}
+
+impl<'de, 'a> Visitor<'de> for RoutingVisitor<'a> {
+    type Value = ();
+
+    fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str("a JSON object")
+    }
+
+
+    #[inline(always)]
+    fn visit_map<M>(self, mut map: M) -> Result<(), M::Error>
+    where
+        M: MapAccess<'de>,
+    {
+        while let Some(key) = map.next_key::<&str>()? {
+            match key {
+                "id" => {
+                    let id: Option<u64> = map.next_value()?;
+                    drain_map(&mut map)?;
+                    match id {
+                        None => {
+                            // id: null
+                            // subscription confirmation or error
+                            return Ok(());
+                        }
+                        Some(id) => {
+                            if let Some((_, tx)) = self.pending_requests.remove(&id) {
+                                let _ = tx.send(self.shared_text.clone());
+                            }
+                            return Ok(());
+                        }
+                    }
+                }
+
+                "channel_name" => {
+                    let channel: &str = map.next_value()?;
+                    drain_map(&mut map)?;
+
+                    for route in [
+                        self.private_subscriptions,
+                        self.public_subscriptions,
+                    ] {
+                        if let Some(sender) = route.get_mut(channel) {
+                            if sender.send(self.shared_text.clone()).is_err() {
+                                route.remove(channel);
+                            }
+                            return Ok(());
+                        }
+                    }
+
+                    warn!("No subscription handler for channel: {channel}");
+                    return Ok(());
+                }
+
+                // Skip everything else fast
+                _ => {
+                    let _: de::IgnoredAny = map.next_value()?;
+                }
+            }
+        }
+
+        // No routing keys found
+        warn!("Received unhandled message: {}", self.shared_text);
+        Ok(())
+    }
+}
+
+
+fn drain_map<'de, M>(map: &mut M) -> Result<(), M::Error>
+where
+    M: MapAccess<'de>,
+{
+    while map.next_entry::<de::IgnoredAny, de::IgnoredAny>()?.is_some() {}
+    Ok(())
+}
+
 
 impl WsClient {
     pub fn subscriptions(&self) -> Subscriptions {
@@ -81,9 +170,11 @@ impl WsClient {
         let (cmd_tx, cmd_rx) = mpsc::unbounded_channel::<InternalCommand>();
         let (shutdown_tx, shutdown_rx) = watch::channel(false);
 
-        let pending_requests = Arc::new(DashMap::new());
-        let public_subscriptions = Arc::new(DashMap::new());
-        let private_subscriptions = Arc::new(DashMap::new());
+        // let pending_requests = Arc::new(DashMap::new());
+        let pending_requests: Arc<DashMap<u64, ResponseSender>> =Arc::new(DashMap::new());
+        let public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>> = Arc::new(DashMap::new());
+        let private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>> = Arc::new(DashMap::new());
+
         let next_id = Arc::new(AtomicU64::new(1));
 
         let (connection_state_tx, connection_state_rx) =
@@ -171,7 +262,7 @@ impl WsClient {
     {
         let id = self.next_id.fetch_add(1, Ordering::Relaxed);
 
-        let (tx, rx) = oneshot::channel::<String>();
+        let (tx, rx) = oneshot::channel::<Arc<str>>();
         self.pending_requests.insert(id, tx);
 
         let request = serde_json::json!({
@@ -233,7 +324,7 @@ impl WsClient {
                 id: _id,
                 result: _result,
             } => {
-                let (tx, mut rx) = mpsc::unbounded_channel::<String>();
+                let (tx, mut rx) = mpsc::unbounded_channel::<Arc<str>>();
 
                 {
                     match scope {
@@ -421,8 +512,8 @@ async fn connection_supervisor(
     mut cmd_rx: mpsc::UnboundedReceiver<InternalCommand>,
     mut shutdown_rx: watch::Receiver<bool>,
     pending_requests: Arc<DashMap<u64, ResponseSender>>,
-    public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
-    private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
+    private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
     connection_state_tx: watch::Sender<ExternalEvent>,
 ) {
     info!("Connection supervisor started for {url}");
@@ -466,7 +557,8 @@ async fn connection_supervisor(
                     .collect::<Vec<u64>>()
                 {
                     if let Some((_, tx)) = pending_requests.remove(&key) {
-                        let _ = tx.send(r#"{"error":"connection closed"}"#.to_string());
+                        let msg = format!(r#"{{"error":"connection closed"}}"#);
+                        let _ = tx.send(msg.into());
                     }
                 }
 
@@ -505,8 +597,8 @@ async fn run_single_connection(
     cmd_rx: &mut mpsc::UnboundedReceiver<InternalCommand>,
     shutdown_rx: &mut watch::Receiver<bool>,
     pending_requests: &Arc<DashMap<u64, ResponseSender>>,
-    public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
-    private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
+    private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
 ) -> Result<(), Error> {
     // Set up ping interval
     let mut ping_interval = interval(PING_INTERVAL);
@@ -556,7 +648,7 @@ async fn run_single_connection(
                 match msg {
                     Some(Ok(Message::Text(text))) => {
                         handle_incoming(
-                            text.to_string(),
+                            &text.to_string(),
                             pending_requests,
                             public_subscriptions,
                             private_subscriptions,
@@ -565,7 +657,7 @@ async fn run_single_connection(
                     Some(Ok(Message::Binary(bin))) => {
                         if let Ok(text) = String::from_utf8(bin.to_vec()) {
                             handle_incoming(
-                                text,
+                                &text,
                                 pending_requests,
                                 public_subscriptions,
                                 private_subscriptions,
@@ -606,55 +698,70 @@ async fn run_single_connection(
     }
 }
 
-async fn handle_incoming(
-    text: String,
+pub async fn handle_incoming(
+    text:  &str,
     pending_requests: &Arc<DashMap<u64, ResponseSender>>,
-    public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
-    private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
+    private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
 ) {
-    let parsed: Value = match serde_json::from_str(&text) {
-        Ok(v) => v,
-        Err(e) => {
-            warn!("Failed to parse incoming message as JSON: {e}; raw: {text}");
-            return;
-        }
-    };
+    let shared_text: Arc<str> = Arc::from(text); // allocate once
 
-    // RPC response: has "id" (including null)
-    if let Some(id_value) = parsed.get("id") {
-        // Handle messages with id: null (like subscription responses/errors)
-        if id_value.is_null() {
-            // Check if it's a subscription result or error
-            if let Some(result) = parsed.get("result") {
-                info!("Subscription confirmed: {result}");
-            } else if let Some(error) = parsed.get("error") {
-                warn!("Subscription error: {error}");
-            }
-            return;
-        }
+    let mut deserializer = serde_json::Deserializer::from_str(&text);
 
-        // Handle messages with numeric IDs
-        if let Some(id) = id_value.as_u64() {
-            if let Some((_, tx)) = pending_requests.remove(&id) {
-                let _ = tx.send(text);
-            }
-            return;
-        }
+    let res = deserializer.deserialize_map(RoutingVisitor {
+        shared_text: shared_text.clone(),
+        pending_requests,
+        public_subscriptions,
+        private_subscriptions,
+    });
+
+    if let Err(e) = res {
+        warn!("Failed to parse incoming message as JSON: {e}; raw: {text}");
     }
 
-    // Subscription notification: has "channel_name"
-    if let Some(channel_name) = parsed.get("channel_name").and_then(|v| v.as_str()) {
-        for route in [&private_subscriptions, &public_subscriptions] {
-            if let Some(sender) = route.get_mut(channel_name) {
-                if sender.send(text).is_err() {
-                    // Receiver dropped; cleanup this subscription entry.
-                    route.remove(channel_name);
-                }
-                return;
-            }
-        }
-        warn!("No subscription handler for channel: {channel_name}");
-    }
+    // let parsed: Value = match serde_json::from_str(&text) {
+    //     Ok(v) => v,
+    //     Err(e) => {
+    //         warn!("Failed to parse incoming message as JSON: {e}; raw: {text}");
+    //         return;
+    //     }
+    // };
 
-    warn!("Received unhandled message: {text}");
+    // // RPC response: has "id" (including null)
+    // if let Some(id_value) = parsed.get("id") {
+    //     // Handle messages with id: null (like subscription responses/errors)
+    //     if id_value.is_null() {
+    //         // Check if it's a subscription result or error
+    //         if let Some(result) = parsed.get("result") {
+    //             info!("Subscription confirmed: {result}");
+    //         } else if let Some(error) = parsed.get("error") {
+    //             warn!("Subscription error: {error}");
+    //         }
+    //         return;
+    //     }
+
+    //     // Handle messages with numeric IDs
+    //     if let Some(id) = id_value.as_u64() {
+    //         if let Some((_, tx)) = pending_requests.remove(&id) {
+    //             let _ = tx.send(text);
+    //         }
+    //         return;
+    //     }
+    // }
+
+    // // Subscription notification: has "channel_name"
+    // if let Some(channel_name) = parsed.get("channel_name").and_then(|v| v.as_str()) {
+    //     for route in [&private_subscriptions, &public_subscriptions] {
+    //         if let Some(sender) = route.get_mut(channel_name) {
+    //             if sender.send(text).is_err() {
+    //                 // Receiver dropped; cleanup this subscription entry.
+    //                 route.remove(channel_name);
+    //             }
+    //             return;
+    //         }
+    //     }
+    //     warn!("No subscription handler for channel: {channel_name}");
+    // }
+
+    // warn!("Received unhandled message: {text}");
 }
