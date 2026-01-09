@@ -16,6 +16,9 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    ## NOT on a specific commit
+    # NOT IF THE LAST COMMIT IS A RELEASE COMMIT
+    if: "!contains(github.event.head_commit.message, 'Bump version to v:')"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -45,5 +48,7 @@ jobs:
           echo "${{ secrets.CARGO_REGISTRY_TOKEN }}" | cargo login
 
       - name: Create Release
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           make release
