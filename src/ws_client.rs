@@ -37,8 +37,8 @@ const READ_TIMEOUT: Duration = Duration::from_secs(7);
 pub struct WsClient {
     write_tx: mpsc::UnboundedSender<InternalCommand>,
     pending_requests: Arc<DashMap<u64, ResponseSender>>,
-    pub public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
-    pub private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    pub public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
+    pub private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
     next_id: Arc<AtomicU64>,
     shutdown_tx: watch::Sender<bool>,
     instruments_cache: Arc<DashMap<String, Instrument>>,
@@ -56,8 +56,8 @@ use std::fmt;
 struct RoutingVisitor<'a> {
     text: &'a str,
     pending_requests: &'a Arc<DashMap<u64, ResponseSender>>,
-    public_subscriptions: &'a Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
-    private_subscriptions: &'a Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    public_subscriptions: &'a Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
+    private_subscriptions: &'a Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
 }
 
 impl<'de, 'a> Visitor<'de> for RoutingVisitor<'a> {
@@ -86,7 +86,7 @@ impl<'de, 'a> Visitor<'de> for RoutingVisitor<'a> {
                         }
                         Some(id) => {
                             if let Some((_, tx)) = self.pending_requests.remove(&id) {
-                                let _ = tx.send(self.text.to_string());
+                                let _ = tx.send(Arc::from(self.text));
                             }
                             return Ok(());
                         }
@@ -102,7 +102,7 @@ impl<'de, 'a> Visitor<'de> for RoutingVisitor<'a> {
                         self.public_subscriptions,
                     ] {
                         if let Some(sender) = route.get_mut(channel) {
-                            if sender.send(self.text.to_string()).is_err() {
+                            if sender.send(Arc::from(self.text)).is_err() {
                                 route.remove(channel);
                             }
                             return Ok(());
@@ -170,9 +170,11 @@ impl WsClient {
         let (cmd_tx, cmd_rx) = mpsc::unbounded_channel::<InternalCommand>();
         let (shutdown_tx, shutdown_rx) = watch::channel(false);
 
-        let pending_requests = Arc::new(DashMap::new());
-        let public_subscriptions = Arc::new(DashMap::new());
-        let private_subscriptions = Arc::new(DashMap::new());
+        // let pending_requests = Arc::new(DashMap::new());
+        let pending_requests: Arc<DashMap<u64, ResponseSender>> =Arc::new(DashMap::new());
+        let public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>> = Arc::new(DashMap::new());
+        let private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>> = Arc::new(DashMap::new());
+
         let next_id = Arc::new(AtomicU64::new(1));
 
         let (connection_state_tx, connection_state_rx) =
@@ -260,7 +262,7 @@ impl WsClient {
     {
         let id = self.next_id.fetch_add(1, Ordering::Relaxed);
 
-        let (tx, rx) = oneshot::channel::<String>();
+        let (tx, rx) = oneshot::channel::<Arc<str>>();
         self.pending_requests.insert(id, tx);
 
         let request = serde_json::json!({
@@ -322,7 +324,7 @@ impl WsClient {
                 id: _id,
                 result: _result,
             } => {
-                let (tx, mut rx) = mpsc::unbounded_channel::<String>();
+                let (tx, mut rx) = mpsc::unbounded_channel::<Arc<str>>();
 
                 {
                     match scope {
@@ -510,8 +512,8 @@ async fn connection_supervisor(
     mut cmd_rx: mpsc::UnboundedReceiver<InternalCommand>,
     mut shutdown_rx: watch::Receiver<bool>,
     pending_requests: Arc<DashMap<u64, ResponseSender>>,
-    public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
-    private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
+    private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
     connection_state_tx: watch::Sender<ExternalEvent>,
 ) {
     info!("Connection supervisor started for {url}");
@@ -555,7 +557,8 @@ async fn connection_supervisor(
                     .collect::<Vec<u64>>()
                 {
                     if let Some((_, tx)) = pending_requests.remove(&key) {
-                        let _ = tx.send(r#"{"error":"connection closed"}"#.to_string());
+                        let msg = format!(r#"{{"error":"connection closed"}}"#);
+                        let _ = tx.send(msg.into());
                     }
                 }
 
@@ -594,8 +597,8 @@ async fn run_single_connection(
     cmd_rx: &mut mpsc::UnboundedReceiver<InternalCommand>,
     shutdown_rx: &mut watch::Receiver<bool>,
     pending_requests: &Arc<DashMap<u64, ResponseSender>>,
-    public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
-    private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
+    private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
 ) -> Result<(), Error> {
     // Set up ping interval
     let mut ping_interval = interval(PING_INTERVAL);
@@ -698,8 +701,8 @@ async fn run_single_connection(
 pub async fn handle_incoming(
     text:  &str,
     pending_requests: &Arc<DashMap<u64, ResponseSender>>,
-    public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
-    private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
+    private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
 ) {
     let mut deserializer = serde_json::Deserializer::from_str(&text);
 
