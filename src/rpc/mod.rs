@@ -7,6 +7,7 @@ use crate::{
     ws_client::WsClient,
 };
 
+pub mod subs;
 pub mod accounting;
 pub mod conditional;
 pub mod historical_data;
