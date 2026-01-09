@@ -54,7 +54,7 @@ use std::fmt;
 
 
 struct RoutingVisitor<'a> {
-    text: &'a str,
+    shared_text: Arc<str>,
     pending_requests: &'a Arc<DashMap<u64, ResponseSender>>,
     public_subscriptions: &'a Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
     private_subscriptions: &'a Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
@@ -86,7 +86,7 @@ impl<'de, 'a> Visitor<'de> for RoutingVisitor<'a> {
                         }
                         Some(id) => {
                             if let Some((_, tx)) = self.pending_requests.remove(&id) {
-                                let _ = tx.send(Arc::from(self.text));
+                                let _ = tx.send(self.shared_text.clone());
                             }
                             return Ok(());
                         }
@@ -102,7 +102,7 @@ impl<'de, 'a> Visitor<'de> for RoutingVisitor<'a> {
                         self.public_subscriptions,
                     ] {
                         if let Some(sender) = route.get_mut(channel) {
-                            if sender.send(Arc::from(self.text)).is_err() {
+                            if sender.send(self.shared_text.clone()).is_err() {
                                 route.remove(channel);
                             }
                             return Ok(());
@@ -121,7 +121,7 @@ impl<'de, 'a> Visitor<'de> for RoutingVisitor<'a> {
         }
 
         // No routing keys found
-        warn!("Received unhandled message: {}", self.text);
+        warn!("Received unhandled message: {}", self.shared_text);
         Ok(())
     }
 }
@@ -704,10 +704,12 @@ pub async fn handle_incoming(
     public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
     private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<Arc<str>>>>,
 ) {
+    let shared_text: Arc<str> = Arc::from(text); // allocate once
+
     let mut deserializer = serde_json::Deserializer::from_str(&text);
 
     let res = deserializer.deserialize_map(RoutingVisitor {
-        text: &text,
+        shared_text: shared_text.clone(),
         pending_requests,
         public_subscriptions,
         private_subscriptions,
