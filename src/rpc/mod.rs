@@ -2,10 +2,12 @@ use crate::{
     rpc::{
         accounting::AccountingRpc, conditional::ConditionalRpc, historical_data::HistoricalDataRpc,
         market_data::MarketDataRpc, session_management::SessionManagementRpc, trading::TradingRpc,
+        subs::SubsRpc
     },
     ws_client::WsClient,
 };
 
+pub mod subs;
 pub mod accounting;
 pub mod conditional;
 pub mod historical_data;
@@ -49,6 +51,11 @@ impl<'a> Rpc<'a> {
 
     pub fn historical_data(&self) -> HistoricalDataRpc<'a> {
         HistoricalDataRpc {
+            client: self.client,
+        }
+    }
+    pub fn subs(&self) -> SubsRpc<'a> {
+        SubsRpc {
             client: self.client,
         }
     }
