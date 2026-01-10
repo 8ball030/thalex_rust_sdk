@@ -564,9 +564,9 @@ async fn run_single_connection(
                         ).await;
                     }
                     Some(Ok(Message::Binary(bin))) => {
-                        if let Ok(text) = String::from_utf8(bin.to_vec()) {
+                        if let Ok(text) = str::from_utf8(&bin) {
                             handle_incoming(
-                                &text,
+                                text,
                                 pending_requests,
                                 public_subscriptions,
                                 private_subscriptions,
