@@ -6,7 +6,7 @@ use dashmap::DashMap;
 use thalex_rust_sdk::{
     types::{ResponseSender, SubscriptionChannel},
     ws_client::handle_incoming,
-}; // <-- change `my_crate`
+};
 
 fn bench_handle_incoming(c: &mut Criterion) {
     let rt = tokio::runtime::Runtime::new().unwrap();
