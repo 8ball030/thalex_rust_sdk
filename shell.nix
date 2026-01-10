@@ -13,6 +13,7 @@ pkgs.mkShell {
     openapi-generator-cli
     python312
     redocly
+    linuxPackages.perf
 
   ];
   nativeBuildInputs =

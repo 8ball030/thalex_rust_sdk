@@ -30,6 +30,7 @@ TAGS_TO_PROCESS = [
     "rpc_market_data",
     "rpc_accounting",
     "rpc_conditional",
+    "rpc_mm",
 ]
 
 
@@ -54,6 +55,9 @@ RPC_RESULT_IMPORT_ALIASES = {
     "RequiredMarginForOrderRpcResult": "MarginBreakdownWithOrder",
     # conditional order
     "CreateConditionalOrderRpcResult": "ConditionalOrder",
+    "MassQuoteRpcResult": "DoubleSidedQuoteResult",
+    "CancelMassQuoteRpcResult": "Value",
+    "SetMmProtectionRpcResult": "Value",
 }
 
 RETURN_MODEL_TO_VECTOR_ALIASES = {
@@ -95,7 +99,11 @@ MODELS_TO_LIFT = [
     "PortfolioMarginBreakdown",
     "MarginBreakdownWithOrder",
     # Conditional order
-    "ConditionalOrder"
+    "ConditionalOrder",
+    # mm
+    "DoubleSidedQuoteResult",
+    "DoubleSidedQuote",
+
 ]
 
 
@@ -373,14 +381,36 @@ def process_tag(spec, tag):
 
         if result_model_name in NEW_MODELS:
             print(f"   Warning: Response model {result_model_name} already exists. Overwriting.")
-            raise ValueError("Duplicate response model name")
-        NEW_MODELS[result_model_name] = result_model_schema
+            actual_model = NEW_MODELS[result_model_name]
+            new_model = result_model_schema
+            del new_model['example']
+            del actual_model['example']
+            del new_model['properties']['result']['example']
+            del actual_model['properties']['result']['example']
+            if NEW_MODELS[result_model_name] != result_model_schema:
+                pprint(NEW_MODELS[result_model_name])
+                pprint(result_model_schema)
+                raise ValueError("Duplicate response model name")
+            NEW_MODELS[result_model_name] = new_model
+        else:
+            NEW_MODELS[result_model_name] = result_model_schema
 
         param_schema_name = to_camel_case(method.split("/")[-1]) + "Params"
         if param_schema_name in NEW_MODELS:
             print(f"   Warning: Param schema {param_schema_name} already exists. Overwriting.")
-            raise ValueError("Duplicate param schema name")
-        NEW_MODELS[param_schema_name] = params
+            actual_model = NEW_MODELS[param_schema_name]
+            new_model = params
+            pprint(new_model)
+            pprint(actual_model)
+            del new_model['properties']['channels']['example']
+            del actual_model['properties']['channels']['example']
+            if new_model != actual_model:
+                pprint(NEW_MODELS[param_schema_name])
+                pprint(params)
+                raise ValueError("Duplicate param schema name")
+            NEW_MODELS[param_schema_name] = new_model
+        else:
+            NEW_MODELS[param_schema_name] = params
 
         new_path_spec = generate_new_path_spec(result_model_name, path_spec, param_schema_name)
         NEW_PATHS["/" + path_name] = new_path_spec
@@ -441,6 +471,8 @@ def clean_useless_files():
         if file_path.name.startswith("_"):
             print("  renaming req file file")
             new_name = file_path.name.replace("_public_", "").replace("_private_", "")
+            if new_name.startswith("_"):
+                new_name = new_name[1:]
             file_path.rename(file_path.parent / new_name)
             file_path = file_path.parent / new_name
         if file_path.name.endswith("_response_result.rs"):
