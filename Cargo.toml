@@ -7,7 +7,7 @@ repository = "https://github.com/8ball030/thalex_rust_sdk"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-tokio = { version = "1", features = ["full"] }
+tokio = { version = "1", features = ["fs", "time", "sync", "rt-multi-thread", "macros"] }
 tokio-tungstenite = { version = "0.28", features = ["rustls-tls-webpki-roots"] }
 futures-util = "0.3"
 serde = { version = "1.0", features = ["derive"] }
@@ -27,7 +27,7 @@ serial_test = { version = "3.2.0", features = ["async"] }
 rust_decimal_macros = "1.39.0"
 rust_decimal = "1.39.0"
 chrono = "0.4.42"
-criterion = { version = "0.5", features = ["async_tokio", "html_reports"] }
+criterion = { version = "0.8.1", features = ["async_tokio", "html_reports"] }
 tokio-test = "0.4"
 
 [[bench]]
@@ -46,3 +46,6 @@ harness = false
 name = "subscription_throughput"
 harness = false
 
+[profile.dev]
+opt-level = 0
+debug = 0

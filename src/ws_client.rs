@@ -3,6 +3,7 @@ use serde::de::DeserializeOwned;
 
 use tokio::{
     sync::oneshot,
+    task::JoinHandle,
     time::{Duration, Instant, MissedTickBehavior, interval, sleep},
 };
 
@@ -23,7 +24,7 @@ use crate::{
     routing::{extract_channel, extract_id},
     types::{
         ClientError, Error, ExternalEvent, InternalCommand, LoginState, RequestScope,
-        ResponseSender, SubscribeResponse, SubscriptionChannel, WsStream,
+        ResponseSender, SubscribeResponse, WsStream,
     },
     utils::round_to_ticks,
 };
@@ -38,22 +39,24 @@ const READ_TIMEOUT: Duration = Duration::from_secs(7);
 pub struct WsClient {
     write_tx: mpsc::UnboundedSender<InternalCommand>,
     pending_requests: Arc<DashMap<u64, ResponseSender>>,
-    pub public_subscriptions: Arc<DashMap<String, SubscriptionChannel>>,
-    pub private_subscriptions: Arc<DashMap<String, SubscriptionChannel>>,
+    pub public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    pub private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
     next_id: Arc<AtomicU64>,
     shutdown_tx: watch::Sender<bool>,
     instruments_cache: Arc<DashMap<String, Instrument>>,
     login_state: LoginState,
     connection_state_rx: watch::Receiver<ExternalEvent>,
     current_connection_state: Arc<Mutex<ExternalEvent>>,
+    supervisor_handle: Arc<Mutex<Option<JoinHandle<()>>>>,
+    subscription_tasks: Arc<Mutex<Vec<JoinHandle<()>>>>,
 }
 
 impl WsClient {
-    pub fn subscriptions(&self) -> Subscriptions {
+    pub fn subscriptions(&self) -> Subscriptions<'_> {
         Subscriptions { client: self }
     }
 
-    pub fn rpc(&self) -> Rpc {
+    pub fn rpc(&self) -> Rpc<'_> {
         Rpc { client: self }
     }
 
@@ -62,13 +65,16 @@ impl WsClient {
         let key_id = var("THALEX_KEY_ID").unwrap();
         let account_id = var("THALEX_ACCOUNT_ID").unwrap();
         let client = WsClient::new(URL, key_id, account_id, key_path).await?;
+        client.wait_for_connection().await;
         info!("WsClient created from environment variables Logging in...");
         client.login().await.expect("Login failed");
         Ok(client)
     }
 
     pub async fn new_public() -> Result<Self, Error> {
-        WsClient::new(URL, "".to_string(), "".to_string(), "".to_string()).await
+        let client = WsClient::new(URL, "".to_string(), "".to_string(), "".to_string()).await?;
+        client.wait_for_connection().await;
+        Ok(client)
     }
 
     pub async fn new(
@@ -98,6 +104,16 @@ impl WsClient {
 
         let _ = connection_state_tx.send(ExternalEvent::Disconnected);
 
+        let supervisor_handle = tokio::spawn(connection_supervisor(
+            url,
+            cmd_rx,
+            shutdown_rx,
+            pending_requests.clone(),
+            public_subscriptions.clone(),
+            private_subscriptions.clone(),
+            connection_state_tx,
+        ));
+
         let client = WsClient {
             write_tx: cmd_tx.clone(),
             pending_requests: pending_requests.clone(),
@@ -109,18 +125,9 @@ impl WsClient {
             login_state,
             connection_state_rx,
             current_connection_state: Arc::new(Mutex::new(ExternalEvent::Disconnected)),
+            supervisor_handle: Arc::new(Mutex::new(Some(supervisor_handle))),
+            subscription_tasks: Arc::new(Mutex::new(Vec::new())),
         };
-
-        tokio::spawn(connection_supervisor(
-            url,
-            cmd_rx,
-            shutdown_rx,
-            pending_requests,
-            public_subscriptions,
-            private_subscriptions,
-            connection_state_tx,
-        ));
-        // client.cache_instruments().await?;
         Ok(client)
     }
 
@@ -172,7 +179,7 @@ impl WsClient {
     {
         let id = self.next_id.fetch_add(1, Ordering::Relaxed);
 
-        let (tx, rx) = oneshot::channel::<Arc<str>>();
+        let (tx, rx) = oneshot::channel::<String>();
         self.pending_requests.insert(id, tx);
 
         let request = serde_json::json!({
@@ -206,8 +213,28 @@ impl WsClient {
 
     pub async fn shutdown(&self, reason: &'static str) -> Result<(), Error> {
         info!("Shutdown requested: {reason}");
+        self.public_subscriptions.clear();
+        self.private_subscriptions.clear();
         let _ = self.shutdown_tx.send(true);
         let _ = self.write_tx.send(InternalCommand::Close);
+        if let Some(handle) = self.supervisor_handle.lock().await.take() {
+            match tokio::time::timeout(Duration::from_secs(5), handle).await {
+                Ok(Ok(())) => {
+                    info!("Supervisor task completed successfully");
+                }
+                Ok(Err(e)) => {
+                    error!("Supervisor task panicked: {e:?}");
+                    return Err("Supervisor task panicked".into());
+                }
+                Err(_) => {
+                    error!("Supervisor task timeout after 5s");
+                    return Err("Supervisor shutdown timeout".into());
+                }
+            }
+        }
+        for task in self.subscription_tasks.lock().await.drain(..) {
+            task.abort();
+        }
         Ok(())
     }
 
@@ -234,7 +261,7 @@ impl WsClient {
                 id: _id,
                 result: _result,
             } => {
-                let (tx, mut rx) = mpsc::unbounded_channel::<Arc<str>>();
+                let (tx, mut rx) = mpsc::unbounded_channel::<String>();
 
                 {
                     match scope {
@@ -249,7 +276,7 @@ impl WsClient {
                     }
                 }
 
-                tokio::spawn(async move {
+                let handle = tokio::spawn(async move {
                     while let Some(msg) = rx.recv().await {
                         let parsed: P = match serde_json::from_str(&msg) {
                             Ok(m) => m,
@@ -262,6 +289,7 @@ impl WsClient {
                         callback(parsed);
                     }
                 });
+                self.subscription_tasks.lock().await.push(handle);
                 Ok(channel)
             }
             SubscribeResponse::Err { error, id: _id } => {
@@ -273,7 +301,9 @@ impl WsClient {
 
     pub async fn unsubscribe(&self, channel: &str) -> Result<(), Error> {
         let channel = channel.to_string();
-
+        if let Some(task) = self.subscription_tasks.lock().await.pop() {
+            task.abort();
+        }
         {
             if self.public_subscriptions.remove(&channel).is_some() {
                 let _: RpcResponse = self
@@ -422,8 +452,8 @@ async fn connection_supervisor(
     mut cmd_rx: mpsc::UnboundedReceiver<InternalCommand>,
     mut shutdown_rx: watch::Receiver<bool>,
     pending_requests: Arc<DashMap<u64, ResponseSender>>,
-    public_subscriptions: Arc<DashMap<String, SubscriptionChannel>>,
-    private_subscriptions: Arc<DashMap<String, SubscriptionChannel>>,
+    public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
     connection_state_tx: watch::Sender<ExternalEvent>,
 ) {
     info!("Connection supervisor started for {url}");
@@ -467,7 +497,7 @@ async fn connection_supervisor(
                     .collect::<Vec<u64>>()
                 {
                     if let Some((_, tx)) = pending_requests.remove(&key) {
-                        let _ = tx.send(r#"{"error":"connection closed"}"#.into());
+                        let _ = tx.send(r#"{"error":"connection closed"}"#.to_string());
                     }
                 }
 
@@ -506,8 +536,8 @@ async fn run_single_connection(
     cmd_rx: &mut mpsc::UnboundedReceiver<InternalCommand>,
     shutdown_rx: &mut watch::Receiver<bool>,
     pending_requests: &Arc<DashMap<u64, ResponseSender>>,
-    public_subscriptions: &Arc<DashMap<String, SubscriptionChannel>>,
-    private_subscriptions: &Arc<DashMap<String, SubscriptionChannel>>,
+    public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
 ) -> Result<(), Error> {
     // Set up ping interval
     let mut ping_interval = interval(PING_INTERVAL);
@@ -564,9 +594,9 @@ async fn run_single_connection(
                         ).await;
                     }
                     Some(Ok(Message::Binary(bin))) => {
-                        if let Ok(text) = str::from_utf8(&bin) {
+                        if let Ok(text) = String::from_utf8(bin.to_vec()) {
                             handle_incoming(
-                                text,
+                                &text,
                                 pending_requests,
                                 public_subscriptions,
                                 private_subscriptions,
@@ -611,8 +641,8 @@ async fn run_single_connection(
 pub async fn handle_incoming(
     text: &str,
     pending_requests: &Arc<DashMap<u64, ResponseSender>>,
-    public_subscriptions: &Arc<DashMap<String, SubscriptionChannel>>,
-    private_subscriptions: &Arc<DashMap<String, SubscriptionChannel>>,
+    public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
 ) {
     // println!("Incoming message: {text}");
     let bytes = text.as_bytes();

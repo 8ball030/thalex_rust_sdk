@@ -199,14 +199,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                             let mut state = state.lock().await;
                             info!("Order {} is no longer active.", order.order_id);
                             info!("Removing order from strategy state.");
-                            if let Some(bid_order) = &state.bid_order {
-                                if bid_order.order_id == order.order_id {
+                            if let Some(bid_order) = &state.bid_order
+                                && bid_order.order_id == order.order_id {
                                     state.bid_order = None;
-                                }}
-                            if let Some(ask_order) = &state.ask_order {
-                                if ask_order.order_id == order.order_id {
+                                }
+                            if let Some(ask_order) = &state.ask_order
+                                && ask_order.order_id == order.order_id {
                                     state.ask_order = None;
-                                }}
+                                }
                         }
                         _ => { }
                     }

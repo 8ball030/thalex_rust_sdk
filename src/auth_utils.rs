@@ -17,7 +17,8 @@ pub fn make_auth_token(
         iat: SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
-            .as_secs() as i64,
+            .as_millis() as i64
+            / 1000,
     };
 
     let mut header = Header::new(Algorithm::RS512);

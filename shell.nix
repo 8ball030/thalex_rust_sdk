@@ -14,6 +14,9 @@ pkgs.mkShell {
     python312
     redocly
     linuxPackages.perf
+    sccache
+    mold
+    clang
 
   ];
   nativeBuildInputs =
@@ -40,8 +43,33 @@ pkgs.mkShell {
     ];
   
   shellHook = ''
+    # Rust toolchain
     rustup default 1.88.0
     rustup component add rust-src
-    export PATH=/home/$(whoami)/.cargo/bin:$PATH
+
+    # Paths
+    export PATH=$HOME/.cargo/bin:$PATH
+
+    # Linker & optimizer
+    export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="clang"
+
+    # sccache config (super fast in-RAM caching)
+    export RUSTC_WRAPPER="sccache"
+    export RUSTC_WRAPPER="${pkgs.sccache}/bin/sccache"
+
+    export SCCACHE_CACHE_SIZE="20G"
+    export SCCACHE_JOBS=$(nproc)
+    # sscache --start-server
+
+    # Cargo parallelism
+    export CARGO_BUILD_JOBS=$(nproc)
+    export CARGO_INCREMENTAL=0
+
+    export RUSTFLAGS="-C link-arg=-fuse-ld=mold -C opt-level=0"
+    export CARGO_HOME=/dev/shm/cargo
+    mkdir -p $CARGO_HOME
+    sccache --start-server | true
+
+	
   '';
 }
