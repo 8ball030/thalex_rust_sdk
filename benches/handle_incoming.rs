@@ -4,10 +4,9 @@ use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use dashmap::DashMap;
 use tokio::sync::mpsc;
 
-use thalex_rust_sdk::ws_client::handle_incoming; // <-- change `my_crate`
+use thalex_rust_sdk::{types::ResponseSender, ws_client::handle_incoming}; // <-- change `my_crate`
 
 // Adjust to your actual type
-type ResponseSender = tokio::sync::oneshot::Sender<String>;
 
 fn bench_handle_incoming(c: &mut Criterion) {
     let rt = tokio::runtime::Runtime::new().unwrap();
