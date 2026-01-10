@@ -3,21 +3,22 @@ use std::sync::Arc;
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use dashmap::DashMap;
 
-use thalex_rust_sdk::{
-    types::{ResponseSender, SubscriptionChannel},
-    ws_client::handle_incoming,
-};
+use thalex_rust_sdk::{types::ResponseSender, ws_client::handle_incoming};
+use tokio::sync::mpsc::UnboundedSender;
 
 fn bench_handle_incoming(c: &mut Criterion) {
     let rt = tokio::runtime::Runtime::new().unwrap();
 
     // ---- Shared state (NOT measured) ----
     let pending_requests: Arc<DashMap<u64, ResponseSender>> = Arc::new(DashMap::new());
-    let public_subscriptions: Arc<DashMap<String, SubscriptionChannel>> = Arc::new(DashMap::new());
-    let private_subscriptions: Arc<DashMap<String, SubscriptionChannel>> = Arc::new(DashMap::new());
+
+    let public_subscriptions: Arc<DashMap<String, UnboundedSender<String>>> =
+        Arc::new(DashMap::new());
+    let private_subscriptions: Arc<DashMap<String, UnboundedSender<String>>> =
+        Arc::new(DashMap::new());
 
     // Sample RPC response message
-    let rpc_response = r#"{"jsonrpc":"2.0","id":42,"result":"ok"}"#.to_string();
+    let rpc_response = r#"{"id":42,"jsonrpc":"2.0","result":"ok"}"#.to_string();
 
     let rpc_response_str = &rpc_response;
     // Sample subscription message

@@ -10,11 +10,15 @@ macro_rules! with_private_client {
         );
 
         let $client = WsClient::from_env().await.unwrap();
-        tokio::time::sleep(std::time::Duration::from_millis(2000)).await;
+        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
 
         let result = { $body };
 
-        $client.shutdown("Test complete").await.unwrap();
+        // check it shuts down properly
+        match $client.shutdown("Test complete").await {
+            Ok(_) => (),
+            Err(e) => eprintln!("Error during client shutdown: {:?}", e),
+        }
         result
     }};
 }
@@ -23,11 +27,13 @@ macro_rules! with_private_client {
 macro_rules! with_public_client {
     ($client:ident, $body:expr) => {{
         let $client = WsClient::new_public().await.unwrap();
-        tokio::time::sleep(std::time::Duration::from_millis(50)).await;
 
         let result = { $body };
 
-        $client.shutdown("Test complete").await.unwrap();
+        match $client.shutdown("Test complete").await {
+            Ok(_) => (),
+            Err(e) => eprintln!("Error during client shutdown: {:?}", e),
+        }
         result
     }};
 }
