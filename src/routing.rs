@@ -2,15 +2,14 @@ use dashmap::DashMap;
 use log::warn;
 use serde::de::{self, MapAccess, Visitor};
 use std::{fmt, sync::Arc};
-use tokio::sync::mpsc::UnboundedSender;
 
-use crate::types::ResponseSender;
+use crate::types::{ResponseSender, SubscriptionChannel};
 
 pub struct RoutingVisitor<'a> {
     pub text: &'a str,
     pub pending_requests: &'a Arc<DashMap<u64, ResponseSender>>,
-    pub public_subscriptions: &'a Arc<DashMap<String, UnboundedSender<String>>>,
-    pub private_subscriptions: &'a Arc<DashMap<String, UnboundedSender<String>>>,
+    pub public_subscriptions: &'a Arc<DashMap<String, SubscriptionChannel>>,
+    pub private_subscriptions: &'a Arc<DashMap<String, SubscriptionChannel>>,
 }
 
 impl<'de, 'a> Visitor<'de> for RoutingVisitor<'a> {
@@ -51,7 +50,7 @@ impl<'de, 'a> Visitor<'de> for RoutingVisitor<'a> {
 
                     for route in [self.private_subscriptions, self.public_subscriptions] {
                         if let Some(sender) = route.get_mut(channel) {
-                            if sender.send(self.text.to_string()).is_err() {
+                            if sender.send(self.text.into()).is_err() {
                                 route.remove(channel);
                             }
                             return Ok(());

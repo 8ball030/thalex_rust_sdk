@@ -23,7 +23,7 @@ use crate::{
     routing::RoutingVisitor,
     types::{
         ClientError, Error, ExternalEvent, InternalCommand, LoginState, RequestScope,
-        ResponseSender, SubscribeResponse, WsStream,
+        ResponseSender, SubscribeResponse, SubscriptionChannel, WsStream,
     },
     utils::round_to_ticks,
 };
@@ -38,8 +38,8 @@ const READ_TIMEOUT: Duration = Duration::from_secs(7);
 pub struct WsClient {
     write_tx: mpsc::UnboundedSender<InternalCommand>,
     pending_requests: Arc<DashMap<u64, ResponseSender>>,
-    pub public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
-    pub private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    pub public_subscriptions: Arc<DashMap<String, SubscriptionChannel>>,
+    pub private_subscriptions: Arc<DashMap<String, SubscriptionChannel>>,
     next_id: Arc<AtomicU64>,
     shutdown_tx: watch::Sender<bool>,
     instruments_cache: Arc<DashMap<String, Instrument>>,
@@ -234,7 +234,7 @@ impl WsClient {
                 id: _id,
                 result: _result,
             } => {
-                let (tx, mut rx) = mpsc::unbounded_channel::<String>();
+                let (tx, mut rx) = mpsc::unbounded_channel::<Arc<str>>();
 
                 {
                     match scope {
@@ -422,8 +422,8 @@ async fn connection_supervisor(
     mut cmd_rx: mpsc::UnboundedReceiver<InternalCommand>,
     mut shutdown_rx: watch::Receiver<bool>,
     pending_requests: Arc<DashMap<u64, ResponseSender>>,
-    public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
-    private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    public_subscriptions: Arc<DashMap<String, SubscriptionChannel>>,
+    private_subscriptions: Arc<DashMap<String, SubscriptionChannel>>,
     connection_state_tx: watch::Sender<ExternalEvent>,
 ) {
     info!("Connection supervisor started for {url}");
@@ -506,8 +506,8 @@ async fn run_single_connection(
     cmd_rx: &mut mpsc::UnboundedReceiver<InternalCommand>,
     shutdown_rx: &mut watch::Receiver<bool>,
     pending_requests: &Arc<DashMap<u64, ResponseSender>>,
-    public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
-    private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    public_subscriptions: &Arc<DashMap<String, SubscriptionChannel>>,
+    private_subscriptions: &Arc<DashMap<String, SubscriptionChannel>>,
 ) -> Result<(), Error> {
     // Set up ping interval
     let mut ping_interval = interval(PING_INTERVAL);
@@ -610,8 +610,8 @@ async fn run_single_connection(
 pub async fn handle_incoming(
     text: &str,
     pending_requests: &Arc<DashMap<u64, ResponseSender>>,
-    public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
-    private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    public_subscriptions: &Arc<DashMap<String, SubscriptionChannel>>,
+    private_subscriptions: &Arc<DashMap<String, SubscriptionChannel>>,
 ) {
     let mut deserializer = serde_json::Deserializer::from_str(text);
 
