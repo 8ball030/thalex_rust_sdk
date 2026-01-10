@@ -1,5 +1,5 @@
 use dashmap::DashMap;
-use serde::de::{DeserializeOwned, Deserializer};
+use serde::de::DeserializeOwned;
 
 use tokio::{
     sync::oneshot,
@@ -20,7 +20,7 @@ use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
 use crate::{
     auth_utils::make_auth_token,
     models::{Instrument, RpcErrorResponse, RpcResponse},
-    routing::RoutingVisitor,
+    routing::{extract_channel, extract_id},
     types::{
         ClientError, Error, ExternalEvent, InternalCommand, LoginState, RequestScope,
         ResponseSender, SubscribeResponse, WsStream,
@@ -607,22 +607,38 @@ async fn run_single_connection(
     }
 }
 
+#[inline(always)]
 pub async fn handle_incoming(
     text: &str,
     pending_requests: &Arc<DashMap<u64, ResponseSender>>,
     public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
     private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
 ) {
-    let mut deserializer = serde_json::Deserializer::from_str(text);
+    // println!("Incoming message: {text}");
+    let bytes = text.as_bytes();
 
-    let res = deserializer.deserialize_map(RoutingVisitor {
-        text,
-        pending_requests,
-        public_subscriptions,
-        private_subscriptions,
-    });
-
-    if let Err(e) = res {
-        warn!("Failed to parse incoming message as JSON: {e}; raw: {text}");
+    // ---- fast path: id ----
+    if let Some(id) = extract_id(bytes) {
+        if let Some((_, tx)) = pending_requests.remove(&id) {
+            let _ = tx.send(text.to_owned());
+        }
+        return;
     }
+
+    // ---- fast path: channel_name ----
+    if let Some(channel) = extract_channel(bytes) {
+        for routes in [private_subscriptions, public_subscriptions] {
+            if let Some(sender) = routes.get(channel) {
+                if sender.send(text.to_owned()).is_err() {
+                    routes.remove(channel);
+                }
+                return;
+            }
+        }
+
+        warn!("No subscription handler for channel: {channel}");
+        return;
+    }
+    // ---- slow path / unhandled ----
+    warn!("Received unhandled message: {text}");
 }
