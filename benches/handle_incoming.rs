@@ -8,8 +8,6 @@ use thalex_rust_sdk::{
     ws_client::handle_incoming,
 }; // <-- change `my_crate`
 
-// Adjust to your actual type
-
 fn bench_handle_incoming(c: &mut Criterion) {
     let rt = tokio::runtime::Runtime::new().unwrap();
 
