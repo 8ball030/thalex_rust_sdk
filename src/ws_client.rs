@@ -607,22 +607,98 @@ async fn run_single_connection(
     }
 }
 
+// pub async fn handle_incoming(
+//     text: &str,
+//     pending_requests: &Arc<DashMap<u64, ResponseSender>>,
+//     public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+//     private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+// ) {
+//     let mut deserializer = serde_json::Deserializer::from_str(text);
+
+//     let res = deserializer.deserialize_map(RoutingVisitor {
+//         text,
+//         pending_requests,
+//         public_subscriptions,
+//         private_subscriptions,
+//     });
+
+//     if let Err(e) = res {
+//         warn!("Failed to parse incoming message as JSON: {e}; raw: {text}");
+//     }
+// }
+
+
+#[inline(always)]
 pub async fn handle_incoming(
     text: &str,
     pending_requests: &Arc<DashMap<u64, ResponseSender>>,
     public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
     private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
 ) {
-    let mut deserializer = serde_json::Deserializer::from_str(text);
+    // println!("Incoming message: {text}");
+    let bytes = text.as_bytes();
 
-    let res = deserializer.deserialize_map(RoutingVisitor {
-        text,
-        pending_requests,
-        public_subscriptions,
-        private_subscriptions,
-    });
-
-    if let Err(e) = res {
-        warn!("Failed to parse incoming message as JSON: {e}; raw: {text}");
+    // ---- fast path: id ----
+    if let Some(id) = extract_id(bytes) {
+        if let Some((_, tx)) = pending_requests.remove(&id) {
+            let _ = tx.send(text.to_owned());
+        }
+        return;
     }
+
+    // ---- fast path: channel_name ----
+    if let Some(channel) = extract_channel(bytes) {
+        for routes in [private_subscriptions, public_subscriptions] {
+            if let Some(sender) = routes.get(channel) {
+                if sender.send(text.to_owned()).is_err() {
+                    routes.remove(channel);
+                }
+                return;
+            }
+        }
+
+        warn!("No subscription handler for channel: {channel}");
+        return;
+    }
+
+    // ---- slow path / unhandled ----
+    warn!("Received unhandled message: {text}");
 }
+#[inline(always)]
+fn extract_id(bytes: &[u8]) -> Option<u64> {
+    // Quick check: does it start with "{"id":"
+    if !bytes.starts_with(b"{\"id\":") {
+        return None;
+    }
+
+    // Start parsing after `"id":`
+    let mut i = 6; // skip {"id":
+    let start = i;
+
+    // parse digits
+    while let Some(&b) = bytes.get(i) {
+        if !b.is_ascii_digit() {
+            break;
+        }
+        i += 1;
+    }
+
+    std::str::from_utf8(&bytes[start..i]).ok()?.parse().ok()
+}
+
+
+#[inline(always)]
+fn extract_channel<'a>(bytes: &'a [u8]) -> Option<&'a str> {
+    if !bytes.starts_with(b"{\"channel_name\":\"") { return None; }
+    let mut i = 17;
+    let start = i;
+
+    while i < bytes.len() {
+        let b = bytes[i];
+        if b == b'"' { break; }
+        i += 1;
+    }
+
+    unsafe { Some(std::str::from_utf8_unchecked(&bytes[start..i])) }
+}
+
