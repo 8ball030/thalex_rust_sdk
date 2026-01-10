@@ -8,7 +8,7 @@ pub struct MmRfqSubscriptions<'a> {
     pub client: &'a WsClient,
 }
 impl<'a> MmRfqSubscriptions<'a> {
-    pub async fn mm_rfqs<F, Fut>(&self, mut callback: F) -> Result<(), Error>
+    pub async fn mm_rfqs<F, Fut>(&self, mut callback: F) -> Result<String, Error>
     where
         F: FnMut(MmRfqsPayload) -> Fut + Send + 'static,
         Fut: Future<Output = ()> + Send + 'static,
@@ -17,17 +17,17 @@ impl<'a> MmRfqSubscriptions<'a> {
         self.client
             .subscribe_channel(
                 RequestScope::Private,
-                channel,
+                channel.clone(),
                 move |msg: MmRfqsNotification| {
                     let fut = callback(msg.notification);
                     tokio::spawn(fut);
                 },
             )
             .await?;
-        Ok(())
+        Ok(channel)
     }
 
-    pub async fn mm_rfq_quotes<F, Fut>(&self, mut callback: F) -> Result<(), Error>
+    pub async fn mm_rfq_quotes<F, Fut>(&self, mut callback: F) -> Result<String, Error>
     where
         F: FnMut(MmRfqQuotesPayload) -> Fut + Send + 'static,
         Fut: Future<Output = ()> + Send + 'static,
@@ -36,13 +36,13 @@ impl<'a> MmRfqSubscriptions<'a> {
         self.client
             .subscribe_channel(
                 RequestScope::Private,
-                channel,
+                channel.clone(),
                 move |msg: MmRfqQuotesNotification| {
                     let fut = callback(msg.notification);
                     tokio::spawn(fut);
                 },
             )
             .await?;
-        Ok(())
+        Ok(channel)
     }
 }

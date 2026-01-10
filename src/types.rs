@@ -1,18 +1,14 @@
 use serde::Deserialize;
 use serde_json::Value;
-use std::{fmt, sync::Arc};
+use std::fmt;
 use thiserror::Error;
-use tokio::{
-    net::TcpStream,
-    sync::{mpsc, oneshot},
-};
+use tokio::{net::TcpStream, sync::oneshot};
 use tokio_tungstenite::{MaybeTlsStream, WebSocketStream, tungstenite::Message};
 
 use crate::models::{ErrorResponse, RpcErrorResponse};
 
 pub type WsStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
-pub type ResponseSender = oneshot::Sender<Arc<str>>;
-pub type SubscriptionChannel = mpsc::UnboundedSender<Arc<str>>;
+pub type ResponseSender = oneshot::Sender<String>;
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 
 pub enum InternalCommand {

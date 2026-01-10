@@ -8,7 +8,7 @@ pub struct NotificationsSubscriptions<'a> {
     pub client: &'a WsClient,
 }
 impl<'a> NotificationsSubscriptions<'a> {
-    pub async fn user_inbox_notifications<F, Fut>(&self, mut callback: F) -> Result<(), Error>
+    pub async fn user_inbox_notifications<F, Fut>(&self, mut callback: F) -> Result<String, Error>
     where
         F: FnMut(Notifications) -> Fut + Send + 'static,
         Fut: Future<Output = ()> + Send + 'static,
@@ -17,13 +17,13 @@ impl<'a> NotificationsSubscriptions<'a> {
         self.client
             .subscribe_channel(
                 RequestScope::Private,
-                channel,
+                channel.clone(),
                 move |msg: UserInboxNotificationsNotification| {
                     let fut = callback(msg.notification);
                     tokio::spawn(fut);
                 },
             )
             .await?;
-        Ok(())
+        Ok(channel)
     }
 }

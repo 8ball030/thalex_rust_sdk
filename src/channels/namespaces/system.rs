@@ -8,7 +8,7 @@ pub struct SystemSubscriptions<'a> {
     pub client: &'a WsClient,
 }
 impl<'a> SystemSubscriptions<'a> {
-    pub async fn system<F, Fut>(&self, mut callback: F) -> Result<(), Error>
+    pub async fn system<F, Fut>(&self, mut callback: F) -> Result<String, Error>
     where
         F: FnMut(SystemEvent) -> Fut + Send + 'static,
         Fut: Future<Output = ()> + Send + 'static,
@@ -17,17 +17,17 @@ impl<'a> SystemSubscriptions<'a> {
         self.client
             .subscribe_channel(
                 RequestScope::Public,
-                channel,
+                channel.clone(),
                 move |msg: SystemNotification| {
                     let fut = callback(msg.notification);
                     tokio::spawn(fut);
                 },
             )
             .await?;
-        Ok(())
+        Ok(channel)
     }
 
-    pub async fn banners<F, Fut>(&self, mut callback: F) -> Result<(), Error>
+    pub async fn banners<F, Fut>(&self, mut callback: F) -> Result<String, Error>
     where
         F: FnMut(BannersPayload) -> Fut + Send + 'static,
         Fut: Future<Output = ()> + Send + 'static,
@@ -36,13 +36,13 @@ impl<'a> SystemSubscriptions<'a> {
         self.client
             .subscribe_channel(
                 RequestScope::Public,
-                channel,
+                channel.clone(),
                 move |msg: BannersNotification| {
                     let fut = callback(msg.notification);
                     tokio::spawn(fut);
                 },
             )
             .await?;
-        Ok(())
+        Ok(channel)
     }
 }
