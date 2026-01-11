@@ -59,14 +59,20 @@ pkgs.mkShell {
 
     export SCCACHE_CACHE_SIZE="20G"
     export SCCACHE_JOBS=$(nproc)
+    export SCCACHE_DIR=/dev/shm/sccache
+    export SCCACHE_LOCAL_CACHE_DIR=/dev/shm/sccache
+
+
     # sscache --start-server
 
     # Cargo parallelism
     export CARGO_BUILD_JOBS=$(nproc)
     export CARGO_INCREMENTAL=0
 
-    export RUSTFLAGS="-C link-arg=-fuse-ld=mold -C opt-level=0"
+    export RUSTFLAGS="-C incremental=/dev/shm/rust-incremental -C link-arg=-fuse-ld=mold -C opt-level=0"
+    mkdir -p /dev/shm/rust-incremental
     export CARGO_HOME=/dev/shm/cargo
+
     mkdir -p $CARGO_HOME
     sccache --start-server | true
 
