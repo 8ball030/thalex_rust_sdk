@@ -23,8 +23,11 @@ fn bench_handle_incoming(c: &mut Criterion) {
     let rpc_response_str = &rpc_response;
     // Sample subscription message
     let sub_message = r#"{"channel_name":"ticker.BTCUSD","data":{"price":42000}}"#.to_string();
-
     let sub_message_str = &sub_message;
+    // ensure sub is registered
+    let (tx, _rx) = mpsc::unbounded_channel();
+    public_subscriptions.insert("ticker.BTCUSD".to_string(), tx);
+
 
     c.bench_function("handle_incoming_rpc_response", |b| {
         b.to_async(&rt).iter(|| {
