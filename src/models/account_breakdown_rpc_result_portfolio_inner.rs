@@ -17,8 +17,8 @@ pub struct AccountBreakdownRpcResultPortfolioInner {
     pub instrument_name: String,
     #[serde(rename = "position")]
     pub position: f64,
-    #[serde(rename = "mark_price")]
-    pub mark_price: f64,
+    #[serde(rename = "mark_price", skip_serializing_if = "Option::is_none")]
+    pub mark_price: Option<f64>,
     #[serde(rename = "start_price", skip_serializing_if = "Option::is_none")]
     pub start_price: Option<f64>,
     #[serde(rename = "average_price", skip_serializing_if = "Option::is_none")]
@@ -32,7 +32,6 @@ pub struct AccountBreakdownRpcResultPortfolioInner {
     pub unrealised_pnl_perpetual: Option<f64>,
     #[serde(rename = "unrealised_pnl")]
     pub unrealised_pnl: f64,
-    /// Position profit or loss in current session.
     #[serde(rename = "realised_position_pnl")]
     pub realised_position_pnl: f64,
     #[serde(rename = "open_buy_amount")]
@@ -41,37 +40,29 @@ pub struct AccountBreakdownRpcResultPortfolioInner {
     pub open_sell_amount: f64,
     #[serde(rename = "session_realised_pnl")]
     pub session_realised_pnl: f64,
-    #[serde(
-        rename = "session_position_pnl",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub session_position_pnl: Option<f64>,
+    #[serde(rename = "realised_perpetual_funding")]
+    pub realised_perpetual_funding: f64,
     #[serde(rename = "session_fees")]
     pub session_fees: f64,
-    #[serde(
-        rename = "realised_perpetual_funding",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub realised_perpetual_funding: Option<f64>,
 }
 
 impl AccountBreakdownRpcResultPortfolioInner {
     pub fn new(
         instrument_name: String,
         position: f64,
-        mark_price: f64,
         unrealised_pnl_positional: f64,
         unrealised_pnl: f64,
         realised_position_pnl: f64,
         open_buy_amount: f64,
         open_sell_amount: f64,
         session_realised_pnl: f64,
+        realised_perpetual_funding: f64,
         session_fees: f64,
     ) -> AccountBreakdownRpcResultPortfolioInner {
         AccountBreakdownRpcResultPortfolioInner {
             instrument_name,
             position,
-            mark_price,
+            mark_price: None,
             start_price: None,
             average_price: None,
             unrealised_pnl_positional,
@@ -81,9 +72,8 @@ impl AccountBreakdownRpcResultPortfolioInner {
             open_buy_amount,
             open_sell_amount,
             session_realised_pnl,
-            session_position_pnl: None,
+            realised_perpetual_funding,
             session_fees,
-            realised_perpetual_funding: None,
         }
     }
 }

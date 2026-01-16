@@ -456,8 +456,8 @@
             "enum": [
               "client_request",
               "conditional_order",
-              "liquidation",
-              "bot"
+              "bot",
+              "liquidation"
             ],
             "description": "Detailed reason of order insertion."
           },
@@ -625,8 +625,8 @@
             "enum": [
               "client_request",
               "conditional_order",
-              "liquidation",
-              "bot"
+              "bot",
+              "liquidation"
             ],
             "description": "Detailed reason of order insertion."
           },
@@ -10190,16 +10190,13 @@
                                 "required": [
                                   "instrument_name",
                                   "position",
-                                  "mark_price",
-                                  "start_price",
-                                  "average_price",
                                   "unrealised_pnl_positional",
-                                  "unrealised_pnl_perpetual",
                                   "unrealised_pnl",
                                   "open_buy_amount",
                                   "open_sell_amount",
                                   "session_realised_pnl",
                                   "realised_position_pnl",
+                                  "realised_perpetual_funding",
                                   "session_fees"
                                 ],
                                 "properties": {
@@ -10228,8 +10225,7 @@
                                     "type": "number"
                                   },
                                   "realised_position_pnl": {
-                                    "type": "number",
-                                    "description": "Position profit or loss in current session."
+                                    "type": "number"
                                   },
                                   "open_buy_amount": {
                                     "type": "number"
@@ -10240,10 +10236,7 @@
                                   "session_realised_pnl": {
                                     "type": "number"
                                   },
-                                  "session_position_pnl": {
-                                    "type": "number"
-                                  },
-                                  "session_perpetual_funding": {
+                                  "realised_perpetual_funding": {
                                     "type": "number"
                                   },
                                   "session_fees": {
@@ -10261,7 +10254,6 @@
                                   "currency",
                                   "balance",
                                   "collateral_factor",
-                                  "collateral_index_price",
                                   "applied_collateral",
                                   "transactable"
                                 ],
@@ -10519,13 +10511,13 @@
                                     "required": [
                                       "instrument_name",
                                       "position",
-                                      "mark_price",
                                       "unrealised_pnl_positional",
                                       "unrealised_pnl",
                                       "open_buy_amount",
                                       "open_sell_amount",
                                       "session_realised_pnl",
                                       "realised_position_pnl",
+                                      "realised_perpetual_funding",
                                       "session_fees"
                                     ],
                                     "properties": {
@@ -10554,8 +10546,7 @@
                                         "type": "number"
                                       },
                                       "realised_position_pnl": {
-                                        "type": "number",
-                                        "description": "Position profit or loss in current session."
+                                        "type": "number"
                                       },
                                       "open_buy_amount": {
                                         "type": "number"
@@ -10566,13 +10557,10 @@
                                       "session_realised_pnl": {
                                         "type": "number"
                                       },
-                                      "session_position_pnl": {
+                                      "realised_perpetual_funding": {
                                         "type": "number"
                                       },
                                       "session_fees": {
-                                        "type": "number"
-                                      },
-                                      "realised_perpetual_funding": {
                                         "type": "number"
                                       }
                                     }
@@ -10605,8 +10593,7 @@
                                       },
                                       "collateral_index_price": {
                                         "type": "number",
-                                        "description": "Index price used to calculate collateral effect of this position.\nCan be `null` for assets that are not converted using an index, e.g. for stable coins.\n",
-                                        "nullable": true
+                                        "description": "Index price used to calculate collateral effect of this position.\nCan be `null` for assets that are not converted using an index, e.g. for stable coins.\n"
                                       },
                                       "applied_collateral": {
                                         "type": "number",

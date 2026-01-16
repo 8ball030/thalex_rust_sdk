@@ -26,41 +26,6 @@ def fix_schema(spec: Dict[str, Any]) -> Dict[str, Any]:
     Apply all pre-processing fixes to the OpenAPI spec.
     """
     updated_spec = copy.deepcopy(spec)
-
-    # Remove required fields that cause issues
-    updated_spec['components']['schemas']['AccountSummary']['properties']['cash']['items']['required'] \
-        .remove('collateral_index_price')
-    
-    for item in [
-        "start_price",
-        "average_price",
-        "unrealised_pnl_perpetual",
-    ]:
-        updated_spec['paths']['private/account_breakdown']['rpc']['responses']['default']['content']['application/json']['schema'] \
-            ['oneOf'][0]['allOf'][1]['properties']['result']['properties']['portfolio']['items']['required'] \
-            .remove(item)
-    # rename `session_perpetual_funding` to `realised_perpetual_funding` for `priveate/account_breakdown` RPC
-    for specced, actual in [["session_perpetual_funding", "realised_perpetual_funding"]]:
-        definition = updated_spec['paths']['private/account_breakdown']['rpc']['responses']['default']['content']['application/json']['schema'] \
-            ['oneOf'][0]['allOf'][1]['properties']['result']['properties']['portfolio']['items']['properties'].pop(specced)
-        updated_spec['paths']['private/account_breakdown']['rpc']['responses']['default']['content']['application/json']['schema'] \
-            ['oneOf'][0]['allOf'][1]['properties']['result']['properties']['portfolio']['items']['properties'][actual] = definition
-        
-    
-    # make `collateral_index_price` optional for `private/account_breakdown` RPC and remove from required
-    updated_spec['paths']['private/account_breakdown']['rpc']['responses']['default']['content']['application/json']['schema'] \
-            ['oneOf'][0]['allOf'][1]['properties']['result']['properties']['cash']['items']['properties']['collateral_index_price']['nullable'] = True
-    updated_spec['paths']['private/account_breakdown']['rpc']['responses']['default']['content']['application/json']['schema'] \
-            ['oneOf'][0]['allOf'][1]['properties']['result']['properties']['cash']['items']['required'] \
-            .remove('collateral_index_price')
-    
-
-    # make `reject_reason` optional for `ConditionalOrder` model
-    updated_spec['components']['schemas']['ConditionalOrder']['required'].remove('reject_reason')
-
-    # Add bot to `OrderHistory` & `OrderStatus` models insert_reason enum.
-    for model in ['OrderHistory', 'OrderStatus']:
-        updated_spec['components']['schemas'][model]['properties']['insert_reason']['enum'].append('bot')
     return updated_spec
 
 

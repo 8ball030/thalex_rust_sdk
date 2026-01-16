@@ -18,10 +18,10 @@ pub enum InsertReasonEnum {
     ClientRequest,
     #[serde(rename = "conditional_order")]
     ConditionalOrder,
-    #[serde(rename = "liquidation")]
-    Liquidation,
     #[serde(rename = "bot")]
     Bot,
+    #[serde(rename = "liquidation")]
+    Liquidation,
 }
 
 impl std::fmt::Display for InsertReasonEnum {
@@ -29,8 +29,8 @@ impl std::fmt::Display for InsertReasonEnum {
         match self {
             Self::ClientRequest => write!(f, "client_request"),
             Self::ConditionalOrder => write!(f, "conditional_order"),
-            Self::Liquidation => write!(f, "liquidation"),
             Self::Bot => write!(f, "bot"),
+            Self::Liquidation => write!(f, "liquidation"),
         }
     }
 }
