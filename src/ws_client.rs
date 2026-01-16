@@ -51,6 +51,13 @@ pub struct WsClient {
     subscription_tasks: Arc<Mutex<Vec<JoinHandle<()>>>>,
 }
 
+pub fn deserialise_to_type<T>(s: &str) -> Result<T, serde_json::Error>
+where
+    T: DeserializeOwned,
+{
+    serde_json::from_str::<T>(s)
+}
+
 impl WsClient {
     pub fn subscriptions(&self) -> Subscriptions<'_> {
         Subscriptions { client: self }
@@ -205,7 +212,7 @@ impl WsClient {
         // let as_error = serde_json::from_str::<RpcErrorResponse>(&response);
         // println!("Success parse: {as_success:?}");
         // println!("Error parse:   {as_error:?}");
-        let envelope: T = serde_json::from_str(&response)?;
+        let envelope: T = deserialise_to_type(&response)?;
         // .inspect_err(|e| println!("Failed to parse JSON: {}", e))?;
         // println!("RPC Response: {:?}", envelope);
         Ok(envelope)
@@ -591,7 +598,7 @@ async fn run_single_connection(
                             pending_requests,
                             public_subscriptions,
                             private_subscriptions,
-                        ).await;
+                        );
                     }
                     Some(Ok(Message::Binary(bin))) => {
                         if let Ok(text) = String::from_utf8(bin.to_vec()) {
@@ -600,7 +607,7 @@ async fn run_single_connection(
                                 pending_requests,
                                 public_subscriptions,
                                 private_subscriptions,
-                            ).await;
+                            );
                         } else {
                             warn!("Non-UTF8 binary message on {url}");
                         }
@@ -638,7 +645,7 @@ async fn run_single_connection(
 }
 
 #[inline(always)]
-pub async fn handle_incoming(
+pub fn handle_incoming(
     text: &str,
     pending_requests: &Arc<DashMap<u64, ResponseSender>>,
     public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,

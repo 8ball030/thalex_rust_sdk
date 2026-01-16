@@ -2,6 +2,7 @@ use std::hint::black_box;
 
 use criterion::{BenchmarkId, Criterion, criterion_group, criterion_main};
 use serde_json::{Value, json};
+use thalex_rust_sdk::{models::{InstrumentsNotification, InstrumentsResponse, RpcResponse, Ticker}, ws_client::deserialise_to_type};
 
 /// Бенчмарк для измерения производительности JSON парсинга
 /// Тестирует различные размеры сообщений и типы данных
@@ -56,7 +57,6 @@ fn bench_json_parsing(c: &mut Criterion) {
     // Большое сообщение (множество инструментов)
     // Eng: Large message (many instruments)
     let large_message = json!({
-        "jsonrpc": "2.0",
         "id": 1,
         "result": {
             "instruments": (0..100).map(|i| format!("INSTRUMENT-{}", i)).collect::<Vec<_>>(),
@@ -76,7 +76,7 @@ fn bench_json_parsing(c: &mut Criterion) {
         &rpc_response,
         |b, input| {
             b.iter(|| {
-                let parsed: Value = serde_json::from_str(black_box(input)).unwrap();
+                let parsed: RpcResponse = deserialise_to_type(black_box(input)).unwrap();
                 black_box(parsed)
             });
         },
@@ -89,7 +89,7 @@ fn bench_json_parsing(c: &mut Criterion) {
         &ticker_message,
         |b, input| {
             b.iter(|| {
-                let parsed: Value = serde_json::from_str(black_box(input)).unwrap();
+                let parsed: Ticker = deserialise_to_type(black_box(input)).unwrap();
                 black_box(parsed)
             });
         },
@@ -102,57 +102,12 @@ fn bench_json_parsing(c: &mut Criterion) {
         &large_message,
         |b, input| {
             b.iter(|| {
-                let parsed: Value = serde_json::from_str(black_box(input)).unwrap();
+                let parsed: InstrumentsResponse= deserialise_to_type(black_box(input)).unwrap();
                 black_box(parsed)
             });
         },
     );
 
-    // Бенчмарк: быстрая проверка наличия ключа "id" без полного парсинга
-    // Eng: Benchmark: quick check for "id" key presence without full parsing
-    group.bench_with_input(
-        BenchmarkId::new("check_key", "id_in_rpc"),
-        &rpc_response,
-        |b, input| {
-            b.iter(|| {
-                let has_id = input.contains(r#""id":"#);
-                black_box(has_id)
-            });
-        },
-    );
-
-    // Бенчмарк: быстрая проверка наличия ключа "channel_name"
-    // Eng: Benchmark: quick check for "channel_name" key presence
-    group.bench_with_input(
-        BenchmarkId::new("check_key", "channel_name_in_ticker"),
-        &ticker_message,
-        |b, input| {
-            b.iter(|| {
-                let has_channel = input.contains(r#""channel_name":"#);
-                black_box(has_channel)
-            });
-        },
-    );
-
-    // Бенчмарк: парсинг только после проверки ключа
-    // Eng: Benchmark: parsing only after key check
-    group.bench_with_input(
-        BenchmarkId::new("conditional_parse", "rpc_after_check"),
-        &rpc_response,
-        |b, input| {
-            b.iter(|| {
-                if input.contains(r#""id":"#) {
-                    let parsed: Value = serde_json::from_str(black_box(input)).unwrap();
-                    let id = parsed.get("id").and_then(|v| v.as_u64());
-                    black_box(id)
-                } else {
-                    black_box(None)
-                }
-            });
-        },
-    );
-
-    group.finish();
 }
 
 criterion_group!(benches, bench_json_parsing);
