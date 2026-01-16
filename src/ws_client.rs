@@ -51,6 +51,7 @@ pub struct WsClient {
     subscription_tasks: Arc<Mutex<Vec<JoinHandle<()>>>>,
 }
 
+#[inline(always)]
 pub fn deserialise_to_type<T>(s: &str) -> Result<T, serde_json::Error>
 where
     T: DeserializeOwned,
