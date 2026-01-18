@@ -661,7 +661,7 @@ pub fn handle_incoming(
     }
 
     // ---- fast path: channel_name ----
-    if let Some(channel) = extract_channel(&bytes) {
+    if let Some(channel) = extract_channel(&bytes.clone()) {
         for routes in [private_subscriptions, public_subscriptions] {
             if let Some(sender) = routes.get(channel) {
                 if sender.send(bytes).is_err() {
