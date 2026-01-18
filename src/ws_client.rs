@@ -653,27 +653,48 @@ pub fn handle_incoming(
 ) {
 
     // ---- fast path: id ----
-    if let Some(id) = extract_id(&bytes) {
-        if let Some((_, tx)) = pending_requests.remove(&id) {
-            let _ = tx.send(bytes);
-        }
+    if check_and_send_pending_request(&bytes, pending_requests) {
         return;
     }
 
     // ---- fast path: channel_name ----
-    if let Some(channel) = extract_channel(&bytes.clone()) {
-        for routes in [private_subscriptions, public_subscriptions] {
-            if let Some(sender) = routes.get(channel) {
-                if sender.send(bytes).is_err() {
-                    routes.remove(channel);
-                }
-                return;
-            }
-        }
-
-        warn!("No subscription handler for channel: {channel}");
+    if check_and_send_subscription_message(&bytes, public_subscriptions, private_subscriptions) {
         return;
     }
     // ---- slow path / unhandled ----
     warn!("Received unhandled message: {bytes:?}");
+}
+
+#[inline(always)]
+fn check_and_send_pending_request(
+    bytes: &Bytes,
+    pending_requests: &Arc<DashMap<u64, ResponseSender>>,
+) -> bool {
+    if let Some(id) = extract_id(bytes) {
+        if let Some((_, tx)) = pending_requests.remove(&id) {
+            let _ = tx.send(bytes.clone());
+            return true;
+        }
+    }
+    false
+}
+
+#[inline(always)]
+fn check_and_send_subscription_message(
+    bytes: &Bytes,
+    public_subscriptions: &Arc<DashMap<String, ChannelSender>>,
+    private_subscriptions: &Arc<DashMap<String, ChannelSender>>,
+) -> bool {
+    if let Some(channel) = extract_channel(bytes) {
+        for routes in [private_subscriptions, public_subscriptions] {
+            if let Some(sender) = routes.get(channel) {
+                let bytes_to_send = bytes.clone();
+                if sender.send(bytes_to_send).is_err() {
+                    routes.remove(channel);
+                }
+                return true;
+            }
+        }
+    }
+    false
 }
