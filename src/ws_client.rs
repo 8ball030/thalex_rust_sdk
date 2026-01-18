@@ -658,10 +658,8 @@ pub fn handle_incoming(
             let _ = tx.send(bytes);
         }
         return;
-    }
 
-    // ---- fast path: channel_name ----
-    if let Some(channel) = extract_channel(&bytes) {
+    } else if let Some(channel) = extract_channel(&bytes.clone()) {
         if let Some(sender) = private_subscriptions.get(channel) {
             if sender.send(bytes).is_err() {
                 private_subscriptions.remove(channel);
