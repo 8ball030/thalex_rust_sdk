@@ -16,14 +16,18 @@ use std::sync::{
     atomic::{AtomicU64, Ordering},
 };
 use tokio::sync::{Mutex, mpsc, watch};
-use tokio_tungstenite::{connect_async, tungstenite::{Bytes, protocol::Message}};
+use tokio_tungstenite::{
+    connect_async,
+    tungstenite::{Bytes, protocol::Message},
+};
 
 use crate::{
     auth_utils::make_auth_token,
     models::{Instrument, RpcErrorResponse, RpcResponse},
     routing::{extract_channel, extract_id},
     types::{
-        ChannelSender, ClientError, Error, ExternalEvent, InternalCommand, LoginState, RequestScope, ResponseSender, SubscribeResponse, WsStream
+        ChannelSender, ClientError, Error, ExternalEvent, InternalCommand, LoginState,
+        RequestScope, ResponseSender, SubscribeResponse, WsStream,
     },
     utils::round_to_ticks,
 };
@@ -651,16 +655,13 @@ pub fn handle_incoming(
     public_subscriptions: &Arc<DashMap<String, ChannelSender>>,
     private_subscriptions: &Arc<DashMap<String, ChannelSender>>,
 ) {
-
     if check_and_send_pending_request(&bytes, pending_requests) {
         return;
     }
     if check_and_send_subscription_message(&bytes, private_subscriptions) {
         return;
     }
-    if check_and_send_subscription_message(&bytes, public_subscriptions) {
-        return;
-    }
+    if check_and_send_subscription_message(&bytes, public_subscriptions) {}
 }
 
 #[inline(always)]
@@ -668,11 +669,11 @@ fn check_and_send_pending_request(
     bytes: &Bytes,
     pending_requests: &Arc<DashMap<u64, ResponseSender>>,
 ) -> bool {
-    if let Some(id) = extract_id(bytes) {
-        if let Some((_, tx)) = pending_requests.remove(&id) {
-            let _ = tx.send(bytes.clone());
-            return true;
-        }
+    if let Some(id) = extract_id(bytes)
+        && let Some((_, tx)) = pending_requests.remove(&id)
+    {
+        let _ = tx.send(bytes.clone());
+        return true;
     }
     false
 }
@@ -682,13 +683,13 @@ fn check_and_send_subscription_message(
     bytes: &Bytes,
     subscriptions: &Arc<DashMap<String, ChannelSender>>,
 ) -> bool {
-    if let Some(channel) = extract_channel(bytes) {
-        if let Some(sender) = subscriptions.get(channel) {
-            if sender.send(bytes.clone()).is_err() {
-                subscriptions.remove(channel);
-            }
-            return true;
+    if let Some(channel) = extract_channel(bytes)
+        && let Some(sender) = subscriptions.get(channel)
+    {
+        if sender.send(bytes.clone()).is_err() {
+            subscriptions.remove(channel);
         }
+        return true;
     }
     false
 }

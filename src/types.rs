@@ -3,7 +3,10 @@ use serde_json::Value;
 use std::fmt;
 use thiserror::Error;
 use tokio::{net::TcpStream, sync::oneshot};
-use tokio_tungstenite::{MaybeTlsStream, WebSocketStream, tungstenite::{Bytes, Message}};
+use tokio_tungstenite::{
+    MaybeTlsStream, WebSocketStream,
+    tungstenite::{Bytes, Message},
+};
 
 use crate::models::{ErrorResponse, RpcErrorResponse};
 
