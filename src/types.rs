@@ -3,12 +3,16 @@ use serde_json::Value;
 use std::fmt;
 use thiserror::Error;
 use tokio::{net::TcpStream, sync::oneshot};
-use tokio_tungstenite::{MaybeTlsStream, WebSocketStream, tungstenite::Message};
+use tokio_tungstenite::{
+    MaybeTlsStream, WebSocketStream,
+    tungstenite::{Bytes, Message},
+};
 
 use crate::models::{ErrorResponse, RpcErrorResponse};
 
 pub type WsStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
-pub type ResponseSender = oneshot::Sender<String>;
+pub type ResponseSender = oneshot::Sender<Bytes>;
+pub type ChannelSender = tokio::sync::mpsc::UnboundedSender<Bytes>;
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 
 pub enum InternalCommand {

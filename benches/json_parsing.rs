@@ -6,6 +6,7 @@ use thalex_rust_sdk::{
     models::{InstrumentsResponse, RpcResponse, Ticker},
     ws_client::deserialise_to_type,
 };
+use tokio_tungstenite::tungstenite::Bytes;
 
 /// Бенчмарк для измерения производительности JSON парсинга
 /// Тестирует различные размеры сообщений и типы данных
@@ -16,18 +17,19 @@ fn bench_json_parsing(c: &mut Criterion) {
 
     // RPC ответ (маленькое сообщение)
     // Eng: RPC response (small message)
-    let rpc_response = json!({
+    let rpc_response: Bytes = json!({
         "jsonrpc": "2.0",
         "id": 12345,
         "result": {
             "instruments": ["BTC-PERPETUAL", "ETH-PERPETUAL"]
         }
     })
-    .to_string();
+    .to_string()
+    .into();
 
     // Ticker сообщение (среднее сообщение)
     // Eng: Ticker message (medium message)
-    let ticker_message = json!({
+    let ticker_message: Bytes = json!({
         "channel_name": "ticker.BTC-PERPETUAL.100ms",
         "notification": {
             "best_bid_price": 50000.5,
@@ -55,11 +57,12 @@ fn bench_json_parsing(c: &mut Criterion) {
             "average_funding_rate_24h": 0.0001
         }
     })
-    .to_string();
+    .to_string()
+    .into();
 
     // Большое сообщение (множество инструментов)
     // Eng: Large message (many instruments)
-    let large_message = json!({
+    let large_message: Bytes = json!({
         "id": 1,
         "result": {
             "instruments": (0..100).map(|i| format!("INSTRUMENT-{}", i)).collect::<Vec<_>>(),
@@ -70,7 +73,8 @@ fn bench_json_parsing(c: &mut Criterion) {
             })).collect::<Vec<_>>()
         }
     })
-    .to_string();
+    .to_string()
+    .into();
 
     // Бенчмарк: полный парсинг RPC ответа
     // Eng: Benchmark: full parsing of RPC response

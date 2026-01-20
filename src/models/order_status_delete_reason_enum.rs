@@ -34,6 +34,10 @@ pub enum OrderStatusDeleteReasonEnum {
     ImmediateCancel,
     #[serde(rename = "admin_cancel")]
     AdminCancel,
+    #[serde(rename = "replaced")]
+    Replaced,
+    #[serde(rename = "self_trade_prevention")]
+    SelfTradePrevention,
 }
 
 impl std::fmt::Display for OrderStatusDeleteReasonEnum {
@@ -49,6 +53,8 @@ impl std::fmt::Display for OrderStatusDeleteReasonEnum {
             Self::Filled => write!(f, "filled"),
             Self::ImmediateCancel => write!(f, "immediate_cancel"),
             Self::AdminCancel => write!(f, "admin_cancel"),
+            Self::Replaced => write!(f, "replaced"),
+            Self::SelfTradePrevention => write!(f, "self_trade_prevention"),
         }
     }
 }

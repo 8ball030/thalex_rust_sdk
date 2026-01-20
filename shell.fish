@@ -11,9 +11,9 @@ function dev
     set -gx SCCACHE_LOCAL_CACHE_DIR /dev/shm/sccache
     set -gx CARGO_BUILD_JOBS (nproc)
     set -gx CARGO_INCREMENTAL 0
-    set -gx RUSTFLAGS "-C incremental=/dev/shm/rust-incremental
-    -C link-arg=-fuse-ld=mold -C opt-level=0"
+    set -gx RUSTFLAGS "-C incremental=/dev/shm/rust-incremental -C link-arg=-fuse-ld=mold -C opt-level=0"
     mkdir -p /dev/shm/rust-incremental
+    set -gx NIX_ENFORCE_PURITY 0
     set -gx CARGO_HOME /dev/shm/cargo
     mkdir -p $CARGO_HOME
     sccache --start-server 

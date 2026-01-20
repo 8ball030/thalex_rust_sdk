@@ -42,6 +42,10 @@ pub struct CreateConditionalOrderParams {
     /// Activated order will be reduce-only
     #[serde(rename = "reduce_only", skip_serializing_if = "Option::is_none")]
     pub reduce_only: Option<bool>,
+    #[serde(rename = "stp_level", skip_serializing_if = "Option::is_none")]
+    pub stp_level: Option<models::StpLevelEnum>,
+    #[serde(rename = "stp_action", skip_serializing_if = "Option::is_none")]
+    pub stp_action: Option<models::StpActionEnum>,
 }
 
 impl CreateConditionalOrderParams {
@@ -62,6 +66,8 @@ impl CreateConditionalOrderParams {
             trailing_stop_callback_rate: None,
             label: None,
             reduce_only: None,
+            stp_level: None,
+            stp_action: None,
         }
     }
 }

@@ -16,15 +16,18 @@ use std::sync::{
     atomic::{AtomicU64, Ordering},
 };
 use tokio::sync::{Mutex, mpsc, watch};
-use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
+use tokio_tungstenite::{
+    connect_async,
+    tungstenite::{Bytes, protocol::Message},
+};
 
 use crate::{
     auth_utils::make_auth_token,
     models::{Instrument, RpcErrorResponse, RpcResponse},
     routing::{extract_channel, extract_id},
     types::{
-        ClientError, Error, ExternalEvent, InternalCommand, LoginState, RequestScope,
-        ResponseSender, SubscribeResponse, WsStream,
+        ChannelSender, ClientError, Error, ExternalEvent, InternalCommand, LoginState,
+        RequestScope, ResponseSender, SubscribeResponse, WsStream,
     },
     utils::round_to_ticks,
 };
@@ -39,8 +42,8 @@ const READ_TIMEOUT: Duration = Duration::from_secs(7);
 pub struct WsClient {
     write_tx: mpsc::UnboundedSender<InternalCommand>,
     pending_requests: Arc<DashMap<u64, ResponseSender>>,
-    pub public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
-    pub private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    pub public_subscriptions: Arc<DashMap<String, ChannelSender>>,
+    pub private_subscriptions: Arc<DashMap<String, ChannelSender>>,
     next_id: Arc<AtomicU64>,
     shutdown_tx: watch::Sender<bool>,
     instruments_cache: Arc<DashMap<String, Instrument>>,
@@ -52,11 +55,11 @@ pub struct WsClient {
 }
 
 #[inline(always)]
-pub fn deserialise_to_type<T>(s: &str) -> Result<T, serde_json::Error>
+pub fn deserialise_to_type<T>(s: &Bytes) -> Result<T, serde_json::Error>
 where
     T: DeserializeOwned,
 {
-    serde_json::from_str::<T>(s)
+    serde_json::from_slice::<T>(s)
 }
 
 impl WsClient {
@@ -97,8 +100,8 @@ impl WsClient {
         let (shutdown_tx, shutdown_rx) = watch::channel(false);
 
         let pending_requests = Arc::new(DashMap::new());
-        let public_subscriptions = Arc::new(DashMap::new());
-        let private_subscriptions = Arc::new(DashMap::new());
+        let public_subscriptions: Arc<DashMap<String, ChannelSender>> = Arc::new(DashMap::new());
+        let private_subscriptions: Arc<DashMap<String, ChannelSender>> = Arc::new(DashMap::new());
         let next_id = Arc::new(AtomicU64::new(1));
 
         let (connection_state_tx, connection_state_rx) =
@@ -187,7 +190,7 @@ impl WsClient {
     {
         let id = self.next_id.fetch_add(1, Ordering::Relaxed);
 
-        let (tx, rx) = oneshot::channel::<String>();
+        let (tx, rx) = oneshot::channel::<Bytes>();
         self.pending_requests.insert(id, tx);
 
         let request = serde_json::json!({
@@ -250,7 +253,7 @@ impl WsClient {
         P: DeserializeOwned + Send + 'static,
         F: FnMut(P) + Send + 'static,
     {
-        let (tx, mut rx) = mpsc::unbounded_channel::<String>();
+        let (tx, mut rx) = mpsc::unbounded_channel::<Bytes>();
 
         {
             match scope {
@@ -270,7 +273,7 @@ impl WsClient {
                 let parsed: P = match deserialise_to_type(&msg) {
                     Ok(m) => m,
                     Err(e) => {
-                        warn!("Failed to parse channel message: {e}; raw: {msg}");
+                        warn!("Failed to parse channel message: {e}; raw: {msg:?}");
                         continue;
                     }
                 };
@@ -464,8 +467,8 @@ async fn connection_supervisor(
     mut cmd_rx: mpsc::UnboundedReceiver<InternalCommand>,
     mut shutdown_rx: watch::Receiver<bool>,
     pending_requests: Arc<DashMap<u64, ResponseSender>>,
-    public_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
-    private_subscriptions: Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    public_subscriptions: Arc<DashMap<String, ChannelSender>>,
+    private_subscriptions: Arc<DashMap<String, ChannelSender>>,
     connection_state_tx: watch::Sender<ExternalEvent>,
 ) {
     info!("Connection supervisor started for {url}");
@@ -509,7 +512,7 @@ async fn connection_supervisor(
                     .collect::<Vec<u64>>()
                 {
                     if let Some((_, tx)) = pending_requests.remove(&key) {
-                        let _ = tx.send(r#"{"error":"connection closed"}"#.to_string());
+                        let _ = tx.send(r#"{"error":"connection closed"}"#.into());
                     }
                 }
 
@@ -548,8 +551,8 @@ async fn run_single_connection(
     cmd_rx: &mut mpsc::UnboundedReceiver<InternalCommand>,
     shutdown_rx: &mut watch::Receiver<bool>,
     pending_requests: &Arc<DashMap<u64, ResponseSender>>,
-    public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
-    private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    public_subscriptions: &Arc<DashMap<String, ChannelSender>>,
+    private_subscriptions: &Arc<DashMap<String, ChannelSender>>,
 ) -> Result<(), Error> {
     // Set up ping interval
     let mut ping_interval = interval(PING_INTERVAL);
@@ -599,23 +602,19 @@ async fn run_single_connection(
                 match msg {
                     Some(Ok(Message::Text(text))) => {
                         handle_incoming(
-                            &text,
+                            text.into(),
                             pending_requests,
                             public_subscriptions,
                             private_subscriptions,
                         );
                     }
                     Some(Ok(Message::Binary(bin))) => {
-                        if let Ok(text) = String::from_utf8(bin.to_vec()) {
-                            handle_incoming(
-                                &text,
-                                pending_requests,
-                                public_subscriptions,
-                                private_subscriptions,
-                            );
-                        } else {
-                            warn!("Non-UTF8 binary message on {url}");
-                        }
+                        handle_incoming(
+                            bin,
+                            pending_requests,
+                            public_subscriptions,
+                            private_subscriptions,
+                        );
                     }
                     Some(Ok(Message::Ping(data))) => {
                         ws.send(Message::Pong(data)).await?;
@@ -651,36 +650,46 @@ async fn run_single_connection(
 
 #[inline(always)]
 pub fn handle_incoming(
-    text: &str,
+    bytes: Bytes,
     pending_requests: &Arc<DashMap<u64, ResponseSender>>,
-    public_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
-    private_subscriptions: &Arc<DashMap<String, mpsc::UnboundedSender<String>>>,
+    public_subscriptions: &Arc<DashMap<String, ChannelSender>>,
+    private_subscriptions: &Arc<DashMap<String, ChannelSender>>,
 ) {
-    // println!("Incoming message: {text}");
-    let bytes = text.as_bytes();
-
-    // ---- fast path: id ----
-    if let Some(id) = extract_id(bytes) {
-        if let Some((_, tx)) = pending_requests.remove(&id) {
-            let _ = tx.send(text.to_owned());
-        }
+    if check_and_send_pending_request(&bytes, pending_requests) {
         return;
     }
-
-    // ---- fast path: channel_name ----
-    if let Some(channel) = extract_channel(bytes) {
-        for routes in [private_subscriptions, public_subscriptions] {
-            if let Some(sender) = routes.get(channel) {
-                if sender.send(text.to_owned()).is_err() {
-                    routes.remove(channel);
-                }
-                return;
-            }
-        }
-
-        warn!("No subscription handler for channel: {channel}");
+    if check_and_send_subscription_message(&bytes, private_subscriptions) {
         return;
     }
-    // ---- slow path / unhandled ----
-    warn!("Received unhandled message: {text}");
+    if check_and_send_subscription_message(&bytes, public_subscriptions) {}
+}
+
+#[inline(always)]
+fn check_and_send_pending_request(
+    bytes: &Bytes,
+    pending_requests: &Arc<DashMap<u64, ResponseSender>>,
+) -> bool {
+    if let Some(id) = extract_id(bytes)
+        && let Some((_, tx)) = pending_requests.remove(&id)
+    {
+        let _ = tx.send(bytes.clone());
+        return true;
+    }
+    false
+}
+
+#[inline(always)]
+fn check_and_send_subscription_message(
+    bytes: &Bytes,
+    subscriptions: &Arc<DashMap<String, ChannelSender>>,
+) -> bool {
+    if let Some(channel) = extract_channel(bytes)
+        && let Some(sender) = subscriptions.get(channel)
+    {
+        if sender.send(bytes.clone()).is_err() {
+            subscriptions.remove(channel);
+        }
+        return true;
+    }
+    false
 }

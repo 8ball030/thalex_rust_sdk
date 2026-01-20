@@ -25,6 +25,10 @@ pub struct MassQuoteParams {
     /// This flag is only effective in combination with post_only. If set, then instead of adjusting the order price, the order will be cancelled with delete reason 'immediate_cancel'. The combination of post_only and reject_post_only is effectively a book-or-cancel order.
     #[serde(rename = "reject_post_only", skip_serializing_if = "Option::is_none")]
     pub reject_post_only: Option<bool>,
+    #[serde(rename = "stp_level", skip_serializing_if = "Option::is_none")]
+    pub stp_level: Option<models::StpLevelEnum>,
+    #[serde(rename = "stp_action", skip_serializing_if = "Option::is_none")]
+    pub stp_action: Option<models::StpActionEnum>,
 }
 
 impl MassQuoteParams {
@@ -34,6 +38,8 @@ impl MassQuoteParams {
             label: None,
             post_only: None,
             reject_post_only: None,
+            stp_level: None,
+            stp_action: None,
         }
     }
 }

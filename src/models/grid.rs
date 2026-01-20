@@ -58,6 +58,21 @@ pub struct Grid {
     /// A label that the bot will add to all orders for easy identification.
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
+    /// Realized P&L made by this bot since the start.
+    #[serde(rename = "realized_pnl")]
+    pub realized_pnl: f64,
+    /// Trade fees by this bot.
+    #[serde(rename = "fee")]
+    pub fee: f64,
+    /// Average entry price of the position (if any).
+    #[serde(rename = "average_price", skip_serializing_if = "Option::is_none")]
+    pub average_price: Option<f64>,
+    /// Position size (if any).
+    #[serde(rename = "position_size", skip_serializing_if = "Option::is_none")]
+    pub position_size: Option<f64>,
+    /// Mark price of the bot instrument at the moment the bot was stopped.
+    #[serde(rename = "mark_price_at_stop", skip_serializing_if = "Option::is_none")]
+    pub mark_price_at_stop: Option<f64>,
 }
 
 impl Grid {
@@ -71,6 +86,8 @@ impl Grid {
         step_size: f64,
         base_position: f64,
         end_time: f64,
+        realized_pnl: f64,
+        fee: f64,
     ) -> Grid {
         Grid {
             bot_id,
@@ -87,6 +104,11 @@ impl Grid {
             max_slippage: None,
             end_time,
             label: None,
+            realized_pnl,
+            fee,
+            average_price: None,
+            position_size: None,
+            mark_price_at_stop: None,
         }
     }
 }

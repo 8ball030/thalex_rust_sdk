@@ -447,7 +447,9 @@
               "margin_breach",
               "filled",
               "immediate_cancel",
-              "admin_cancel"
+              "admin_cancel",
+              "replaced",
+              "self_trade_prevention"
             ],
             "description": "Detailed reason of order deletion if the order was deleted, omitted otherwise.\n\nThe following reasons are possible:\n\n- `client_cancel`: Order was cancelled by the client, e.g. with a call to `private/cancel`.\n\n- `client_bulk_cancel`: Order was cancelled by the client with a bulk cancel call, e.g. `private/cancel_all`.\n\n- `session_end`: Non-persistent order was automatically cancelled when a WebSocket session ended.\n\n- `instrument_deactivated`: Order was automatically cancelled when the order instrument was deactivated,\n  for example after expiration.\n\n- `mm_protection`: Order was automatically cancelled when configured market maker protection amount was exhausted.\n\n- `failover`: Non-persistent order was automatically cancelled on matching engine failover.\n\n- `margin_breach`: Order was automatically cancelled in a response to a margin breach on the account as part\n  of automatic liquidation procedures.\n\n- `filled`: Order was filled in full.\n\n- `immediate_cancel`: The order was submitted as \"immediate-or-cancel\" and was not filled in full immediately.\n  Note that the order might be partially filled when this delete reason is set.\n\n- `admin_cancel`: The order was cancelled by an exchange admin.\n"
           },
@@ -616,9 +618,11 @@
               "margin_breach",
               "filled",
               "immediate_cancel",
-              "admin_cancel"
+              "admin_cancel",
+              "replaced",
+              "self_trade_prevention"
             ],
-            "description": "Detailed reason of order deletion if the order was deleted, omitted otherwise.\n\nThe following reasons are possible:\n\n- `client_cancel`: Order was cancelled by the client, e.g. with a call to `private/cancel`.\n\n- `client_bulk_cancel`: Order was cancelled by the client with a bulk cancel call, e.g. `private/cancel_all`.\n\n- `session_end`: Non-persistent order was automatically cancelled when a WebSocket session ended.\n\n- `instrument_deactivated`: Order was automatically cancelled when the order instrument was deactivated,\n  for example after expiration.\n\n- `mm_protection`: Order was automatically cancelled when configured market maker protection amount was exhausted.\n\n- `failover`: Non-persistent order was automatically cancelled on matching engine failover.\n\n- `margin_breach`: Order was automatically cancelled in a response to a margin breach on the account as part\n  of automatic liquidation procedures.\n\n- `filled`: Order was filled in full.\n\n- `immediate_cancel`: The order was submitted as \"immediate-or-cancel\" and was not filled in full immediately.\n  Note that the order might be partially filled when this delete reason is set.\n\n- `admin_cancel`: The order was cancelled by an exchange admin.\n"
+            "description": "Detailed reason of order deletion if the order was deleted, omitted otherwise.\n\nThe following reasons are possible:\n\n- `client_cancel`: Order was cancelled by the client, e.g. with a call to `private/cancel`.\n\n- `client_bulk_cancel`: Order was cancelled by the client with a bulk cancel call, e.g. `private/cancel_all`.\n\n- `session_end`: Non-persistent order was automatically cancelled when a WebSocket session ended.\n\n- `instrument_deactivated`: Order was automatically cancelled when the order instrument was deactivated,\n  for example after expiration.\n\n- `mm_protection`: Order was automatically cancelled when configured market maker protection amount was exhausted.\n\n- `failover`: Non-persistent order was automatically cancelled on matching engine failover.\n\n- `margin_breach`: Order was automatically cancelled in a response to a margin breach on the account as part\n  of automatic liquidation procedures.\n\n- `filled`: Order was filled in full.\n\n- `immediate_cancel`: The order was submitted as \"immediate-or-cancel\" and was not filled in full immediately.\n  Note that the order might be partially filled when this delete reason is set.\n\n- `admin_cancel`: The order was cancelled by an exchange admin.\n\n- `self_trade_prevention`: The order was cancelled by the self trade prevention mechanism.\n"
           },
           "insert_reason": {
             "type": "string",
@@ -796,6 +800,23 @@
               "clamp"
             ],
             "description": "If the instrument has a safety price collar set, and the limit price of the order\n(infinite for market orders) is in cross with (more aggressive than) this collar,\nhow to handle. If set to `ignore`, the order will proceed as requested. If `reject`,\nthe order fails early. If `clamp`, the price is adjusted to the collar.\n\nThe default is `clamp` for market orders and `reject` for everything else.\n\nCollar `ignore` is forbidden for market orders.\n\nPrice collars are applied to combination orders. Price collar for a combination is a linear combination of the leg collars with their corresponding quantities as coefficients.\n"
+          },
+          "stp_level": {
+            "type": "string",
+            "enum": [
+              "customer",
+              "account",
+              "disabled"
+            ],
+            "description": "The self trade prevention level override for this order.\nNeeds configuration to be enabled, see the `Self trade prevention` section for more explanation.\n\nThe default is `customer` and not configurable.\n"
+          },
+          "stp_action": {
+            "type": "string",
+            "enum": [
+              "cancel_aggressive_partial_fill",
+              "cancel_aggressive_no_fill"
+            ],
+            "description": "The self trade prevention action override for this order.\nNeeds configuration to be enabled, see the `Self trade prevention` section for more explanation.\n\nThe default is `cancel_aggressive_partial_fill` and not configurable.\n"
           }
         },
         "example": {
@@ -1184,7 +1205,9 @@
               "exit_price",
               "exit_position",
               "end_time",
-              "signal"
+              "signal",
+              "realized_pnl",
+              "fee"
             ],
             "properties": {
               "bot_id": {
@@ -1245,6 +1268,26 @@
               "label": {
                 "type": "string",
                 "description": "A label that the bot will add to all orders for easy identification."
+              },
+              "realized_pnl": {
+                "type": "number",
+                "description": "Realized P&L made by this bot since the start."
+              },
+              "fee": {
+                "type": "number",
+                "description": "Trade fees by this bot."
+              },
+              "average_price": {
+                "type": "number",
+                "description": "Average entry price of the position (if any)."
+              },
+              "position_size": {
+                "type": "number",
+                "description": "Position size (if any)."
+              },
+              "mark_price_at_stop": {
+                "type": "number",
+                "description": "Mark price of the bot instrument at the moment the bot was stopped."
               }
             }
           },
@@ -1262,7 +1305,9 @@
               "min_position",
               "max_position",
               "end_time",
-              "bot_id"
+              "bot_id",
+              "realized_pnl",
+              "fee"
             ],
             "properties": {
               "bot_id": {
@@ -1322,6 +1367,26 @@
               "label": {
                 "type": "string",
                 "description": "A label that the bot will add to all orders for easy identification."
+              },
+              "realized_pnl": {
+                "type": "number",
+                "description": "Realized P&L made by this bot since the start."
+              },
+              "fee": {
+                "type": "number",
+                "description": "Trade fees by this bot."
+              },
+              "average_price": {
+                "type": "number",
+                "description": "Average entry price of the position (if any)."
+              },
+              "position_size": {
+                "type": "number",
+                "description": "Position size (if any)."
+              },
+              "mark_price_at_stop": {
+                "type": "number",
+                "description": "Mark price of the bot instrument at the moment the bot was stopped."
               }
             }
           },
@@ -1338,7 +1403,9 @@
               "target_mean_price",
               "end_time",
               "bot_id",
-              "status"
+              "status",
+              "realized_pnl",
+              "fee"
             ],
             "properties": {
               "bot_id": {
@@ -1409,6 +1476,26 @@
               "label": {
                 "type": "string",
                 "description": "A label that the bot will add to all orders for easy identification."
+              },
+              "realized_pnl": {
+                "type": "number",
+                "description": "Realized P&L made by this bot since the start."
+              },
+              "fee": {
+                "type": "number",
+                "description": "Trade fees by this bot."
+              },
+              "average_price": {
+                "type": "number",
+                "description": "Average entry price of the position (if any)."
+              },
+              "position_size": {
+                "type": "number",
+                "description": "Position size (if any)."
+              },
+              "mark_price_at_stop": {
+                "type": "number",
+                "description": "Mark price of the bot instrument at the moment the bot was stopped."
               }
             }
           },
@@ -1424,7 +1511,9 @@
               "target_mean_price",
               "end_time",
               "bot_id",
-              "status"
+              "status",
+              "realized_pnl",
+              "fee"
             ],
             "properties": {
               "bot_id": {
@@ -1485,6 +1574,26 @@
               "label": {
                 "type": "string",
                 "description": "A label that the bot will add to all orders for easy identification."
+              },
+              "realized_pnl": {
+                "type": "number",
+                "description": "Realized P&L made by this bot since the start."
+              },
+              "fee": {
+                "type": "number",
+                "description": "Trade fees by this bot."
+              },
+              "average_price": {
+                "type": "number",
+                "description": "Average entry price of the position (if any)."
+              },
+              "position_size": {
+                "type": "number",
+                "description": "Position size (if any)."
+              },
+              "mark_price_at_stop": {
+                "type": "number",
+                "description": "Mark price of the bot instrument at the moment the bot was stopped."
               }
             }
           },
@@ -1496,7 +1605,9 @@
               "instrument_name",
               "period",
               "threshold",
-              "target_delta"
+              "target_delta",
+              "realized_pnl",
+              "fee"
             ],
             "properties": {
               "strategy": {
@@ -1534,6 +1645,26 @@
               "label": {
                 "type": "string",
                 "description": "A label that the bot will add to all orders for easy identification."
+              },
+              "realized_pnl": {
+                "type": "number",
+                "description": "Realized P&L made by this bot since the start."
+              },
+              "fee": {
+                "type": "number",
+                "description": "Trade fees by this bot."
+              },
+              "average_price": {
+                "type": "number",
+                "description": "Average entry price of the position (if any)."
+              },
+              "position_size": {
+                "type": "number",
+                "description": "Position size (if any)."
+              },
+              "mark_price_at_stop": {
+                "type": "number",
+                "description": "Mark price of the bot instrument at the moment the bot was stopped."
               }
             }
           },
@@ -1547,7 +1678,9 @@
               "target_amount",
               "threshold",
               "end_time",
-              "period"
+              "period",
+              "realized_pnl",
+              "fee"
             ],
             "properties": {
               "strategy": {
@@ -1585,6 +1718,26 @@
               "label": {
                 "type": "string",
                 "description": "A label that the bot will add to all orders for easy identification."
+              },
+              "realized_pnl": {
+                "type": "number",
+                "description": "Realized P&L made by this bot since the start."
+              },
+              "fee": {
+                "type": "number",
+                "description": "Trade fees by this bot."
+              },
+              "average_price": {
+                "type": "number",
+                "description": "Average entry price of the position (if any)."
+              },
+              "position_size": {
+                "type": "number",
+                "description": "Position size (if any)."
+              },
+              "mark_price_at_stop": {
+                "type": "number",
+                "description": "Mark price of the bot instrument at the moment the bot was stopped."
               }
             }
           }
@@ -5902,6 +6055,23 @@
                   "reduce_only": {
                     "type": "boolean",
                     "description": "Activated order will be reduce-only"
+                  },
+                  "stp_level": {
+                    "type": "string",
+                    "enum": [
+                      "customer",
+                      "account",
+                      "disabled"
+                    ],
+                    "description": "The self trade prevention level override for this order.\nNeeds configuration to be enabled, see the `Self trade prevention` section for more explanation.\n\nThe default is `customer` and not configurable.\n"
+                  },
+                  "stp_action": {
+                    "type": "string",
+                    "enum": [
+                      "cancel_aggressive_partial_fill",
+                      "cancel_aggressive_no_fill"
+                    ],
+                    "description": "The self trade prevention action override for this order.\nNeeds configuration to be enabled, see the `Self trade prevention` section for more explanation.\n\nThe default is `cancel_aggressive_partial_fill` and not configurable.\n"
                   }
                 }
               }
@@ -6052,6 +6222,23 @@
                           "reduce_only": {
                             "type": "boolean",
                             "description": "Activated order will be reduce-only"
+                          },
+                          "stp_level": {
+                            "type": "string",
+                            "enum": [
+                              "customer",
+                              "account",
+                              "disabled"
+                            ],
+                            "description": "The self trade prevention level override for this order.\nNeeds configuration to be enabled, see the `Self trade prevention` section for more explanation.\n\nThe default is `customer` and not configurable.\n"
+                          },
+                          "stp_action": {
+                            "type": "string",
+                            "enum": [
+                              "cancel_aggressive_partial_fill",
+                              "cancel_aggressive_no_fill"
+                            ],
+                            "description": "The self trade prevention action override for this order.\nNeeds configuration to be enabled, see the `Self trade prevention` section for more explanation.\n\nThe default is `cancel_aggressive_partial_fill` and not configurable.\n"
                           }
                         }
                       }
@@ -7982,6 +8169,23 @@
                           "reject_post_only": {
                             "type": "boolean",
                             "description": "This flag is only effective in combination with post_only. If set, then instead of adjusting\nthe order price, the order will be cancelled with delete reason 'immediate_cancel'. The\ncombination of post_only and reject_post_only is effectively a book-or-cancel order.\n"
+                          },
+                          "stp_level": {
+                            "type": "string",
+                            "enum": [
+                              "customer",
+                              "account",
+                              "disabled"
+                            ],
+                            "description": "The self trade prevention level override for this order.\nNeeds configuration to be enabled, see the `Self trade prevention` section for more explanation.\n\nThe default is `customer` and not configurable.\n"
+                          },
+                          "stp_action": {
+                            "type": "string",
+                            "enum": [
+                              "cancel_aggressive_partial_fill",
+                              "cancel_aggressive_no_fill"
+                            ],
+                            "description": "The self trade prevention action override for this order.\nNeeds configuration to be enabled, see the `Self trade prevention` section for more explanation.\n\nThe default is `cancel_aggressive_partial_fill` and not configurable.\n"
                           }
                         },
                         "example": {

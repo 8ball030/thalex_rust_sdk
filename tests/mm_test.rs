@@ -52,6 +52,7 @@ async fn test_mm_flow() {
                 })),
                 a: None,
             }],
+            ..Default::default()
         })
         .await;
     assert!(

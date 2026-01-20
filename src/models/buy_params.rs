@@ -45,6 +45,10 @@ pub struct BuyParams {
     pub reduce_only: Option<bool>,
     #[serde(rename = "collar", skip_serializing_if = "Option::is_none")]
     pub collar: Option<models::CollarEnum>,
+    #[serde(rename = "stp_level", skip_serializing_if = "Option::is_none")]
+    pub stp_level: Option<models::StpLevelEnum>,
+    #[serde(rename = "stp_action", skip_serializing_if = "Option::is_none")]
+    pub stp_action: Option<models::StpActionEnum>,
 }
 
 impl BuyParams {
@@ -62,6 +66,8 @@ impl BuyParams {
             reject_post_only: None,
             reduce_only: None,
             collar: None,
+            stp_level: None,
+            stp_action: None,
         }
     }
 }

@@ -2360,439 +2360,6 @@
             "Notifications": {
                 "$ref": "./openapi.json#/components/schemas/Notifications"
             },
-            "Bot": {
-                "oneOf": [
-                    {
-                        "title": "SGSL",
-                        "type": "object",
-                        "required": [
-                            "strategy",
-                            "bot_id",
-                            "status",
-                            "instrument_name",
-                            "entry_price",
-                            "target_position",
-                            "exit_price",
-                            "exit_position",
-                            "end_time",
-                            "signal"
-                        ],
-                        "properties": {
-                            "bot_id": {
-                                "type": "string",
-                                "description": "Individually identifies this bot instance. You can use it to cancel this specific one."
-                            },
-                            "status": {
-                                "type": "string",
-                                "enum": [
-                                    "active",
-                                    "stopped"
-                                ]
-                            },
-                            "stop_reason": {
-                                "type": "string",
-                                "description": "The reason why the bot stopped executing. Possible values are [\"client_cancel\", \"client_bulk_cancel\", \"end_time\", \"instrument_deactivated\", \"margin_breach\", \"admin_cancel\", \"conflict\", \"strategy\"]."
-                            },
-                            "strategy": {
-                                "type": "string",
-                                "description": "equal to \"sgsl\""
-                            },
-                            "instrument_name": {
-                                "type": "string",
-                                "description": "Name of the instrument."
-                            },
-                            "signal": {
-                                "type": "string",
-                                "enum": [
-                                    "last",
-                                    "index",
-                                    "mark"
-                                ]
-                            },
-                            "entry_price": {
-                                "type": "number",
-                                "description": "Price to compare `signal` price to, to determine necessary adjustments to the portfolio. See [the bot strategies section](#tag/bot_strategies) for more explanation."
-                            },
-                            "target_position": {
-                                "type": "number",
-                                "description": "The target position to maintain in the subaccount if `signal` price is above `entry_price`. See [the bot strategies section](#tag/bot_strategies) for more explanation."
-                            },
-                            "exit_price": {
-                                "type": "number",
-                                "description": "Price to compare `signal` price to, to determine necessary adjustments to the portfolio. See [the bot strategies section](#tag/bot_strategies) for more explanation."
-                            },
-                            "exit_position": {
-                                "type": "number",
-                                "description": "The target position to maintain in the subaccount if `signal` price is below `exit_price`. See [the bot strategies section](#tag/bot_strategies) for more explanation."
-                            },
-                            "max_slippage": {
-                                "type": "number",
-                                "description": "Maximum slippage per trade, expressed as % of the traded instruments mark price."
-                            },
-                            "end_time": {
-                                "type": "number",
-                                "description": "Timestamp when the bot stops executing, cancelling its orders and leaving all positions of the subaccount intact."
-                            },
-                            "label": {
-                                "type": "string",
-                                "description": "A label that the bot will add to all orders for easy identification."
-                            }
-                        }
-                    },
-                    {
-                        "title": "OCQ",
-                        "type": "object",
-                        "required": [
-                            "strategy",
-                            "instrument_name",
-                            "status",
-                            "bid_offset",
-                            "ask_offset",
-                            "signal",
-                            "quote_size",
-                            "min_position",
-                            "max_position",
-                            "end_time",
-                            "bot_id"
-                        ],
-                        "properties": {
-                            "bot_id": {
-                                "type": "string",
-                                "description": "Individually identifies this bot instance. You can use it to cancel this specific one."
-                            },
-                            "status": {
-                                "type": "string",
-                                "enum": [
-                                    "active",
-                                    "stopped"
-                                ]
-                            },
-                            "stop_reason": {
-                                "type": "string",
-                                "description": "The reason why the bot stopped executing. Possible values are [\"client_cancel\", \"client_bulk_cancel\", \"end_time\", \"instrument_deactivated\", \"margin_breach\", \"admin_cancel\", \"conflict\", \"strategy\"]."
-                            },
-                            "strategy": {
-                                "type": "string",
-                                "description": "equal to \"ocq\""
-                            },
-                            "instrument_name": {
-                                "type": "string",
-                                "description": "Name of the instrument."
-                            },
-                            "signal": {
-                                "type": "string",
-                                "enum": [
-                                    "index",
-                                    "mark"
-                                ]
-                            },
-                            "bid_offset": {
-                                "type": "number",
-                                "description": "The offset of the price of the bid quote from the signal price. See [the bot strategies section](#tag/bot_strategies) for more explanation."
-                            },
-                            "ask_offset": {
-                                "type": "number",
-                                "description": "The offset of the price of the ask quote from the signal price. See [the bot strategies section](#tag/bot_strategies) for more explanation."
-                            },
-                            "quote_size": {
-                                "type": "number",
-                                "description": "The default size of both the bid and ask quote, See [the bot strategies section](#tag/bot_strategies) for more explanation."
-                            },
-                            "min_position": {
-                                "type": "number",
-                                "description": "The minimum portfolio position to maintain in the subaccount. See [the bot strategies section](#tag/bot_strategies) for more explanation."
-                            },
-                            "max_position": {
-                                "type": "number",
-                                "description": "The maximum portfolio position to maintain in the subaccount. See [the bot strategies section](#tag/bot_strategies) for more explanation."
-                            },
-                            "end_time": {
-                                "type": "number",
-                                "description": "Timestamp when the bot stops executing, cancelling its orders and leaving all positions of the subaccount intact."
-                            },
-                            "label": {
-                                "type": "string",
-                                "description": "A label that the bot will add to all orders for easy identification."
-                            }
-                        }
-                    },
-                    {
-                        "title": "Levels",
-                        "type": "object",
-                        "required": [
-                            "strategy",
-                            "instrument_name",
-                            "bids",
-                            "asks",
-                            "step_size",
-                            "base_position",
-                            "target_mean_price",
-                            "end_time",
-                            "bot_id",
-                            "status"
-                        ],
-                        "properties": {
-                            "bot_id": {
-                                "type": "string",
-                                "description": "Individually identifies this bot instance. You can use it to cancel this specific one."
-                            },
-                            "status": {
-                                "type": "string",
-                                "enum": [
-                                    "active",
-                                    "stopped"
-                                ]
-                            },
-                            "stop_reason": {
-                                "type": "string",
-                                "description": "The reason why the bot stopped executing. Possible values are [\"client_cancel\", \"client_bulk_cancel\", \"end_time\", \"instrument_deactivated\", \"margin_breach\", \"admin_cancel\", \"conflict\", \"strategy\"]."
-                            },
-                            "strategy": {
-                                "type": "string",
-                                "description": "equal to \"levels\""
-                            },
-                            "instrument_name": {
-                                "type": "string",
-                                "description": "Name of the instrument the bot instance is trading."
-                            },
-                            "bids": {
-                                "type": "array",
-                                "description": "The default price levels the bot will be bidding at. See [the bot strategies section](#tag/bot_strategies) for more explanation.",
-                                "items": {
-                                    "type": "number"
-                                }
-                            },
-                            "asks": {
-                                "type": "array",
-                                "description": "The default price levels the bot will be quoting on the ask side. See [the bot strategies section](#tag/bot_strategies) for more explanation.",
-                                "items": {
-                                    "type": "number"
-                                }
-                            },
-                            "target_mean_price": {
-                                "type": "number",
-                                "description": "The price level to exit positions at."
-                            },
-                            "step_size": {
-                                "type": "number",
-                                "description": "The default size of to quote on one level. See [the bot strategies section](#tag/bot_strategies) for more explanation."
-                            },
-                            "base_position": {
-                                "type": "number",
-                                "description": "Will be used as a reference to compare the subaccount's portfolio position in the instrument that this bot is trading to. See [the bot strategies section](#tag/bot_strategies) for more explanation."
-                            },
-                            "upside_exit_price": {
-                                "type": "number",
-                                "description": "If the mark price of the instrument this bot is trading goes above `upside_exit_price`, the bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing."
-                            },
-                            "downside_exit_price": {
-                                "type": "number",
-                                "description": "If the mark price of the instrument this bot is trading goes below `downside_exit_price`, the bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing."
-                            },
-                            "max_slippage": {
-                                "type": "number",
-                                "description": "Maximum slippage per trade when exiting any position, expressed as % of the traded instruments mark price."
-                            },
-                            "end_time": {
-                                "type": "number",
-                                "description": "Timestamp when the bot stops executing, cancelling its orders and leaving all positions of the subaccount intact."
-                            },
-                            "label": {
-                                "type": "string",
-                                "description": "A label that the bot will add to all orders for easy identification."
-                            }
-                        }
-                    },
-                    {
-                        "title": "Grid",
-                        "type": "object",
-                        "required": [
-                            "strategy",
-                            "instrument_name",
-                            "grid",
-                            "step_size",
-                            "base_position",
-                            "target_mean_price",
-                            "end_time",
-                            "bot_id",
-                            "status"
-                        ],
-                        "properties": {
-                            "bot_id": {
-                                "type": "string",
-                                "description": "Individually identifies this bot instance. You can use it to cancel this specific one."
-                            },
-                            "status": {
-                                "type": "string",
-                                "description": "One of [\"active\", \"stopped\"]."
-                            },
-                            "stop_reason": {
-                                "type": "string",
-                                "description": "The reason why the bot stopped executing. Possible values are [\"client_cancel\", \"client_bulk_cancel\", \"end_time\", \"instrument_deactivated\", \"margin_breach\", \"admin_cancel\", \"conflict\", \"strategy\"]."
-                            },
-                            "strategy": {
-                                "type": "string",
-                                "description": "Equal to \"grid\"."
-                            },
-                            "instrument_name": {
-                                "type": "string",
-                                "description": "Name of the instrument the bot instance is trading."
-                            },
-                            "grid": {
-                                "type": "array",
-                                "items": {
-                                    "type": "number"
-                                },
-                                "description": "The default price levels the bot will be quoting at. See [the bot strategies section](#tag/bot_strategies) for more explanation."
-                            },
-                            "target_mean_price": {
-                                "type": "number",
-                                "description": "As long as the account's portfolio position in the instrument that the bot is trading is equal to base_position, the bot will insert step_size asks on the grid above target_mean_price (one per level), and step_size bids below target_mean_price."
-                            },
-                            "step_size": {
-                                "type": "number",
-                                "description": "The default size to quote on one level. See [the bot strategies section](#tag/bot_strategies) for more explanation."
-                            },
-                            "base_position": {
-                                "type": "number",
-                                "description": "Will be used as a reference to compare the subaccount's portfolio position in the instrument that this bot is trading to. See [the bot strategies section](#tag/bot_strategies) for more explanation."
-                            },
-                            "upside_exit_price": {
-                                "type": "number",
-                                "description": "If the mark price of the instrument this bot is trading goes above `upside_exit_price`, the bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing."
-                            },
-                            "downside_exit_price": {
-                                "type": "number",
-                                "description": "If the mark price of the instrument this bot is trading goes below `downside_exit_price`, the bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing."
-                            },
-                            "max_slippage": {
-                                "type": "number",
-                                "description": "Maximum slippage per trade when exiting any position, expressed as % of the traded instruments mark price."
-                            },
-                            "end_time": {
-                                "type": "number",
-                                "description": "Timestamp when the bot stops executing, cancelling its orders and leaving all positions of the subaccount intact."
-                            },
-                            "label": {
-                                "type": "string",
-                                "description": "A label that the bot will add to all orders for easy identification."
-                            }
-                        }
-                    },
-                    {
-                        "title": "DHedge",
-                        "type": "object",
-                        "required": [
-                            "strategy",
-                            "instrument_name",
-                            "period",
-                            "threshold",
-                            "target_delta"
-                        ],
-                        "properties": {
-                            "strategy": {
-                                "type": "string",
-                                "description": "Equal to \"dhedge\"."
-                            },
-                            "instrument_name": {
-                                "type": "string",
-                                "description": "Name of the instrument the bot will trade."
-                            },
-                            "position": {
-                                "type": "string",
-                                "description": "Name of an instrument. If specified, the bot will only hedge the position in this instrument, not the entire underlying."
-                            },
-                            "target_delta": {
-                                "type": "number",
-                                "description": "The delta that the bot is targeting."
-                            },
-                            "threshold": {
-                                "type": "number",
-                                "description": "Tolerance threshold."
-                            },
-                            "period": {
-                                "type": "number",
-                                "description": "Number of seconds to let the deltas stay outside of `[target-threshold, target+threshold]`, before hedging them."
-                            },
-                            "max_slippage": {
-                                "type": "number",
-                                "description": "Maximum slippage per trade, expressed as % of the traded instruments mark price."
-                            },
-                            "end_time": {
-                                "type": "number",
-                                "description": "Timestamp when the bot should stop executing.\nIf not specified, the bot will run until it's manually stopped.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
-                            },
-                            "label": {
-                                "type": "string",
-                                "description": "A label that the bot will add to all orders for easy identification."
-                            }
-                        }
-                    },
-                    {
-                        "title": "DFollow",
-                        "type": "object",
-                        "required": [
-                            "strategy",
-                            "instrument_name",
-                            "target_instrument",
-                            "target_amount",
-                            "threshold",
-                            "end_time",
-                            "period"
-                        ],
-                        "properties": {
-                            "strategy": {
-                                "type": "string",
-                                "description": "Equal to \"dfollow\"."
-                            },
-                            "instrument_name": {
-                                "type": "string",
-                                "description": "Name of the instrument to trade, in order to follow the deltas of the target."
-                            },
-                            "target_instrument": {
-                                "type": "string",
-                                "description": "Name of the option to follow the deltas of."
-                            },
-                            "target_amount": {
-                                "type": "number",
-                                "description": "Amount of `target_instrument` contracts to follow the deltas of."
-                            },
-                            "threshold": {
-                                "type": "number",
-                                "description": "Tolerance threshold."
-                            },
-                            "period": {
-                                "type": "number",
-                                "description": "Number of seconds to let the deltas of the following position stay outside of `[target-threshold, target+threshold]`,\nbefore correcting them, where `target = deltas of target_instrument * target_amount`.\n"
-                            },
-                            "max_slippage": {
-                                "type": "number",
-                                "description": "Maximum slippage per trade, expressed as % of the traded instruments mark price."
-                            },
-                            "end_time": {
-                                "type": "number",
-                                "description": "Timestamp when the bot should stop executing.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
-                            },
-                            "label": {
-                                "type": "string",
-                                "description": "A label that the bot will add to all orders for easy identification."
-                            }
-                        }
-                    }
-                ],
-                "example": {
-                    "strategy": "sgsl",
-                    "status": "active",
-                    "bot_id": "0000000035832FDE",
-                    "instrument_name": "BTC-PERPETUAL",
-                    "signal": "index",
-                    "entry_price": 100050,
-                    "target_position": 0.2,
-                    "exit_price": 100000,
-                    "exit_position": 0,
-                    "end_time": 1740064912
-                }
-            },
             "Trade": {
                 "$ref": "./rpc_spec_generated.json#/components/schemas/Trade"
             },
@@ -2951,6 +2518,571 @@
             },
             "OrderHistory": {
                 "$ref": "./rpc_spec_generated.json#/components/schemas/OrderHistory"
+            },
+            "Bot": {
+                "oneOf": [
+                    {
+                        "title": "SGSL",
+                        "type": "object",
+                        "required": [
+                            "strategy",
+                            "bot_id",
+                            "status",
+                            "instrument_name",
+                            "entry_price",
+                            "target_position",
+                            "exit_price",
+                            "exit_position",
+                            "end_time",
+                            "signal",
+                            "realized_pnl",
+                            "fee"
+                        ],
+                        "properties": {
+                            "bot_id": {
+                                "type": "string",
+                                "description": "Individually identifies this bot instance. You can use it to cancel this specific one."
+                            },
+                            "status": {
+                                "type": "string",
+                                "enum": [
+                                    "active",
+                                    "stopped"
+                                ]
+                            },
+                            "stop_reason": {
+                                "type": "string",
+                                "description": "The reason why the bot stopped executing. Possible values are [\"client_cancel\", \"client_bulk_cancel\", \"end_time\", \"instrument_deactivated\", \"margin_breach\", \"admin_cancel\", \"conflict\", \"strategy\"]."
+                            },
+                            "strategy": {
+                                "type": "string",
+                                "description": "equal to \"sgsl\""
+                            },
+                            "instrument_name": {
+                                "type": "string",
+                                "description": "Name of the instrument."
+                            },
+                            "signal": {
+                                "type": "string",
+                                "enum": [
+                                    "last",
+                                    "index",
+                                    "mark"
+                                ]
+                            },
+                            "entry_price": {
+                                "type": "number",
+                                "description": "Price to compare `signal` price to, to determine necessary adjustments to the portfolio. See [the bot strategies section](#tag/bot_strategies) for more explanation."
+                            },
+                            "target_position": {
+                                "type": "number",
+                                "description": "The target position to maintain in the subaccount if `signal` price is above `entry_price`. See [the bot strategies section](#tag/bot_strategies) for more explanation."
+                            },
+                            "exit_price": {
+                                "type": "number",
+                                "description": "Price to compare `signal` price to, to determine necessary adjustments to the portfolio. See [the bot strategies section](#tag/bot_strategies) for more explanation."
+                            },
+                            "exit_position": {
+                                "type": "number",
+                                "description": "The target position to maintain in the subaccount if `signal` price is below `exit_price`. See [the bot strategies section](#tag/bot_strategies) for more explanation."
+                            },
+                            "max_slippage": {
+                                "type": "number",
+                                "description": "Maximum slippage per trade, expressed as % of the traded instruments mark price."
+                            },
+                            "end_time": {
+                                "type": "number",
+                                "description": "Timestamp when the bot stops executing, cancelling its orders and leaving all positions of the subaccount intact."
+                            },
+                            "label": {
+                                "type": "string",
+                                "description": "A label that the bot will add to all orders for easy identification."
+                            },
+                            "realized_pnl": {
+                                "type": "number",
+                                "description": "Realized P&L made by this bot since the start."
+                            },
+                            "fee": {
+                                "type": "number",
+                                "description": "Trade fees by this bot."
+                            },
+                            "average_price": {
+                                "type": "number",
+                                "description": "Average entry price of the position (if any)."
+                            },
+                            "position_size": {
+                                "type": "number",
+                                "description": "Position size (if any)."
+                            },
+                            "mark_price_at_stop": {
+                                "type": "number",
+                                "description": "Mark price of the bot instrument at the moment the bot was stopped."
+                            }
+                        }
+                    },
+                    {
+                        "title": "OCQ",
+                        "type": "object",
+                        "required": [
+                            "strategy",
+                            "instrument_name",
+                            "status",
+                            "bid_offset",
+                            "ask_offset",
+                            "signal",
+                            "quote_size",
+                            "min_position",
+                            "max_position",
+                            "end_time",
+                            "bot_id",
+                            "realized_pnl",
+                            "fee"
+                        ],
+                        "properties": {
+                            "bot_id": {
+                                "type": "string",
+                                "description": "Individually identifies this bot instance. You can use it to cancel this specific one."
+                            },
+                            "status": {
+                                "type": "string",
+                                "enum": [
+                                    "active",
+                                    "stopped"
+                                ]
+                            },
+                            "stop_reason": {
+                                "type": "string",
+                                "description": "The reason why the bot stopped executing. Possible values are [\"client_cancel\", \"client_bulk_cancel\", \"end_time\", \"instrument_deactivated\", \"margin_breach\", \"admin_cancel\", \"conflict\", \"strategy\"]."
+                            },
+                            "strategy": {
+                                "type": "string",
+                                "description": "equal to \"ocq\""
+                            },
+                            "instrument_name": {
+                                "type": "string",
+                                "description": "Name of the instrument."
+                            },
+                            "signal": {
+                                "type": "string",
+                                "enum": [
+                                    "index",
+                                    "mark"
+                                ]
+                            },
+                            "bid_offset": {
+                                "type": "number",
+                                "description": "The offset of the price of the bid quote from the signal price. See [the bot strategies section](#tag/bot_strategies) for more explanation."
+                            },
+                            "ask_offset": {
+                                "type": "number",
+                                "description": "The offset of the price of the ask quote from the signal price. See [the bot strategies section](#tag/bot_strategies) for more explanation."
+                            },
+                            "quote_size": {
+                                "type": "number",
+                                "description": "The default size of both the bid and ask quote, See [the bot strategies section](#tag/bot_strategies) for more explanation."
+                            },
+                            "min_position": {
+                                "type": "number",
+                                "description": "The minimum portfolio position to maintain in the subaccount. See [the bot strategies section](#tag/bot_strategies) for more explanation."
+                            },
+                            "max_position": {
+                                "type": "number",
+                                "description": "The maximum portfolio position to maintain in the subaccount. See [the bot strategies section](#tag/bot_strategies) for more explanation."
+                            },
+                            "end_time": {
+                                "type": "number",
+                                "description": "Timestamp when the bot stops executing, cancelling its orders and leaving all positions of the subaccount intact."
+                            },
+                            "label": {
+                                "type": "string",
+                                "description": "A label that the bot will add to all orders for easy identification."
+                            },
+                            "realized_pnl": {
+                                "type": "number",
+                                "description": "Realized P&L made by this bot since the start."
+                            },
+                            "fee": {
+                                "type": "number",
+                                "description": "Trade fees by this bot."
+                            },
+                            "average_price": {
+                                "type": "number",
+                                "description": "Average entry price of the position (if any)."
+                            },
+                            "position_size": {
+                                "type": "number",
+                                "description": "Position size (if any)."
+                            },
+                            "mark_price_at_stop": {
+                                "type": "number",
+                                "description": "Mark price of the bot instrument at the moment the bot was stopped."
+                            }
+                        }
+                    },
+                    {
+                        "title": "Levels",
+                        "type": "object",
+                        "required": [
+                            "strategy",
+                            "instrument_name",
+                            "bids",
+                            "asks",
+                            "step_size",
+                            "base_position",
+                            "target_mean_price",
+                            "end_time",
+                            "bot_id",
+                            "status",
+                            "realized_pnl",
+                            "fee"
+                        ],
+                        "properties": {
+                            "bot_id": {
+                                "type": "string",
+                                "description": "Individually identifies this bot instance. You can use it to cancel this specific one."
+                            },
+                            "status": {
+                                "type": "string",
+                                "enum": [
+                                    "active",
+                                    "stopped"
+                                ]
+                            },
+                            "stop_reason": {
+                                "type": "string",
+                                "description": "The reason why the bot stopped executing. Possible values are [\"client_cancel\", \"client_bulk_cancel\", \"end_time\", \"instrument_deactivated\", \"margin_breach\", \"admin_cancel\", \"conflict\", \"strategy\"]."
+                            },
+                            "strategy": {
+                                "type": "string",
+                                "description": "equal to \"levels\""
+                            },
+                            "instrument_name": {
+                                "type": "string",
+                                "description": "Name of the instrument the bot instance is trading."
+                            },
+                            "bids": {
+                                "type": "array",
+                                "description": "The default price levels the bot will be bidding at. See [the bot strategies section](#tag/bot_strategies) for more explanation.",
+                                "items": {
+                                    "type": "number"
+                                }
+                            },
+                            "asks": {
+                                "type": "array",
+                                "description": "The default price levels the bot will be quoting on the ask side. See [the bot strategies section](#tag/bot_strategies) for more explanation.",
+                                "items": {
+                                    "type": "number"
+                                }
+                            },
+                            "target_mean_price": {
+                                "type": "number",
+                                "description": "The price level to exit positions at."
+                            },
+                            "step_size": {
+                                "type": "number",
+                                "description": "The default size of to quote on one level. See [the bot strategies section](#tag/bot_strategies) for more explanation."
+                            },
+                            "base_position": {
+                                "type": "number",
+                                "description": "Will be used as a reference to compare the subaccount's portfolio position in the instrument that this bot is trading to. See [the bot strategies section](#tag/bot_strategies) for more explanation."
+                            },
+                            "upside_exit_price": {
+                                "type": "number",
+                                "description": "If the mark price of the instrument this bot is trading goes above `upside_exit_price`, the bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing."
+                            },
+                            "downside_exit_price": {
+                                "type": "number",
+                                "description": "If the mark price of the instrument this bot is trading goes below `downside_exit_price`, the bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing."
+                            },
+                            "max_slippage": {
+                                "type": "number",
+                                "description": "Maximum slippage per trade when exiting any position, expressed as % of the traded instruments mark price."
+                            },
+                            "end_time": {
+                                "type": "number",
+                                "description": "Timestamp when the bot stops executing, cancelling its orders and leaving all positions of the subaccount intact."
+                            },
+                            "label": {
+                                "type": "string",
+                                "description": "A label that the bot will add to all orders for easy identification."
+                            },
+                            "realized_pnl": {
+                                "type": "number",
+                                "description": "Realized P&L made by this bot since the start."
+                            },
+                            "fee": {
+                                "type": "number",
+                                "description": "Trade fees by this bot."
+                            },
+                            "average_price": {
+                                "type": "number",
+                                "description": "Average entry price of the position (if any)."
+                            },
+                            "position_size": {
+                                "type": "number",
+                                "description": "Position size (if any)."
+                            },
+                            "mark_price_at_stop": {
+                                "type": "number",
+                                "description": "Mark price of the bot instrument at the moment the bot was stopped."
+                            }
+                        }
+                    },
+                    {
+                        "title": "Grid",
+                        "type": "object",
+                        "required": [
+                            "strategy",
+                            "instrument_name",
+                            "grid",
+                            "step_size",
+                            "base_position",
+                            "target_mean_price",
+                            "end_time",
+                            "bot_id",
+                            "status",
+                            "realized_pnl",
+                            "fee"
+                        ],
+                        "properties": {
+                            "bot_id": {
+                                "type": "string",
+                                "description": "Individually identifies this bot instance. You can use it to cancel this specific one."
+                            },
+                            "status": {
+                                "type": "string",
+                                "description": "One of [\"active\", \"stopped\"]."
+                            },
+                            "stop_reason": {
+                                "type": "string",
+                                "description": "The reason why the bot stopped executing. Possible values are [\"client_cancel\", \"client_bulk_cancel\", \"end_time\", \"instrument_deactivated\", \"margin_breach\", \"admin_cancel\", \"conflict\", \"strategy\"]."
+                            },
+                            "strategy": {
+                                "type": "string",
+                                "description": "Equal to \"grid\"."
+                            },
+                            "instrument_name": {
+                                "type": "string",
+                                "description": "Name of the instrument the bot instance is trading."
+                            },
+                            "grid": {
+                                "type": "array",
+                                "items": {
+                                    "type": "number"
+                                },
+                                "description": "The default price levels the bot will be quoting at. See [the bot strategies section](#tag/bot_strategies) for more explanation."
+                            },
+                            "target_mean_price": {
+                                "type": "number",
+                                "description": "As long as the account's portfolio position in the instrument that the bot is trading is equal to base_position, the bot will insert step_size asks on the grid above target_mean_price (one per level), and step_size bids below target_mean_price."
+                            },
+                            "step_size": {
+                                "type": "number",
+                                "description": "The default size to quote on one level. See [the bot strategies section](#tag/bot_strategies) for more explanation."
+                            },
+                            "base_position": {
+                                "type": "number",
+                                "description": "Will be used as a reference to compare the subaccount's portfolio position in the instrument that this bot is trading to. See [the bot strategies section](#tag/bot_strategies) for more explanation."
+                            },
+                            "upside_exit_price": {
+                                "type": "number",
+                                "description": "If the mark price of the instrument this bot is trading goes above `upside_exit_price`, the bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing."
+                            },
+                            "downside_exit_price": {
+                                "type": "number",
+                                "description": "If the mark price of the instrument this bot is trading goes below `downside_exit_price`, the bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing."
+                            },
+                            "max_slippage": {
+                                "type": "number",
+                                "description": "Maximum slippage per trade when exiting any position, expressed as % of the traded instruments mark price."
+                            },
+                            "end_time": {
+                                "type": "number",
+                                "description": "Timestamp when the bot stops executing, cancelling its orders and leaving all positions of the subaccount intact."
+                            },
+                            "label": {
+                                "type": "string",
+                                "description": "A label that the bot will add to all orders for easy identification."
+                            },
+                            "realized_pnl": {
+                                "type": "number",
+                                "description": "Realized P&L made by this bot since the start."
+                            },
+                            "fee": {
+                                "type": "number",
+                                "description": "Trade fees by this bot."
+                            },
+                            "average_price": {
+                                "type": "number",
+                                "description": "Average entry price of the position (if any)."
+                            },
+                            "position_size": {
+                                "type": "number",
+                                "description": "Position size (if any)."
+                            },
+                            "mark_price_at_stop": {
+                                "type": "number",
+                                "description": "Mark price of the bot instrument at the moment the bot was stopped."
+                            }
+                        }
+                    },
+                    {
+                        "title": "DHedge",
+                        "type": "object",
+                        "required": [
+                            "strategy",
+                            "instrument_name",
+                            "period",
+                            "threshold",
+                            "target_delta",
+                            "realized_pnl",
+                            "fee"
+                        ],
+                        "properties": {
+                            "strategy": {
+                                "type": "string",
+                                "description": "Equal to \"dhedge\"."
+                            },
+                            "instrument_name": {
+                                "type": "string",
+                                "description": "Name of the instrument the bot will trade."
+                            },
+                            "position": {
+                                "type": "string",
+                                "description": "Name of an instrument. If specified, the bot will only hedge the position in this instrument, not the entire underlying."
+                            },
+                            "target_delta": {
+                                "type": "number",
+                                "description": "The delta that the bot is targeting."
+                            },
+                            "threshold": {
+                                "type": "number",
+                                "description": "Tolerance threshold."
+                            },
+                            "period": {
+                                "type": "number",
+                                "description": "Number of seconds to let the deltas stay outside of `[target-threshold, target+threshold]`, before hedging them."
+                            },
+                            "max_slippage": {
+                                "type": "number",
+                                "description": "Maximum slippage per trade, expressed as % of the traded instruments mark price."
+                            },
+                            "end_time": {
+                                "type": "number",
+                                "description": "Timestamp when the bot should stop executing.\nIf not specified, the bot will run until it's manually stopped.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
+                            },
+                            "label": {
+                                "type": "string",
+                                "description": "A label that the bot will add to all orders for easy identification."
+                            },
+                            "realized_pnl": {
+                                "type": "number",
+                                "description": "Realized P&L made by this bot since the start."
+                            },
+                            "fee": {
+                                "type": "number",
+                                "description": "Trade fees by this bot."
+                            },
+                            "average_price": {
+                                "type": "number",
+                                "description": "Average entry price of the position (if any)."
+                            },
+                            "position_size": {
+                                "type": "number",
+                                "description": "Position size (if any)."
+                            },
+                            "mark_price_at_stop": {
+                                "type": "number",
+                                "description": "Mark price of the bot instrument at the moment the bot was stopped."
+                            }
+                        }
+                    },
+                    {
+                        "title": "DFollow",
+                        "type": "object",
+                        "required": [
+                            "strategy",
+                            "instrument_name",
+                            "target_instrument",
+                            "target_amount",
+                            "threshold",
+                            "end_time",
+                            "period",
+                            "realized_pnl",
+                            "fee"
+                        ],
+                        "properties": {
+                            "strategy": {
+                                "type": "string",
+                                "description": "Equal to \"dfollow\"."
+                            },
+                            "instrument_name": {
+                                "type": "string",
+                                "description": "Name of the instrument to trade, in order to follow the deltas of the target."
+                            },
+                            "target_instrument": {
+                                "type": "string",
+                                "description": "Name of the option to follow the deltas of."
+                            },
+                            "target_amount": {
+                                "type": "number",
+                                "description": "Amount of `target_instrument` contracts to follow the deltas of."
+                            },
+                            "threshold": {
+                                "type": "number",
+                                "description": "Tolerance threshold."
+                            },
+                            "period": {
+                                "type": "number",
+                                "description": "Number of seconds to let the deltas of the following position stay outside of `[target-threshold, target+threshold]`,\nbefore correcting them, where `target = deltas of target_instrument * target_amount`.\n"
+                            },
+                            "max_slippage": {
+                                "type": "number",
+                                "description": "Maximum slippage per trade, expressed as % of the traded instruments mark price."
+                            },
+                            "end_time": {
+                                "type": "number",
+                                "description": "Timestamp when the bot should stop executing.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
+                            },
+                            "label": {
+                                "type": "string",
+                                "description": "A label that the bot will add to all orders for easy identification."
+                            },
+                            "realized_pnl": {
+                                "type": "number",
+                                "description": "Realized P&L made by this bot since the start."
+                            },
+                            "fee": {
+                                "type": "number",
+                                "description": "Trade fees by this bot."
+                            },
+                            "average_price": {
+                                "type": "number",
+                                "description": "Average entry price of the position (if any)."
+                            },
+                            "position_size": {
+                                "type": "number",
+                                "description": "Position size (if any)."
+                            },
+                            "mark_price_at_stop": {
+                                "type": "number",
+                                "description": "Mark price of the bot instrument at the moment the bot was stopped."
+                            }
+                        }
+                    }
+                ],
+                "example": {
+                    "strategy": "sgsl",
+                    "status": "active",
+                    "bot_id": "0000000035832FDE",
+                    "instrument_name": "BTC-PERPETUAL",
+                    "signal": "index",
+                    "entry_price": 100050,
+                    "target_position": 0.2,
+                    "exit_price": 100000,
+                    "exit_position": 0,
+                    "end_time": 1740064912
+                }
             }
         }
     }
