@@ -58,11 +58,12 @@ jobs:
       - name: Lint
         run: make lint
 
+      - name: Check generated code is up to date
+        run: git diff --exit-code
+
       - name: Build
         run: make build
 
       - name: Test
         run: make test
 
-      - name: Check generated code is up to date
-        run: git diff --exit-code
