@@ -16,6 +16,9 @@ pub struct DHedge {
     /// Equal to \"dhedge\".
     #[serde(rename = "strategy")]
     pub strategy: String,
+    /// One of [\"active\", \"stopped\"].
+    #[serde(rename = "status")]
+    pub status: String,
     /// Name of the instrument the bot will trade.
     #[serde(rename = "instrument_name")]
     pub instrument_name: String,
@@ -60,6 +63,7 @@ pub struct DHedge {
 impl DHedge {
     pub fn new(
         strategy: String,
+        status: String,
         instrument_name: String,
         target_delta: f64,
         threshold: f64,
@@ -69,6 +73,7 @@ impl DHedge {
     ) -> DHedge {
         DHedge {
             strategy,
+            status,
             instrument_name,
             position: None,
             target_delta,

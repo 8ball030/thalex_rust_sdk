@@ -1602,6 +1602,7 @@
             "type": "object",
             "required": [
               "strategy",
+              "status",
               "instrument_name",
               "period",
               "threshold",
@@ -1613,6 +1614,10 @@
               "strategy": {
                 "type": "string",
                 "description": "Equal to \"dhedge\"."
+              },
+              "status": {
+                "type": "string",
+                "description": "One of [\"active\", \"stopped\"]."
               },
               "instrument_name": {
                 "type": "string",
@@ -1673,6 +1678,7 @@
             "type": "object",
             "required": [
               "strategy",
+              "status",
               "instrument_name",
               "target_instrument",
               "target_amount",
@@ -1686,6 +1692,10 @@
               "strategy": {
                 "type": "string",
                 "description": "Equal to \"dfollow\"."
+              },
+              "status": {
+                "type": "string",
+                "description": "One of [\"active\", \"stopped\"]."
               },
               "instrument_name": {
                 "type": "string",

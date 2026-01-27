@@ -16,6 +16,9 @@ pub struct DFollow {
     /// Equal to \"dfollow\".
     #[serde(rename = "strategy")]
     pub strategy: String,
+    /// One of [\"active\", \"stopped\"].
+    #[serde(rename = "status")]
+    pub status: String,
     /// Name of the instrument to trade, in order to follow the deltas of the target.
     #[serde(rename = "instrument_name")]
     pub instrument_name: String,
@@ -60,6 +63,7 @@ pub struct DFollow {
 impl DFollow {
     pub fn new(
         strategy: String,
+        status: String,
         instrument_name: String,
         target_instrument: String,
         target_amount: f64,
@@ -71,6 +75,7 @@ impl DFollow {
     ) -> DFollow {
         DFollow {
             strategy,
+            status,
             instrument_name,
             target_instrument,
             target_amount,
