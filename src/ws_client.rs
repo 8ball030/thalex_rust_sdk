@@ -483,6 +483,7 @@ async fn connection_supervisor(
             break;
         }
 
+        info!("Attempting to connect to {url} (attempt {attempts})");
         match connect_async(&url).await {
             Ok((ws_stream, _)) => {
                 connection_state_tx.send(ExternalEvent::Connected).ok();
@@ -526,8 +527,10 @@ async fn connection_supervisor(
                     break;
                 }
 
-                info!("Reconnecting to {url} after backoff");
-                tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+                connection_state_tx.send(ExternalEvent::Disconnected).ok();
+                let cooldown_secs = attempts * 3;
+                info!("Reconnecting to {url} in {cooldown_secs} seconds (attempt {attempts})");
+                tokio::time::sleep(std::time::Duration::from_secs(cooldown_secs)).await;
             }
             Err(e) => {
                 connection_state_tx.send(ExternalEvent::Disconnected).ok();
