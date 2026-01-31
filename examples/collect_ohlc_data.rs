@@ -4,12 +4,14 @@ use thalex_rust_sdk::{
         Resolution,
         historic_data_mark::{MarkPriceData, MarkPriceHistoricalDataParams, PerpetualDataPoint},
     },
+    types::Environment,
     ws_client::WsClient,
 };
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let client = WsClient::new_public().await.unwrap();
+    let env = Environment::Mainnet;
+    let client = WsClient::new_public(env).await.unwrap();
 
     // 1 day ago in unix timestamp
     let from = (chrono::Utc::now() - chrono::Duration::days(1)).timestamp() as f64;

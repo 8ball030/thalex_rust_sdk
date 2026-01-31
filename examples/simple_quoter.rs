@@ -28,7 +28,6 @@ struct StrategyState {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     init_with_level(Info).unwrap();
-
     dotenv::dotenv().ok();
     let client = WsClient::from_env().await.unwrap();
     let _ = client.set_cancel_on_disconnect().await;

@@ -46,7 +46,6 @@ impl<'a> Serialize for TradeCsv<'a> {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     init_with_level(Info).unwrap();
-
     dotenv::dotenv().ok();
     let client = WsClient::from_env().await.unwrap();
 

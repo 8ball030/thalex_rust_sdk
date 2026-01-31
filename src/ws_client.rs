@@ -26,7 +26,7 @@ use crate::{
     models::{Instrument, RpcErrorResponse, RpcResponse},
     routing::{extract_channel, extract_id},
     types::{
-        ChannelSender, ClientError, Error, ExternalEvent, InternalCommand, LoginState,
+        ChannelSender, ClientError, Environment, Error, ExternalEvent, InternalCommand, LoginState,
         RequestScope, ResponseSender, SubscribeResponse, WsStream,
     },
     utils::round_to_ticks,
@@ -34,8 +34,8 @@ use crate::{
 
 use crate::channels::subscriptions::Subscriptions;
 use crate::rpc::Rpc;
+use std::str::FromStr;
 
-const URL: &str = "wss://thalex.com/ws/api/v2";
 const PING_INTERVAL: Duration = Duration::from_secs(5);
 const READ_TIMEOUT: Duration = Duration::from_secs(7);
 
@@ -75,26 +75,29 @@ impl WsClient {
         let key_path = var("THALEX_PRIVATE_KEY_PATH").unwrap();
         let key_id = var("THALEX_KEY_ID").unwrap();
         let account_id = var("THALEX_ACCOUNT_ID").unwrap();
-        let client = WsClient::new(URL, key_id, account_id, key_path).await?;
+        let env_str = var("THALEX_ENVIRONMENT")
+            .expect("THALEX_ENVIRONMENT not set. Must be 'Mainnet' or 'Testnet'");
+        let env = Environment::from_str(&env_str).expect("Invalid THALEX_ENVIRONMENT value");
+        let client = WsClient::new(env, key_id, account_id, key_path).await?;
         client.wait_for_connection().await;
         info!("WsClient created from environment variables Logging in...");
         client.login().await.expect("Login failed");
         Ok(client)
     }
 
-    pub async fn new_public() -> Result<Self, Error> {
-        let client = WsClient::new(URL, "".to_string(), "".to_string(), "".to_string()).await?;
+    pub async fn new_public(env: Environment) -> Result<Self, Error> {
+        let client = WsClient::new(env, "".to_string(), "".to_string(), "".to_string()).await?;
         client.wait_for_connection().await;
         Ok(client)
     }
 
     pub async fn new(
-        url: impl Into<String>,
+        env: Environment,
         key_id: String,
         account_id: String,
         key_path: String,
     ) -> Result<Self, Error> {
-        let url = url.into();
+        let url = env.get_url();
 
         let (cmd_tx, cmd_rx) = mpsc::unbounded_channel::<InternalCommand>();
         let (shutdown_tx, shutdown_rx) = watch::channel(false);
@@ -115,7 +118,7 @@ impl WsClient {
         };
 
         let supervisor_handle = tokio::spawn(connection_supervisor(
-            url,
+            url.to_string(),
             cmd_rx,
             shutdown_rx,
             pending_requests.clone(),

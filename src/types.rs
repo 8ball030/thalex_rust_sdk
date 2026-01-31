@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use serde_json::Value;
-use std::fmt;
+use std::{fmt, str::FromStr};
 use thiserror::Error;
 use tokio::{net::TcpStream, sync::oneshot};
 use tokio_tungstenite::{
@@ -77,4 +77,28 @@ pub enum ClientError {
 
     #[error("oneshot receive error")]
     Recv(#[from] oneshot::error::RecvError),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Environment {
+    Mainnet,
+    Testnet,
+}
+impl Environment {
+    pub fn get_url(&self) -> &str {
+        match self {
+            Environment::Mainnet => "wss://thalex.com/ws/api/v2",
+            Environment::Testnet => "wss://testnet.thalex.com/ws/api/v2",
+        }
+    }
+}
+impl FromStr for Environment {
+    type Err = ();
+    fn from_str(env: &str) -> Result<Self, Self::Err> {
+        match env.to_lowercase().as_str() {
+            "mainnet" => Ok(Environment::Mainnet),
+            "testnet" => Ok(Environment::Testnet),
+            _ => Err(()),
+        }
+    }
 }
