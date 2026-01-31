@@ -7,7 +7,11 @@ use chrono::{DateTime, Utc};
 use log::{Level::Info, info};
 use rust_decimal::{Decimal, prelude::FromPrimitive};
 use simple_logger::init_with_level;
-use thalex_rust_sdk::{models::Delay, models::Ticker, types::ExternalEvent, ws_client::WsClient};
+use thalex_rust_sdk::{
+    models::{Delay, Ticker},
+    types::{Environment, ExternalEvent},
+    ws_client::WsClient,
+};
 use tokio::sync::Mutex;
 
 #[derive(Debug, Clone, Default)]
@@ -23,7 +27,8 @@ pub struct Candle {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     init_with_level(Info).unwrap();
 
-    let client = WsClient::new_public().await.unwrap();
+    let env = Environment::Mainnet;
+    let client = WsClient::new_public(env).await.unwrap();
 
     let interval = 60; // 1 minute candles
 

@@ -1,12 +1,16 @@
 use log::{Level::Info, info};
 use simple_logger::init_with_level;
-use thalex_rust_sdk::{models::Delay, types::ExternalEvent, ws_client::WsClient};
+use thalex_rust_sdk::{
+    models::Delay,
+    types::{Environment, ExternalEvent},
+    ws_client::WsClient,
+};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     init_with_level(Info).unwrap();
 
-    let client = WsClient::new_public().await.unwrap();
+    let client = WsClient::new_public(Environment::Mainnet).await.unwrap();
 
     let instruments = client.rpc().market_data().instruments().await.unwrap();
     info!("Total Instruments: {}", instruments.len());

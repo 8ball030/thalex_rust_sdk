@@ -4,13 +4,13 @@ use log::Level::Info;
 use simple_logger::init_with_level;
 use thalex_rust_sdk::{
     models::Delay,
-    types::{ExternalEvent, InternalCommand},
+    types::{Environment, ExternalEvent, InternalCommand},
     ws_client::WsClient,
 };
 
 #[tokio::test]
 async fn test_websocket_subscription_working() {
-    let client = WsClient::new_public().await.unwrap();
+    let client = WsClient::new_public(Environment::Testnet).await.unwrap();
     let result = client
         .subscriptions()
         .market_data()
@@ -34,7 +34,7 @@ async fn test_websocket_subscription_working() {
 
 #[tokio::test]
 async fn test_websocket_subscription_not_working() {
-    let client = WsClient::new_public().await.unwrap();
+    let client = WsClient::new_public(Environment::Testnet).await.unwrap();
     let result = client
         .subscriptions()
         .market_data()
@@ -48,7 +48,7 @@ async fn test_websocket_subscription_not_working() {
 
 #[tokio::test]
 async fn test_client_shutdown() {
-    let client = WsClient::new_public().await.unwrap();
+    let client = WsClient::new_public(Environment::Testnet).await.unwrap();
     tokio::time::sleep(Duration::from_millis(200)).await;
 
     let result = tokio::time::timeout(Duration::from_secs(5), client.shutdown("test")).await;
@@ -63,7 +63,7 @@ async fn test_client_shutdown() {
 #[tokio::test]
 async fn test_ws_reconnect() {
     init_with_level(Info).unwrap();
-    let client = WsClient::new_public().await.unwrap();
+    let client = WsClient::new_public(Environment::Testnet).await.unwrap();
     // let client = Arc::new(client);
     let disconnect_triger = client.write_tx.clone();
 

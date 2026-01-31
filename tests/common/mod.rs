@@ -3,10 +3,11 @@ macro_rules! with_private_client {
     ($client:ident, $body:expr) => {{
         dotenv::dotenv().ok();
 
-        let (_, _, _) = require_env!(
+        let (_, _, _, _) = require_env!(
             "THALEX_PRIVATE_KEY_PATH",
             "THALEX_KEY_ID",
-            "THALEX_ACCOUNT_ID"
+            "THALEX_ACCOUNT_ID",
+            "THALEX_ENVIRONMENT"
         );
 
         tokio::time::sleep(std::time::Duration::from_secs(1)).await;
@@ -26,7 +27,9 @@ macro_rules! with_private_client {
 #[macro_export]
 macro_rules! with_public_client {
     ($client:ident, $body:expr) => {{
-        let $client = WsClient::new_public().await.unwrap();
+        let $client = WsClient::new_public(thalex_rust_sdk::types::Environment::Testnet)
+            .await
+            .unwrap();
 
         let result = { $body };
 
