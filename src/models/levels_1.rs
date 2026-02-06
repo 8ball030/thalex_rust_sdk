@@ -19,13 +19,13 @@ pub struct Levels1 {
     /// Name of the instrument to run the Levels bot on.
     #[serde(rename = "instrument_name")]
     pub instrument_name: String,
-    /// The default price levels the bot will be bidding at. Must not contain more than 5 levels. Distance between levels must be at least 2 ticks, at most 100 ticks. Best bid and best ask must be at least 10 ticks apart for options and 50 ticks apart for everything else. See [the bot strategies section](#tag/bot_strategies) for more explanation.
+    /// The default price levels the bot will be bidding at. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "bids")]
     pub bids: Vec<f64>,
-    /// The default price levels the bot will be quoting on the ask side. Must not contain more than 5 levels. Distance between levels must be at least 2 ticks, at most 100 ticks. Best bid and best ask must be at least 10 ticks apart for options and 50 ticks apart for everything else. See [the bot strategies section](#tag/bot_strategies) for more explanation.
+    /// The default price levels the bot will be quoting on the ask side. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "asks")]
     pub asks: Vec<f64>,
-    /// The default size to quote on one level. Must nut be greater than 100 volume ticks of the instrument. See [the bot strategies section](#tag/bot_strategies) for more explanation.
+    /// The default size to quote on one level. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "step_size")]
     pub step_size: f64,
     /// Will be used as a reference to compare the subaccount's portfolio position in the instrument that this bot is trading to. Defaults to the portfolio position of the subaccount in `instrument_name` at the time of sending the request. See [the bot strategies section](#tag/bot_strategies) for more explanation.
@@ -34,10 +34,10 @@ pub struct Levels1 {
     /// The price level to exit positions at.
     #[serde(rename = "target_mean_price", skip_serializing_if = "Option::is_none")]
     pub target_mean_price: Option<f64>,
-    /// If the mark price of the instrument this bot is trading goes above `upside_exit_price`, the bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing. Must not be more than 200 ticks away from highest ask.
+    /// If the mark price of the instrument this bot is trading goes above `upside_exit_price`, the bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.
     #[serde(rename = "upside_exit_price", skip_serializing_if = "Option::is_none")]
     pub upside_exit_price: Option<f64>,
-    /// If the mark price of the instrument this bot is trading goes below `downside_exit_price`, the bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing. Must not be more than 200 ticks away from lowest bid.
+    /// If the mark price of the instrument this bot is trading goes below `downside_exit_price`, the bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.
     #[serde(
         rename = "downside_exit_price",
         skip_serializing_if = "Option::is_none"
@@ -46,12 +46,18 @@ pub struct Levels1 {
     /// Maximum slippage per trade when exiting any position, expressed as % of the traded instruments mark price.
     #[serde(rename = "max_slippage", skip_serializing_if = "Option::is_none")]
     pub max_slippage: Option<f64>,
-    /// Timestamp when the bot should stop executing. Must not be further away than a week. When `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.
+    /// Timestamp when the bot should stop executing. When `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.
     #[serde(rename = "end_time")]
     pub end_time: f64,
     /// A label that the bot will add to all orders for easy identification.
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
+    /// Timestamp indicating when the bot was created.
+    #[serde(rename = "start_time")]
+    pub start_time: f64,
+    /// Timestamp indicating when the bot stopped working due to specified `stop_reason`.
+    #[serde(rename = "stop_time", skip_serializing_if = "Option::is_none")]
+    pub stop_time: Option<f64>,
 }
 
 impl Levels1 {
@@ -62,6 +68,7 @@ impl Levels1 {
         asks: Vec<f64>,
         step_size: f64,
         end_time: f64,
+        start_time: f64,
     ) -> Levels1 {
         Levels1 {
             strategy,
@@ -76,6 +83,8 @@ impl Levels1 {
             max_slippage: None,
             end_time,
             label: None,
+            start_time,
+            stop_time: None,
         }
     }
 }

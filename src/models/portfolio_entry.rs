@@ -37,7 +37,7 @@ pub struct PortfolioEntry {
     /// Unrealised P&L in the current session for this position based on current mark price, equal to `(mark_price - start_price) * position`.  Note: for instruments that are subject to daily futures-style settlement, the start price is reset to the mark price at the end of each session and all the unrealized P&L is thus realized. Use `private/daily_mark_history` API endpoint to get information about daily settlements.
     #[serde(rename = "unrealised_pnl", skip_serializing_if = "Option::is_none")]
     pub unrealised_pnl: Option<f64>,
-    /// Realized P&L in the current session.  Realized P&L is settled into a settlement asset at the end of each session.  
+    /// Realized P&L in the current session.  Realized P&L is settled into a settlement asset at the end of each session.
     #[serde(rename = "realised_pnl", skip_serializing_if = "Option::is_none")]
     pub realised_pnl: Option<f64>,
     /// Total entry value, equal to `start_price * position`.

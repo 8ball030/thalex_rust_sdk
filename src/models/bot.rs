@@ -29,6 +29,48 @@ impl Default for Bot {
 }
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum Status {
+    #[serde(rename = "active")]
+    Active,
+    #[serde(rename = "stopped")]
+    Stopped,
+}
+
+impl Default for Status {
+    fn default() -> Status {
+        Self::Active
+    }
+}
+/// The reason why the bot stopped executing.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum StopReason {
+    #[serde(rename = "client_cancel")]
+    ClientCancel,
+    #[serde(rename = "client_bulk_cancel")]
+    ClientBulkCancel,
+    #[serde(rename = "end_time")]
+    EndTime,
+    #[serde(rename = "instrument_deactivated")]
+    InstrumentDeactivated,
+    #[serde(rename = "margin_breach")]
+    MarginBreach,
+    #[serde(rename = "admin_cancel")]
+    AdminCancel,
+    #[serde(rename = "conflict")]
+    Conflict,
+    #[serde(rename = "strategy")]
+    Strategy,
+    #[serde(rename = "self_trade_prevention")]
+    SelfTradePrevention,
+}
+
+impl Default for StopReason {
+    fn default() -> StopReason {
+        Self::ClientCancel
+    }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum Signal {
     #[serde(rename = "index")]
     Index,

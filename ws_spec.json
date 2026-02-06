@@ -1293,44 +1293,43 @@
                     "index_delta": 1
                 }
             },
-            "InstrumentsPayloadNotification": {
-                "type": "object",
-                "required": [
-                    "channel_name",
-                    "notification"
-                ],
-                "properties": {
-                    "channel_name": {
-                        "type": "string",
-                        "description": "Channel name as in subscription."
-                    },
-                    "notification": {
-                        "$ref": "#/components/schemas/InstrumentsPayload"
-                    }
-                }
-            },
             "InstrumentsPayload": {
                 "type": "array",
                 "items": {
-                    "type": "object",
-                    "oneOf": [
-                        {
-                            "type": "object",
-                            "properties": {
-                                "added": {
-                                    "$ref": "./rpc_spec_generated.json#/components/schemas/Instrument"
-                                }
-                            }
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "removed": {
-                                    "$ref": "./rpc_spec_generated.json#/components/schemas/Instrument"
-                                }
+                    "$ref": "#/components/schemas/InstrumentDelta"
+                }
+            },
+            "InstrumentDelta": {
+                "oneOf": [
+                    {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "title": "Added",
+                        "required": [
+                            "added"
+                        ],
+                        "properties": {
+                            "added": {
+                                "$ref": "./rpc_spec_generated.json#/components/schemas/Instrument"
                             }
                         }
-                    ]
+                    },
+                    {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "title": "Removed",
+                        "required": [
+                            "removed"
+                        ],
+                        "properties": {
+                            "removed": {
+                                "$ref": "./rpc_spec_generated.json#/components/schemas/Instrument"
+                            }
+                        }
+                    }
+                ],
+                "x-rust-type": {
+                    "serde": "untagged"
                 }
             },
             "RfqsPayloadNotification": {
@@ -2070,69 +2069,7 @@
                 }
             },
             "PortfolioEntry": {
-                "type": "object",
-                "properties": {
-                    "instrument_name": {
-                        "type": "string",
-                        "description": "Instrument name."
-                    },
-                    "position": {
-                        "type": "number",
-                        "description": "Amount of this contract currently held; short positions are negative."
-                    },
-                    "mark_price": {
-                        "type": "number",
-                        "description": "Current mark price for the instrument."
-                    },
-                    "iv": {
-                        "type": "number",
-                        "description": "Implied volatility calculated at time of marking."
-                    },
-                    "index": {
-                        "type": "number",
-                        "description": "Index price at time of marking."
-                    },
-                    "start_price": {
-                        "type": "number",
-                        "description": "Average price paid to obtain position.\n\nNote: for instruments that are subject to daily futures-style settlement, the start price\nis reset to the mark price at the end of each session and all the unrealized P&L is thus realized.\nUse `private/daily_mark_history` API endpoint to get information about daily settlements.\n"
-                    },
-                    "average_price": {
-                        "type": "number",
-                        "description": "Average price paid to obtain position. Doesn't reset at settlement."
-                    },
-                    "unrealised_pnl": {
-                        "type": "number",
-                        "description": "Unrealised P&L in the current session for this position based on current mark price,\nequal to `(mark_price - start_price) * position`.\n\nNote: for instruments that are subject to daily futures-style settlement, the start price\nis reset to the mark price at the end of each session and all the unrealized P&L is thus realized.\nUse `private/daily_mark_history` API endpoint to get information about daily settlements.\n"
-                    },
-                    "realised_pnl": {
-                        "type": "number",
-                        "description": "Realized P&L in the current session.\n\nRealized P&L is settled into a settlement asset at the end of each session. \n"
-                    },
-                    "entry_value": {
-                        "type": "number",
-                        "description": "Total entry value, equal to `start_price * position`."
-                    },
-                    "perpetual_funding_entry_value": {
-                        "type": "number",
-                        "description": "Entry mark value for perpetual funding.\nUnrealised perpetual funding is (current perp funding mark * position) -\nperpetual funding entry value. Not\nincluded if zero.\n"
-                    },
-                    "unrealised_perpetual_funding": {
-                        "type": "number",
-                        "description": "For perpetual positions, current unrealized perpetual funding.\n\nThe funding is realized as P&L and settled into settlement asset at the end of each session.\n"
-                    }
-                },
-                "example": {
-                    "instrument_name": "BTC-PERPETUAL",
-                    "position": 1,
-                    "mark_price": 47299.741264339274,
-                    "start_price": 47260,
-                    "average_price": 47260,
-                    "unrealised_pnl": 39.75859976453942,
-                    "realised_pnl": 0,
-                    "entry_value": 47260,
-                    "perpetual_funding_entry_value": -0.13040705,
-                    "unrealised_perpetual_funding": 0.017335425264924917
-                }
+                "$ref": "./rpc_spec_generated.json#/components/schemas/PortfolioEntry"
             },
             "RfqOrder": {
                 "$ref": "./rpc_spec_generated.json#/components/schemas/RfqOrder"

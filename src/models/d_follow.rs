@@ -13,12 +13,14 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct DFollow {
+    /// Individually identifies this bot instance. You can use it to cancel this specific one.
+    #[serde(rename = "bot_id")]
+    pub bot_id: String,
     /// Equal to \"dfollow\".
     #[serde(rename = "strategy")]
     pub strategy: String,
-    /// One of [\"active\", \"stopped\"].
     #[serde(rename = "status")]
-    pub status: String,
+    pub status: Status,
     /// Name of the instrument to trade, in order to follow the deltas of the target.
     #[serde(rename = "instrument_name")]
     pub instrument_name: String,
@@ -31,6 +33,9 @@ pub struct DFollow {
     /// Tolerance threshold.
     #[serde(rename = "threshold")]
     pub threshold: f64,
+    /// Maximum deviation allowed from target deltas at any time.
+    #[serde(rename = "tolerance", skip_serializing_if = "Option::is_none")]
+    pub tolerance: Option<f64>,
     /// Number of seconds to let the deltas of the following position stay outside of `[target-threshold, target+threshold]`, before correcting them, where `target = deltas of target_instrument * target_amount`.
     #[serde(rename = "period")]
     pub period: f64,
@@ -40,6 +45,15 @@ pub struct DFollow {
     /// Timestamp when the bot should stop executing. When `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.
     #[serde(rename = "end_time")]
     pub end_time: f64,
+    /// Timestamp indicating when the bot was created.
+    #[serde(rename = "start_time")]
+    pub start_time: f64,
+    /// Timestamp indicating when the bot stopped working due to specified `stop_reason`.
+    #[serde(rename = "stop_time", skip_serializing_if = "Option::is_none")]
+    pub stop_time: Option<f64>,
+    /// The reason why the bot stopped executing.
+    #[serde(rename = "stop_reason", skip_serializing_if = "Option::is_none")]
+    pub stop_reason: Option<StopReason>,
     /// A label that the bot will add to all orders for easy identification.
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
@@ -62,27 +76,34 @@ pub struct DFollow {
 
 impl DFollow {
     pub fn new(
+        bot_id: String,
         strategy: String,
-        status: String,
+        status: Status,
         instrument_name: String,
         target_instrument: String,
         target_amount: f64,
         threshold: f64,
         period: f64,
         end_time: f64,
+        start_time: f64,
         realized_pnl: f64,
         fee: f64,
     ) -> DFollow {
         DFollow {
+            bot_id,
             strategy,
             status,
             instrument_name,
             target_instrument,
             target_amount,
             threshold,
+            tolerance: None,
             period,
             max_slippage: None,
             end_time,
+            start_time,
+            stop_time: None,
+            stop_reason: None,
             label: None,
             realized_pnl,
             fee,
@@ -90,5 +111,47 @@ impl DFollow {
             position_size: None,
             mark_price_at_stop: None,
         }
+    }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum Status {
+    #[serde(rename = "active")]
+    Active,
+    #[serde(rename = "stopped")]
+    Stopped,
+}
+
+impl Default for Status {
+    fn default() -> Status {
+        Self::Active
+    }
+}
+/// The reason why the bot stopped executing.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum StopReason {
+    #[serde(rename = "client_cancel")]
+    ClientCancel,
+    #[serde(rename = "client_bulk_cancel")]
+    ClientBulkCancel,
+    #[serde(rename = "end_time")]
+    EndTime,
+    #[serde(rename = "instrument_deactivated")]
+    InstrumentDeactivated,
+    #[serde(rename = "margin_breach")]
+    MarginBreach,
+    #[serde(rename = "admin_cancel")]
+    AdminCancel,
+    #[serde(rename = "conflict")]
+    Conflict,
+    #[serde(rename = "strategy")]
+    Strategy,
+    #[serde(rename = "self_trade_prevention")]
+    SelfTradePrevention,
+}
+
+impl Default for StopReason {
+    fn default() -> StopReason {
+        Self::ClientCancel
     }
 }

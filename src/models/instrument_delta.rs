@@ -13,13 +13,13 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum InstrumentsPayloadInner {
-    InstrumentsPayloadInnerOneOf(models::InstrumentsPayloadInnerOneOf),
-    InstrumentsPayloadInnerOneOf1(models::InstrumentsPayloadInnerOneOf1),
+pub enum InstrumentDelta {
+    Added(models::Added),
+    Removed(models::Removed),
 }
 
-impl Default for InstrumentsPayloadInner {
+impl Default for InstrumentDelta {
     fn default() -> Self {
-        Self::InstrumentsPayloadInnerOneOf(Default::default())
+        Self::Added(Default::default())
     }
 }

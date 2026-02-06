@@ -18,9 +18,9 @@ pub struct Levels {
     pub bot_id: String,
     #[serde(rename = "status")]
     pub status: Status,
-    /// The reason why the bot stopped executing. Possible values are [\"client_cancel\", \"client_bulk_cancel\", \"end_time\", \"instrument_deactivated\", \"margin_breach\", \"admin_cancel\", \"conflict\", \"strategy\"].
+    /// The reason why the bot stopped executing.
     #[serde(rename = "stop_reason", skip_serializing_if = "Option::is_none")]
-    pub stop_reason: Option<String>,
+    pub stop_reason: Option<StopReason>,
     /// equal to \"levels\"
     #[serde(rename = "strategy")]
     pub strategy: String,
@@ -57,6 +57,12 @@ pub struct Levels {
     /// Timestamp when the bot stops executing, cancelling its orders and leaving all positions of the subaccount intact.
     #[serde(rename = "end_time")]
     pub end_time: f64,
+    /// Timestamp indicating when the bot was created.
+    #[serde(rename = "start_time")]
+    pub start_time: f64,
+    /// Timestamp indicating when the bot stopped working due to specified `stop_reason`.
+    #[serde(rename = "stop_time", skip_serializing_if = "Option::is_none")]
+    pub stop_time: Option<f64>,
     /// A label that the bot will add to all orders for easy identification.
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
@@ -89,6 +95,7 @@ impl Levels {
         step_size: f64,
         base_position: f64,
         end_time: f64,
+        start_time: f64,
         realized_pnl: f64,
         fee: f64,
     ) -> Levels {
@@ -107,6 +114,8 @@ impl Levels {
             downside_exit_price: None,
             max_slippage: None,
             end_time,
+            start_time,
+            stop_time: None,
             label: None,
             realized_pnl,
             fee,
@@ -128,5 +137,33 @@ pub enum Status {
 impl Default for Status {
     fn default() -> Status {
         Self::Active
+    }
+}
+/// The reason why the bot stopped executing.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum StopReason {
+    #[serde(rename = "client_cancel")]
+    ClientCancel,
+    #[serde(rename = "client_bulk_cancel")]
+    ClientBulkCancel,
+    #[serde(rename = "end_time")]
+    EndTime,
+    #[serde(rename = "instrument_deactivated")]
+    InstrumentDeactivated,
+    #[serde(rename = "margin_breach")]
+    MarginBreach,
+    #[serde(rename = "admin_cancel")]
+    AdminCancel,
+    #[serde(rename = "conflict")]
+    Conflict,
+    #[serde(rename = "strategy")]
+    Strategy,
+    #[serde(rename = "self_trade_prevention")]
+    SelfTradePrevention,
+}
+
+impl Default for StopReason {
+    fn default() -> StopReason {
+        Self::ClientCancel
     }
 }

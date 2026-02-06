@@ -12,13 +12,13 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct InstrumentsPayloadInnerOneOf1 {
-    #[serde(rename = "removed", skip_serializing_if = "Option::is_none")]
-    pub removed: Option<models::Instrument>,
+pub struct Removed {
+    #[serde(rename = "removed")]
+    pub removed: models::Instrument,
 }
 
-impl InstrumentsPayloadInnerOneOf1 {
-    pub fn new() -> InstrumentsPayloadInnerOneOf1 {
-        InstrumentsPayloadInnerOneOf1 { removed: None }
+impl Removed {
+    pub fn new(removed: models::Instrument) -> Removed {
+        Removed { removed }
     }
 }

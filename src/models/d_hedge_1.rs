@@ -22,16 +22,16 @@ pub struct DHedge1 {
     /// Name of an outright instrument. If specified, the bot will only hedge the position in this instrument, not the entire underlying.
     #[serde(rename = "position", skip_serializing_if = "Option::is_none")]
     pub position: Option<String>,
-    /// Delta to target. Defaults to 0. Must be between -10 and 10.
+    /// Delta to target. Defaults to 0.
     #[serde(rename = "target_delta", skip_serializing_if = "Option::is_none")]
     pub target_delta: Option<f64>,
-    /// Hedging threshold. Defaults to 0. Must be between 0 and 0.3.
+    /// Hedging threshold. Defaults to 0.
     #[serde(rename = "threshold", skip_serializing_if = "Option::is_none")]
     pub threshold: Option<f64>,
     /// Maximum deviation allowed from target deltas at any time.
     #[serde(rename = "tolerance", skip_serializing_if = "Option::is_none")]
     pub tolerance: Option<f64>,
-    /// Number of seconds to let the deltas stay outside of `[target-threshold, target+threshold]`, before hedging them. Must be between 1 and 3600.
+    /// Number of seconds to let the deltas stay outside of `[target-threshold, target+threshold]`, before hedging them.
     #[serde(rename = "period")]
     pub period: f64,
     /// Maximum slippage per trade, expressed as % of the traded instruments mark price.
@@ -43,10 +43,16 @@ pub struct DHedge1 {
     /// A label that the bot will add to all orders for easy identification.
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
+    /// Timestamp indicating when the bot was created.
+    #[serde(rename = "start_time")]
+    pub start_time: f64,
+    /// Timestamp indicating when the bot stopped working due to specified `stop_reason`.
+    #[serde(rename = "stop_time", skip_serializing_if = "Option::is_none")]
+    pub stop_time: Option<f64>,
 }
 
 impl DHedge1 {
-    pub fn new(strategy: String, instrument_name: String, period: f64) -> DHedge1 {
+    pub fn new(strategy: String, instrument_name: String, period: f64, start_time: f64) -> DHedge1 {
         DHedge1 {
             strategy,
             instrument_name,
@@ -58,6 +64,8 @@ impl DHedge1 {
             max_slippage: None,
             end_time: None,
             label: None,
+            start_time,
+            stop_time: None,
         }
     }
 }
