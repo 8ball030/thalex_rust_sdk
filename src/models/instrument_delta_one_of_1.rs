@@ -12,13 +12,13 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct InstrumentsPayloadInnerOneOf {
+pub struct InstrumentDeltaOneOf1 {
     #[serde(rename = "added", skip_serializing_if = "Option::is_none")]
     pub added: Option<models::Instrument>,
 }
 
-impl InstrumentsPayloadInnerOneOf {
-    pub fn new() -> InstrumentsPayloadInnerOneOf {
-        InstrumentsPayloadInnerOneOf { added: None }
+impl InstrumentDeltaOneOf1 {
+    pub fn new() -> InstrumentDeltaOneOf1 {
+        InstrumentDeltaOneOf1 { added: None }
     }
 }

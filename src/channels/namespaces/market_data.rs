@@ -1,7 +1,7 @@
 use crate::{
     models::{
         BasePrice, BasePriceNotification, Book, BookNotification, Delay, Index, IndexComponents,
-        IndexComponentsNotification, InstrumentsNotification, InstrumentsPayload, Lwt,
+        IndexComponentsNotification, InstrumentDelta, InstrumentsNotification, Lwt,
         LwtNotification, PriceIndexNotification, RecentTrades, RecentTradesNotification,
         RfqsNotification, RfqsPayload, Ticker, TickerNotification, UnderlyingStatistics,
         UnderlyingStatisticsNotification,
@@ -184,7 +184,7 @@ impl<'a> MarketDataSubscriptions<'a> {
 
     pub async fn instruments<F, Fut>(&self, mut callback: F) -> Result<String, Error>
     where
-        F: FnMut(InstrumentsPayload) -> Fut + Send + 'static,
+        F: FnMut(Vec<InstrumentDelta>) -> Fut + Send + 'static,
         Fut: Future<Output = ()> + Send + 'static,
     {
         let channel = "instruments".to_string();

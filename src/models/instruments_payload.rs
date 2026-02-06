@@ -12,10 +12,13 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct InstrumentsPayload {}
+pub struct InstrumentsPayload {
+    #[serde(rename = "notification")]
+    pub notification: Vec<models::InstrumentDelta>,
+}
 
 impl InstrumentsPayload {
-    pub fn new() -> InstrumentsPayload {
-        InstrumentsPayload {}
+    pub fn new(notification: Vec<models::InstrumentDelta>) -> InstrumentsPayload {
+        InstrumentsPayload { notification }
     }
 }

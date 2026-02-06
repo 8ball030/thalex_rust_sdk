@@ -13,21 +13,23 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InstrumentsNotification {
-    /// Channel name as in subscription.
     #[serde(rename = "channel_name")]
     pub channel_name: String,
     #[serde(rename = "notification")]
-    pub notification: models::InstrumentsPayload,
+    pub notification: Vec<models::InstrumentDelta>,
+    #[serde(rename = "snapshot", skip_serializing_if = "Option::is_none")]
+    pub snapshot: Option<bool>,
 }
 
 impl InstrumentsNotification {
     pub fn new(
         channel_name: String,
-        notification: models::InstrumentsPayload,
+        notification: Vec<models::InstrumentDelta>,
     ) -> InstrumentsNotification {
         InstrumentsNotification {
             channel_name,
             notification,
+            snapshot: None,
         }
     }
 }
