@@ -8,7 +8,7 @@ use tokio::{
 };
 
 use futures_util::{SinkExt, StreamExt};
-use log::{error, info, warn};
+use log::{debug, error, info, warn};
 use serde_json::Value;
 use std::env::var;
 use std::sync::{
@@ -219,7 +219,7 @@ impl WsClient {
     }
 
     pub async fn shutdown(&self, reason: &'static str) -> Result<(), Error> {
-        info!("Shutdown requested: {reason}");
+        debug!("Shutdown requested: {reason}");
         self.public_subscriptions.clear();
         self.private_subscriptions.clear();
         let _ = self.shutdown_tx.send(true);
@@ -227,7 +227,7 @@ impl WsClient {
         if let Some(handle) = self.supervisor_handle.lock().await.take() {
             match tokio::time::timeout(Duration::from_secs(5), handle).await {
                 Ok(Ok(())) => {
-                    info!("Supervisor task completed successfully");
+                    debug!("Supervisor task completed successfully");
                 }
                 Ok(Err(e)) => {
                     error!("Supervisor task panicked: {e:?}");
@@ -261,11 +261,11 @@ impl WsClient {
             match scope {
                 RequestScope::Public => {
                     self.public_subscriptions.insert(channel.clone(), tx);
-                    info!("Subscribing to public channel: {channel}");
+                    debug!("Subscribing to public channel: {channel}");
                 }
                 RequestScope::Private => {
                     self.private_subscriptions.insert(channel.clone(), tx);
-                    info!("Subscribing to private channel: {channel}");
+                    debug!("Subscribing to private channel: {channel}");
                 }
             }
         }
@@ -368,13 +368,14 @@ impl WsClient {
                 }),
             )
             .await?;
-        info!("Sent login message, received response: {result:?}");
+        debug!("Sent login message, received response: {result:?}");
         if let Some(error) = result.get("error") {
+            warn!("Login error: {error:?}");
             Err(Box::new(std::io::Error::other(format!(
                 "Login error: {error:?}"
             ))))
         } else {
-            info!("Login successful");
+            debug!("Login successful");
             Ok(())
         }
     }
@@ -386,7 +387,7 @@ impl WsClient {
                 serde_json::json!({ "timeout_secs": 6}),
             )
             .await?;
-        info!("Set cancel_on_disconnect result: {result:?}");
+        debug!("Set cancel_on_disconnect result: {result:?}");
         Ok(())
     }
 
@@ -405,7 +406,7 @@ impl WsClient {
                 }),
             )
             .await?;
-        info!("Re-subscribed to public channels: {public_channels:?}");
+        debug!("Re-subscribed to public channels: {public_channels:?}");
         let private_channels: Vec<String> = {
             self.private_subscriptions
                 .iter()
@@ -420,7 +421,7 @@ impl WsClient {
                 }),
             )
             .await?;
-        info!("Re-subscribed to private channels: {private_channels:?}");
+        debug!("Re-subscribed to private channels: {private_channels:?}");
         Ok(())
     }
 
@@ -477,7 +478,7 @@ async fn connection_supervisor(
     private_subscriptions: Arc<DashMap<String, ChannelSender>>,
     connection_state_tx: watch::Sender<ExternalEvent>,
 ) {
-    info!("Connection supervisor started for {url}");
+    debug!("Connection supervisor started for {url}");
 
     let mut attempts: u64 = 1;
     loop {
@@ -486,12 +487,12 @@ async fn connection_supervisor(
             break;
         }
 
-        info!("Attempting to connect to {url} (attempt {attempts})");
+        debug!("Attempting to connect to {url} (attempt {attempts})");
         match connect_async(&url).await {
             Ok((ws_stream, _)) => {
                 connection_state_tx.send(ExternalEvent::Connected).ok();
                 attempts = 1;
-                info!("Connected to {url}");
+                debug!("Connected to {url}");
                 let result = run_single_connection(
                     &url,
                     ws_stream,
@@ -502,7 +503,7 @@ async fn connection_supervisor(
                     &private_subscriptions,
                 )
                 .await;
-                info!("Connection to {url} ended with result: {result:?}");
+                debug!("Connection to {url} ended with result: {result:?}");
 
                 if result.is_ok() {
                     connection_state_tx.send(ExternalEvent::Exited).ok();
@@ -532,7 +533,7 @@ async fn connection_supervisor(
 
                 connection_state_tx.send(ExternalEvent::Disconnected).ok();
                 let cooldown_secs = attempts * 3;
-                info!("Reconnecting to {url} in {cooldown_secs} seconds (attempt {attempts})");
+                debug!("Reconnecting to {url} in {cooldown_secs} seconds (attempt {attempts})");
                 tokio::time::sleep(std::time::Duration::from_secs(cooldown_secs)).await;
             }
             Err(e) => {
@@ -547,7 +548,7 @@ async fn connection_supervisor(
         }
     }
 
-    info!("Connection supervisor exited for {url}");
+    debug!("Connection supervisor exited for {url}");
 }
 
 async fn run_single_connection(
