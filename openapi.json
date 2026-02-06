@@ -1052,7 +1052,7 @@
           },
           "realised_pnl": {
             "type": "number",
-            "description": "Realized P&L in the current session.\n\nRealized P&L is settled into a settlement asset at the end of each session. \n"
+            "description": "Realized P&L in the current session.\n\nRealized P&L is settled into a settlement asset at the end of each session.\n"
           },
           "entry_value": {
             "type": "number",
@@ -1207,7 +1207,8 @@
               "end_time",
               "signal",
               "realized_pnl",
-              "fee"
+              "fee",
+              "start_time"
             ],
             "properties": {
               "bot_id": {
@@ -1223,7 +1224,18 @@
               },
               "stop_reason": {
                 "type": "string",
-                "description": "The reason why the bot stopped executing. Possible values are [\"client_cancel\", \"client_bulk_cancel\", \"end_time\", \"instrument_deactivated\", \"margin_breach\", \"admin_cancel\", \"conflict\", \"strategy\"]."
+                "enum": [
+                  "client_cancel",
+                  "client_bulk_cancel",
+                  "end_time",
+                  "instrument_deactivated",
+                  "margin_breach",
+                  "admin_cancel",
+                  "conflict",
+                  "strategy",
+                  "self_trade_prevention"
+                ],
+                "description": "The reason why the bot stopped executing."
               },
               "strategy": {
                 "type": "string",
@@ -1264,6 +1276,14 @@
               "end_time": {
                 "type": "number",
                 "description": "Timestamp when the bot stops executing, cancelling its orders and leaving all positions of the subaccount intact."
+              },
+              "start_time": {
+                "type": "number",
+                "description": "Timestamp indicating when the bot was created."
+              },
+              "stop_time": {
+                "type": "number",
+                "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
               },
               "label": {
                 "type": "string",
@@ -1307,7 +1327,8 @@
               "end_time",
               "bot_id",
               "realized_pnl",
-              "fee"
+              "fee",
+              "start_time"
             ],
             "properties": {
               "bot_id": {
@@ -1323,7 +1344,18 @@
               },
               "stop_reason": {
                 "type": "string",
-                "description": "The reason why the bot stopped executing. Possible values are [\"client_cancel\", \"client_bulk_cancel\", \"end_time\", \"instrument_deactivated\", \"margin_breach\", \"admin_cancel\", \"conflict\", \"strategy\"]."
+                "enum": [
+                  "client_cancel",
+                  "client_bulk_cancel",
+                  "end_time",
+                  "instrument_deactivated",
+                  "margin_breach",
+                  "admin_cancel",
+                  "conflict",
+                  "strategy",
+                  "self_trade_prevention"
+                ],
+                "description": "The reason why the bot stopped executing."
               },
               "strategy": {
                 "type": "string",
@@ -1363,6 +1395,14 @@
               "end_time": {
                 "type": "number",
                 "description": "Timestamp when the bot stops executing, cancelling its orders and leaving all positions of the subaccount intact."
+              },
+              "start_time": {
+                "type": "number",
+                "description": "Timestamp indicating when the bot was created."
+              },
+              "stop_time": {
+                "type": "number",
+                "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
               },
               "label": {
                 "type": "string",
@@ -1405,7 +1445,8 @@
               "bot_id",
               "status",
               "realized_pnl",
-              "fee"
+              "fee",
+              "start_time"
             ],
             "properties": {
               "bot_id": {
@@ -1421,7 +1462,18 @@
               },
               "stop_reason": {
                 "type": "string",
-                "description": "The reason why the bot stopped executing. Possible values are [\"client_cancel\", \"client_bulk_cancel\", \"end_time\", \"instrument_deactivated\", \"margin_breach\", \"admin_cancel\", \"conflict\", \"strategy\"]."
+                "enum": [
+                  "client_cancel",
+                  "client_bulk_cancel",
+                  "end_time",
+                  "instrument_deactivated",
+                  "margin_breach",
+                  "admin_cancel",
+                  "conflict",
+                  "strategy",
+                  "self_trade_prevention"
+                ],
+                "description": "The reason why the bot stopped executing."
               },
               "strategy": {
                 "type": "string",
@@ -1473,6 +1525,14 @@
                 "type": "number",
                 "description": "Timestamp when the bot stops executing, cancelling its orders and leaving all positions of the subaccount intact."
               },
+              "start_time": {
+                "type": "number",
+                "description": "Timestamp indicating when the bot was created."
+              },
+              "stop_time": {
+                "type": "number",
+                "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
+              },
               "label": {
                 "type": "string",
                 "description": "A label that the bot will add to all orders for easy identification."
@@ -1513,7 +1573,8 @@
               "bot_id",
               "status",
               "realized_pnl",
-              "fee"
+              "fee",
+              "start_time"
             ],
             "properties": {
               "bot_id": {
@@ -1522,11 +1583,25 @@
               },
               "status": {
                 "type": "string",
-                "description": "One of [\"active\", \"stopped\"]."
+                "enum": [
+                  "active",
+                  "stopped"
+                ]
               },
               "stop_reason": {
                 "type": "string",
-                "description": "The reason why the bot stopped executing. Possible values are [\"client_cancel\", \"client_bulk_cancel\", \"end_time\", \"instrument_deactivated\", \"margin_breach\", \"admin_cancel\", \"conflict\", \"strategy\"]."
+                "enum": [
+                  "client_cancel",
+                  "client_bulk_cancel",
+                  "end_time",
+                  "instrument_deactivated",
+                  "margin_breach",
+                  "admin_cancel",
+                  "conflict",
+                  "strategy",
+                  "self_trade_prevention"
+                ],
+                "description": "The reason why the bot stopped executing."
               },
               "strategy": {
                 "type": "string",
@@ -1571,6 +1646,14 @@
                 "type": "number",
                 "description": "Timestamp when the bot stops executing, cancelling its orders and leaving all positions of the subaccount intact."
               },
+              "start_time": {
+                "type": "number",
+                "description": "Timestamp indicating when the bot was created."
+              },
+              "stop_time": {
+                "type": "number",
+                "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
+              },
               "label": {
                 "type": "string",
                 "description": "A label that the bot will add to all orders for easy identification."
@@ -1601,6 +1684,7 @@
             "title": "DHedge",
             "type": "object",
             "required": [
+              "bot_id",
               "strategy",
               "status",
               "instrument_name",
@@ -1608,16 +1692,24 @@
               "threshold",
               "target_delta",
               "realized_pnl",
-              "fee"
+              "fee",
+              "start_time"
             ],
             "properties": {
+              "bot_id": {
+                "type": "string",
+                "description": "Individually identifies this bot instance. You can use it to cancel this specific one."
+              },
               "strategy": {
                 "type": "string",
                 "description": "Equal to \"dhedge\"."
               },
               "status": {
                 "type": "string",
-                "description": "One of [\"active\", \"stopped\"]."
+                "enum": [
+                  "active",
+                  "stopped"
+                ]
               },
               "instrument_name": {
                 "type": "string",
@@ -1635,6 +1727,10 @@
                 "type": "number",
                 "description": "Tolerance threshold."
               },
+              "tolerance": {
+                "type": "number",
+                "description": "Maximum deviation allowed from target deltas at any time."
+              },
               "period": {
                 "type": "number",
                 "description": "Number of seconds to let the deltas stay outside of `[target-threshold, target+threshold]`, before hedging them."
@@ -1646,6 +1742,29 @@
               "end_time": {
                 "type": "number",
                 "description": "Timestamp when the bot should stop executing.\nIf not specified, the bot will run until it's manually stopped.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
+              },
+              "start_time": {
+                "type": "number",
+                "description": "Timestamp indicating when the bot was created."
+              },
+              "stop_time": {
+                "type": "number",
+                "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
+              },
+              "stop_reason": {
+                "type": "string",
+                "enum": [
+                  "client_cancel",
+                  "client_bulk_cancel",
+                  "end_time",
+                  "instrument_deactivated",
+                  "margin_breach",
+                  "admin_cancel",
+                  "conflict",
+                  "strategy",
+                  "self_trade_prevention"
+                ],
+                "description": "The reason why the bot stopped executing."
               },
               "label": {
                 "type": "string",
@@ -1677,6 +1796,7 @@
             "title": "DFollow",
             "type": "object",
             "required": [
+              "bot_id",
               "strategy",
               "status",
               "instrument_name",
@@ -1686,16 +1806,24 @@
               "end_time",
               "period",
               "realized_pnl",
-              "fee"
+              "fee",
+              "start_time"
             ],
             "properties": {
+              "bot_id": {
+                "type": "string",
+                "description": "Individually identifies this bot instance. You can use it to cancel this specific one."
+              },
               "strategy": {
                 "type": "string",
                 "description": "Equal to \"dfollow\"."
               },
               "status": {
                 "type": "string",
-                "description": "One of [\"active\", \"stopped\"]."
+                "enum": [
+                  "active",
+                  "stopped"
+                ]
               },
               "instrument_name": {
                 "type": "string",
@@ -1713,6 +1841,10 @@
                 "type": "number",
                 "description": "Tolerance threshold."
               },
+              "tolerance": {
+                "type": "number",
+                "description": "Maximum deviation allowed from target deltas at any time."
+              },
               "period": {
                 "type": "number",
                 "description": "Number of seconds to let the deltas of the following position stay outside of `[target-threshold, target+threshold]`,\nbefore correcting them, where `target = deltas of target_instrument * target_amount`.\n"
@@ -1724,6 +1856,29 @@
               "end_time": {
                 "type": "number",
                 "description": "Timestamp when the bot should stop executing.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
+              },
+              "start_time": {
+                "type": "number",
+                "description": "Timestamp indicating when the bot was created."
+              },
+              "stop_time": {
+                "type": "number",
+                "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
+              },
+              "stop_reason": {
+                "type": "string",
+                "enum": [
+                  "client_cancel",
+                  "client_bulk_cancel",
+                  "end_time",
+                  "instrument_deactivated",
+                  "margin_breach",
+                  "admin_cancel",
+                  "conflict",
+                  "strategy",
+                  "self_trade_prevention"
+                ],
+                "description": "The reason why the bot stopped executing."
               },
               "label": {
                 "type": "string",
@@ -1762,7 +1917,9 @@
           "target_position": 0.2,
           "exit_price": 100000,
           "exit_position": 0,
-          "end_time": 1740064912
+          "end_time": 1740064912,
+          "start_time": 1740064912,
+          "stop_time": 1740064912
         }
       },
       "Trade": {
@@ -6649,7 +6806,9 @@
                               "target_position": 0.2,
                               "exit_price": 100000,
                               "exit_position": 0,
-                              "end_time": 1740064912
+                              "end_time": 1740064912,
+                              "start_time": 1740064912,
+                              "stop_time": 1740064912
                             },
                             {
                               "strategy": "ocq",
@@ -6663,7 +6822,9 @@
                               "quote_size": 0.1,
                               "min_position": -0.3,
                               "max_position": 0.25,
-                              "end_time": 1740064912
+                              "end_time": 1740064912,
+                              "start_time": 1740064912,
+                              "stop_time": 1740064912
                             }
                           ]
                         }
@@ -6680,7 +6841,9 @@
                             "target_position": 0.2,
                             "exit_price": 100000,
                             "exit_position": 0,
-                            "end_time": 1740064912
+                            "end_time": 1740064912,
+                            "start_time": 1740064912,
+                            "stop_time": 1740064912
                           },
                           {
                             "strategy": "ocq",
@@ -6694,7 +6857,9 @@
                             "quote_size": 0.1,
                             "min_position": -0.3,
                             "max_position": 0.25,
-                            "end_time": 1740064912
+                            "end_time": 1740064912,
+                            "start_time": 1740064912,
+                            "stop_time": 1740064912
                           }
                         ]
                       }
@@ -6791,7 +6956,9 @@
                                   "target_position": 0.2,
                                   "exit_price": 100000,
                                   "exit_position": 0,
-                                  "end_time": 1740064912
+                                  "end_time": 1740064912,
+                                  "start_time": 1740064912,
+                                  "stop_time": 1740064912
                                 },
                                 {
                                   "strategy": "ocq",
@@ -6805,7 +6972,9 @@
                                   "quote_size": 0.1,
                                   "min_position": -0.3,
                                   "max_position": 0.25,
-                                  "end_time": 1740064912
+                                  "end_time": 1740064912,
+                                  "start_time": 1740064912,
+                                  "stop_time": 1740064912
                                 }
                               ]
                             }
@@ -6822,7 +6991,9 @@
                                 "target_position": 0.2,
                                 "exit_price": 100000,
                                 "exit_position": 0,
-                                "end_time": 1740064912
+                                "end_time": 1740064912,
+                                "start_time": 1740064912,
+                                "stop_time": 1740064912
                               },
                               {
                                 "strategy": "ocq",
@@ -6836,7 +7007,9 @@
                                 "quote_size": 0.1,
                                 "min_position": -0.3,
                                 "max_position": 0.25,
-                                "end_time": 1740064912
+                                "end_time": 1740064912,
+                                "start_time": 1740064912,
+                                "stop_time": 1740064912
                               }
                             ]
                           }
@@ -6884,7 +7057,8 @@
                       "exit_price",
                       "exit_position",
                       "end_time",
-                      "signal"
+                      "signal",
+                      "start_time"
                     ],
                     "properties": {
                       "strategy": {
@@ -6905,19 +7079,19 @@
                       },
                       "entry_price": {
                         "type": "number",
-                        "description": "Price to compare `signal` price to, to determine necessary adjustments to the portfolio.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\nMust be greater or equal to `exit_price + 5 * price tick of the instrument`.\n"
+                        "description": "Price to compare `signal` price to, to determine necessary adjustments to the portfolio.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
                       },
                       "target_position": {
                         "type": "number",
-                        "description": "The target position to maintain in the subaccount if `signal` price is above `entry_price`.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\nCan be maximum `500 * volume tick of the instrument` away from `exit_position`.\n"
+                        "description": "The target position to maintain in the subaccount if `signal` price is above `entry_price`.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
                       },
                       "exit_price": {
                         "type": "number",
-                        "description": "Price to compare `signal` price to, to determine necessary adjustments to the portfolio.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\nMust be lower or equal to `entry_price - 5 * price tick of the instrument`.\n"
+                        "description": "Price to compare `signal` price to, to determine necessary adjustments to the portfolio.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
                       },
                       "exit_position": {
                         "type": "number",
-                        "description": "The target position to maintain in the subaccount if `signal` price is below `exit_price`.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\nCan be maximum `500 * volume tick of the instrument` away from `target_position`.\n"
+                        "description": "The target position to maintain in the subaccount if `signal` price is below `exit_price`.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
                       },
                       "max_slippage": {
                         "type": "number",
@@ -6925,11 +7099,19 @@
                       },
                       "end_time": {
                         "type": "number",
-                        "description": "Timestamp when the bot should stop executing. Must not be further away than a week.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
+                        "description": "Timestamp when the bot should stop executing.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
                       },
                       "label": {
                         "type": "string",
                         "description": "A label that the bot will add to all orders for easy identification."
+                      },
+                      "start_time": {
+                        "type": "number",
+                        "description": "Timestamp indicating when the bot was created."
+                      },
+                      "stop_time": {
+                        "type": "number",
+                        "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                       }
                     },
                     "example": {
@@ -6955,7 +7137,8 @@
                       "quote_size",
                       "min_position",
                       "max_position",
-                      "end_time"
+                      "end_time",
+                      "start_time"
                     ],
                     "properties": {
                       "strategy": {
@@ -6987,7 +7170,7 @@
                       },
                       "quote_size": {
                         "type": "number",
-                        "description": "The default size of both the bid and ask quote. Must not be greater than 250 volume ticks.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
+                        "description": "The default size of both the bid and ask quote.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
                       },
                       "min_position": {
                         "type": "number",
@@ -7003,11 +7186,19 @@
                       },
                       "end_time": {
                         "type": "number",
-                        "description": "Timestamp when the bot should stop executing. Must not be further away than a week.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
+                        "description": "Timestamp when the bot should stop executing.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
                       },
                       "label": {
                         "type": "string",
                         "description": "A label that the bot will add to all orders for easy identification."
+                      },
+                      "start_time": {
+                        "type": "number",
+                        "description": "Timestamp indicating when the bot was created."
+                      },
+                      "stop_time": {
+                        "type": "number",
+                        "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                       }
                     },
                     "example": {
@@ -7031,7 +7222,8 @@
                       "bids",
                       "asks",
                       "step_size",
-                      "end_time"
+                      "end_time",
+                      "start_time"
                     ],
                     "properties": {
                       "strategy": {
@@ -7047,18 +7239,18 @@
                         "items": {
                           "type": "number"
                         },
-                        "description": "The default price levels the bot will be bidding at.\nMust not contain more than 5 levels.\nDistance between levels must be at least 2 ticks, at most 100 ticks.\nBest bid and best ask must be at least 10 ticks apart for options and 50 ticks apart for everything else.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
+                        "description": "The default price levels the bot will be bidding at.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
                       },
                       "asks": {
                         "type": "array",
                         "items": {
                           "type": "number"
                         },
-                        "description": "The default price levels the bot will be quoting on the ask side.\nMust not contain more than 5 levels.\nDistance between levels must be at least 2 ticks, at most 100 ticks.\nBest bid and best ask must be at least 10 ticks apart for options and 50 ticks apart for everything else.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
+                        "description": "The default price levels the bot will be quoting on the ask side.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
                       },
                       "step_size": {
                         "type": "number",
-                        "description": "The default size to quote on one level.\nMust nut be greater than 100 volume ticks of the instrument.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
+                        "description": "The default size to quote on one level.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
                       },
                       "base_position": {
                         "type": "number",
@@ -7070,11 +7262,11 @@
                       },
                       "upside_exit_price": {
                         "type": "number",
-                        "description": "If the mark price of the instrument this bot is trading goes above `upside_exit_price`,\nthe bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.\nMust not be more than 200 ticks away from highest ask.\n"
+                        "description": "If the mark price of the instrument this bot is trading goes above `upside_exit_price`,\nthe bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.\n"
                       },
                       "downside_exit_price": {
                         "type": "number",
-                        "description": "If the mark price of the instrument this bot is trading goes below `downside_exit_price`,\nthe bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.\nMust not be more than 200 ticks away from lowest bid.\n"
+                        "description": "If the mark price of the instrument this bot is trading goes below `downside_exit_price`,\nthe bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.\n"
                       },
                       "max_slippage": {
                         "type": "number",
@@ -7082,11 +7274,19 @@
                       },
                       "end_time": {
                         "type": "number",
-                        "description": "Timestamp when the bot should stop executing. Must not be further away than a week.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
+                        "description": "Timestamp when the bot should stop executing.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
                       },
                       "label": {
                         "type": "string",
                         "description": "A label that the bot will add to all orders for easy identification."
+                      },
+                      "start_time": {
+                        "type": "number",
+                        "description": "Timestamp indicating when the bot was created."
+                      },
+                      "stop_time": {
+                        "type": "number",
+                        "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                       }
                     },
                     "example": {
@@ -7113,7 +7313,8 @@
                       "instrument_name",
                       "grid",
                       "step_size",
-                      "end_time"
+                      "end_time",
+                      "start_time"
                     ],
                     "properties": {
                       "strategy": {
@@ -7129,11 +7330,11 @@
                         "items": {
                           "type": "number"
                         },
-                        "description": "The default price levels the bot will be quoting at. Must have minimum 2, maximum 8 levels. Distance between quote levels must minimum 5, maximum 100 ticks. See [the bot strategies section](#tag/bot_strategies) for more explanation."
+                        "description": "The default price levels the bot will be quoting at. See [the bot strategies section](#tag/bot_strategies) for more explanation."
                       },
                       "step_size": {
                         "type": "number",
-                        "description": "The default size to quote on one level.\nMust not be greater than 100 volume ticks.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
+                        "description": "The default size to quote on one level.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
                       },
                       "base_position": {
                         "type": "number",
@@ -7145,11 +7346,11 @@
                       },
                       "upside_exit_price": {
                         "type": "number",
-                        "description": "If the mark price of the instrument this bot is trading goes above `upside_exit_price`,\nthe bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.\nMust not be more than 200 ticks away from highest quote.\n"
+                        "description": "If the mark price of the instrument this bot is trading goes above `upside_exit_price`,\nthe bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.\n"
                       },
                       "downside_exit_price": {
                         "type": "number",
-                        "description": "If the mark price of the instrument this bot is trading goes below `downside_exit_price`,\nthe bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.\nMust not be more than 200 ticks away from lowest quote.\n"
+                        "description": "If the mark price of the instrument this bot is trading goes below `downside_exit_price`,\nthe bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.\n"
                       },
                       "max_slippage": {
                         "type": "number",
@@ -7157,11 +7358,19 @@
                       },
                       "end_time": {
                         "type": "number",
-                        "description": "Timestamp when the bot should stop executing. Must not be further away than a week.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
+                        "description": "Timestamp when the bot should stop executing.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
                       },
                       "label": {
                         "type": "string",
                         "description": "A label that the bot will add to all orders for easy identification."
+                      },
+                      "start_time": {
+                        "type": "number",
+                        "description": "Timestamp indicating when the bot was created."
+                      },
+                      "stop_time": {
+                        "type": "number",
+                        "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                       }
                     },
                     "example": {
@@ -7184,7 +7393,8 @@
                     "required": [
                       "strategy",
                       "instrument_name",
-                      "period"
+                      "period",
+                      "start_time"
                     ],
                     "properties": {
                       "strategy": {
@@ -7201,11 +7411,11 @@
                       },
                       "target_delta": {
                         "type": "number",
-                        "description": "Delta to target. Defaults to 0. Must be between -10 and 10."
+                        "description": "Delta to target. Defaults to 0."
                       },
                       "threshold": {
                         "type": "number",
-                        "description": "Hedging threshold. Defaults to 0. Must be between 0 and 0.3."
+                        "description": "Hedging threshold. Defaults to 0."
                       },
                       "tolerance": {
                         "type": "number",
@@ -7213,7 +7423,7 @@
                       },
                       "period": {
                         "type": "number",
-                        "description": "Number of seconds to let the deltas stay outside of `[target-threshold, target+threshold]`, before hedging them.\nMust be between 1 and 3600.\n"
+                        "description": "Number of seconds to let the deltas stay outside of `[target-threshold, target+threshold]`, before hedging them.\n"
                       },
                       "max_slippage": {
                         "type": "number",
@@ -7226,6 +7436,14 @@
                       "label": {
                         "type": "string",
                         "description": "A label that the bot will add to all orders for easy identification."
+                      },
+                      "start_time": {
+                        "type": "number",
+                        "description": "Timestamp indicating when the bot was created."
+                      },
+                      "stop_time": {
+                        "type": "number",
+                        "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                       }
                     },
                     "example": {
@@ -7243,7 +7461,8 @@
                       "target_instrument",
                       "target_amount",
                       "period",
-                      "end_time"
+                      "end_time",
+                      "start_time"
                     ],
                     "properties": {
                       "strategy": {
@@ -7260,11 +7479,11 @@
                       },
                       "target_amount": {
                         "type": "number",
-                        "description": "Amount of `target_instrument` contracts to follow the deltas of.\nMust be between 0.1 and 1000.\n"
+                        "description": "Amount of `target_instrument` contracts to follow the deltas of.\n"
                       },
                       "threshold": {
                         "type": "number",
-                        "description": "Delta correction threshold. Defaults to 0. Must be between 0 and 0.3."
+                        "description": "Delta correction threshold. Defaults to 0."
                       },
                       "tolerance": {
                         "type": "number",
@@ -7272,7 +7491,7 @@
                       },
                       "period": {
                         "type": "number",
-                        "description": "Number of seconds to let the deltas of the following position stay outside of `[target-threshold, target+threshold]`,\nbefore correcting them, where `target = deltas of target_instrument * target_amount`.\nMust be between 1 and 3600.\n"
+                        "description": "Number of seconds to let the deltas of the following position stay outside of `[target-threshold, target+threshold]`,\nbefore correcting them, where `target = deltas of target_instrument * target_amount`.\n"
                       },
                       "max_slippage": {
                         "type": "number",
@@ -7280,11 +7499,19 @@
                       },
                       "end_time": {
                         "type": "number",
-                        "description": "Timestamp when the bot should stop executing. Must not be further away than a week.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
+                        "description": "Timestamp when the bot should stop executing.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
                       },
                       "label": {
                         "type": "string",
                         "description": "A label that the bot will add to all orders for easy identification."
+                      },
+                      "start_time": {
+                        "type": "number",
+                        "description": "Timestamp indicating when the bot was created."
+                      },
+                      "stop_time": {
+                        "type": "number",
+                        "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                       }
                     },
                     "example": {
@@ -7377,7 +7604,8 @@
                               "exit_price",
                               "exit_position",
                               "end_time",
-                              "signal"
+                              "signal",
+                              "start_time"
                             ],
                             "properties": {
                               "strategy": {
@@ -7398,19 +7626,19 @@
                               },
                               "entry_price": {
                                 "type": "number",
-                                "description": "Price to compare `signal` price to, to determine necessary adjustments to the portfolio.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\nMust be greater or equal to `exit_price + 5 * price tick of the instrument`.\n"
+                                "description": "Price to compare `signal` price to, to determine necessary adjustments to the portfolio.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
                               },
                               "target_position": {
                                 "type": "number",
-                                "description": "The target position to maintain in the subaccount if `signal` price is above `entry_price`.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\nCan be maximum `500 * volume tick of the instrument` away from `exit_position`.\n"
+                                "description": "The target position to maintain in the subaccount if `signal` price is above `entry_price`.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
                               },
                               "exit_price": {
                                 "type": "number",
-                                "description": "Price to compare `signal` price to, to determine necessary adjustments to the portfolio.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\nMust be lower or equal to `entry_price - 5 * price tick of the instrument`.\n"
+                                "description": "Price to compare `signal` price to, to determine necessary adjustments to the portfolio.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
                               },
                               "exit_position": {
                                 "type": "number",
-                                "description": "The target position to maintain in the subaccount if `signal` price is below `exit_price`.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\nCan be maximum `500 * volume tick of the instrument` away from `target_position`.\n"
+                                "description": "The target position to maintain in the subaccount if `signal` price is below `exit_price`.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
                               },
                               "max_slippage": {
                                 "type": "number",
@@ -7418,11 +7646,19 @@
                               },
                               "end_time": {
                                 "type": "number",
-                                "description": "Timestamp when the bot should stop executing. Must not be further away than a week.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
+                                "description": "Timestamp when the bot should stop executing.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
                               },
                               "label": {
                                 "type": "string",
                                 "description": "A label that the bot will add to all orders for easy identification."
+                              },
+                              "start_time": {
+                                "type": "number",
+                                "description": "Timestamp indicating when the bot was created."
+                              },
+                              "stop_time": {
+                                "type": "number",
+                                "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                               }
                             },
                             "example": {
@@ -7448,7 +7684,8 @@
                               "quote_size",
                               "min_position",
                               "max_position",
-                              "end_time"
+                              "end_time",
+                              "start_time"
                             ],
                             "properties": {
                               "strategy": {
@@ -7480,7 +7717,7 @@
                               },
                               "quote_size": {
                                 "type": "number",
-                                "description": "The default size of both the bid and ask quote. Must not be greater than 250 volume ticks.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
+                                "description": "The default size of both the bid and ask quote.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
                               },
                               "min_position": {
                                 "type": "number",
@@ -7496,11 +7733,19 @@
                               },
                               "end_time": {
                                 "type": "number",
-                                "description": "Timestamp when the bot should stop executing. Must not be further away than a week.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
+                                "description": "Timestamp when the bot should stop executing.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
                               },
                               "label": {
                                 "type": "string",
                                 "description": "A label that the bot will add to all orders for easy identification."
+                              },
+                              "start_time": {
+                                "type": "number",
+                                "description": "Timestamp indicating when the bot was created."
+                              },
+                              "stop_time": {
+                                "type": "number",
+                                "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                               }
                             },
                             "example": {
@@ -7524,7 +7769,8 @@
                               "bids",
                               "asks",
                               "step_size",
-                              "end_time"
+                              "end_time",
+                              "start_time"
                             ],
                             "properties": {
                               "strategy": {
@@ -7540,18 +7786,18 @@
                                 "items": {
                                   "type": "number"
                                 },
-                                "description": "The default price levels the bot will be bidding at.\nMust not contain more than 5 levels.\nDistance between levels must be at least 2 ticks, at most 100 ticks.\nBest bid and best ask must be at least 10 ticks apart for options and 50 ticks apart for everything else.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
+                                "description": "The default price levels the bot will be bidding at.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
                               },
                               "asks": {
                                 "type": "array",
                                 "items": {
                                   "type": "number"
                                 },
-                                "description": "The default price levels the bot will be quoting on the ask side.\nMust not contain more than 5 levels.\nDistance between levels must be at least 2 ticks, at most 100 ticks.\nBest bid and best ask must be at least 10 ticks apart for options and 50 ticks apart for everything else.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
+                                "description": "The default price levels the bot will be quoting on the ask side.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
                               },
                               "step_size": {
                                 "type": "number",
-                                "description": "The default size to quote on one level.\nMust nut be greater than 100 volume ticks of the instrument.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
+                                "description": "The default size to quote on one level.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
                               },
                               "base_position": {
                                 "type": "number",
@@ -7563,11 +7809,11 @@
                               },
                               "upside_exit_price": {
                                 "type": "number",
-                                "description": "If the mark price of the instrument this bot is trading goes above `upside_exit_price`,\nthe bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.\nMust not be more than 200 ticks away from highest ask.\n"
+                                "description": "If the mark price of the instrument this bot is trading goes above `upside_exit_price`,\nthe bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.\n"
                               },
                               "downside_exit_price": {
                                 "type": "number",
-                                "description": "If the mark price of the instrument this bot is trading goes below `downside_exit_price`,\nthe bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.\nMust not be more than 200 ticks away from lowest bid.\n"
+                                "description": "If the mark price of the instrument this bot is trading goes below `downside_exit_price`,\nthe bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.\n"
                               },
                               "max_slippage": {
                                 "type": "number",
@@ -7575,11 +7821,19 @@
                               },
                               "end_time": {
                                 "type": "number",
-                                "description": "Timestamp when the bot should stop executing. Must not be further away than a week.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
+                                "description": "Timestamp when the bot should stop executing.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
                               },
                               "label": {
                                 "type": "string",
                                 "description": "A label that the bot will add to all orders for easy identification."
+                              },
+                              "start_time": {
+                                "type": "number",
+                                "description": "Timestamp indicating when the bot was created."
+                              },
+                              "stop_time": {
+                                "type": "number",
+                                "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                               }
                             },
                             "example": {
@@ -7606,7 +7860,8 @@
                               "instrument_name",
                               "grid",
                               "step_size",
-                              "end_time"
+                              "end_time",
+                              "start_time"
                             ],
                             "properties": {
                               "strategy": {
@@ -7622,11 +7877,11 @@
                                 "items": {
                                   "type": "number"
                                 },
-                                "description": "The default price levels the bot will be quoting at. Must have minimum 2, maximum 8 levels. Distance between quote levels must minimum 5, maximum 100 ticks. See [the bot strategies section](#tag/bot_strategies) for more explanation."
+                                "description": "The default price levels the bot will be quoting at. See [the bot strategies section](#tag/bot_strategies) for more explanation."
                               },
                               "step_size": {
                                 "type": "number",
-                                "description": "The default size to quote on one level.\nMust not be greater than 100 volume ticks.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
+                                "description": "The default size to quote on one level.\nSee [the bot strategies section](#tag/bot_strategies) for more explanation.\n"
                               },
                               "base_position": {
                                 "type": "number",
@@ -7638,11 +7893,11 @@
                               },
                               "upside_exit_price": {
                                 "type": "number",
-                                "description": "If the mark price of the instrument this bot is trading goes above `upside_exit_price`,\nthe bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.\nMust not be more than 200 ticks away from highest quote.\n"
+                                "description": "If the mark price of the instrument this bot is trading goes above `upside_exit_price`,\nthe bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.\n"
                               },
                               "downside_exit_price": {
                                 "type": "number",
-                                "description": "If the mark price of the instrument this bot is trading goes below `downside_exit_price`,\nthe bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.\nMust not be more than 200 ticks away from lowest quote.\n"
+                                "description": "If the mark price of the instrument this bot is trading goes below `downside_exit_price`,\nthe bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.\n"
                               },
                               "max_slippage": {
                                 "type": "number",
@@ -7650,11 +7905,19 @@
                               },
                               "end_time": {
                                 "type": "number",
-                                "description": "Timestamp when the bot should stop executing. Must not be further away than a week.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
+                                "description": "Timestamp when the bot should stop executing.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
                               },
                               "label": {
                                 "type": "string",
                                 "description": "A label that the bot will add to all orders for easy identification."
+                              },
+                              "start_time": {
+                                "type": "number",
+                                "description": "Timestamp indicating when the bot was created."
+                              },
+                              "stop_time": {
+                                "type": "number",
+                                "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                               }
                             },
                             "example": {
@@ -7677,7 +7940,8 @@
                             "required": [
                               "strategy",
                               "instrument_name",
-                              "period"
+                              "period",
+                              "start_time"
                             ],
                             "properties": {
                               "strategy": {
@@ -7694,11 +7958,11 @@
                               },
                               "target_delta": {
                                 "type": "number",
-                                "description": "Delta to target. Defaults to 0. Must be between -10 and 10."
+                                "description": "Delta to target. Defaults to 0."
                               },
                               "threshold": {
                                 "type": "number",
-                                "description": "Hedging threshold. Defaults to 0. Must be between 0 and 0.3."
+                                "description": "Hedging threshold. Defaults to 0."
                               },
                               "tolerance": {
                                 "type": "number",
@@ -7706,7 +7970,7 @@
                               },
                               "period": {
                                 "type": "number",
-                                "description": "Number of seconds to let the deltas stay outside of `[target-threshold, target+threshold]`, before hedging them.\nMust be between 1 and 3600.\n"
+                                "description": "Number of seconds to let the deltas stay outside of `[target-threshold, target+threshold]`, before hedging them.\n"
                               },
                               "max_slippage": {
                                 "type": "number",
@@ -7719,6 +7983,14 @@
                               "label": {
                                 "type": "string",
                                 "description": "A label that the bot will add to all orders for easy identification."
+                              },
+                              "start_time": {
+                                "type": "number",
+                                "description": "Timestamp indicating when the bot was created."
+                              },
+                              "stop_time": {
+                                "type": "number",
+                                "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                               }
                             },
                             "example": {
@@ -7736,7 +8008,8 @@
                               "target_instrument",
                               "target_amount",
                               "period",
-                              "end_time"
+                              "end_time",
+                              "start_time"
                             ],
                             "properties": {
                               "strategy": {
@@ -7753,11 +8026,11 @@
                               },
                               "target_amount": {
                                 "type": "number",
-                                "description": "Amount of `target_instrument` contracts to follow the deltas of.\nMust be between 0.1 and 1000.\n"
+                                "description": "Amount of `target_instrument` contracts to follow the deltas of.\n"
                               },
                               "threshold": {
                                 "type": "number",
-                                "description": "Delta correction threshold. Defaults to 0. Must be between 0 and 0.3."
+                                "description": "Delta correction threshold. Defaults to 0."
                               },
                               "tolerance": {
                                 "type": "number",
@@ -7765,7 +8038,7 @@
                               },
                               "period": {
                                 "type": "number",
-                                "description": "Number of seconds to let the deltas of the following position stay outside of `[target-threshold, target+threshold]`,\nbefore correcting them, where `target = deltas of target_instrument * target_amount`.\nMust be between 1 and 3600.\n"
+                                "description": "Number of seconds to let the deltas of the following position stay outside of `[target-threshold, target+threshold]`,\nbefore correcting them, where `target = deltas of target_instrument * target_amount`.\n"
                               },
                               "max_slippage": {
                                 "type": "number",
@@ -7773,11 +8046,19 @@
                               },
                               "end_time": {
                                 "type": "number",
-                                "description": "Timestamp when the bot should stop executing. Must not be further away than a week.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
+                                "description": "Timestamp when the bot should stop executing.\nWhen `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.\n"
                               },
                               "label": {
                                 "type": "string",
                                 "description": "A label that the bot will add to all orders for easy identification."
+                              },
+                              "start_time": {
+                                "type": "number",
+                                "description": "Timestamp indicating when the bot was created."
+                              },
+                              "stop_time": {
+                                "type": "number",
+                                "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                               }
                             },
                             "example": {
@@ -8163,7 +8444,7 @@
                         "properties": {
                           "quotes": {
                             "type": "array",
-                            "description": "List of quotes (maximum 100).\n\nEach item is a double-sided quotes array on a single instrument. A quotes array atomically replaces a previous quotes array. Both\nbid and ask price may be specified. If either bid or ask is not specified, that side is *not* replaced or\nremoved. If a double-sided quotes array for an instrument that was specified in an earlier call is omitted from the next\ncall, these quotes are *not* removed or replaced.\n\nWhen a side quotes array is specified, any omitted previous quotes *will* be removed. \nTo remove all quotes on a side, send an empty quotes array.\n\nSending a quote with the exact same price and amount as in the previous call *will not* replace the quote, thus\npreserving the quote's priority.\n\nMass quoting allows for a maximum of 10 level quotes on each side on the instrument.\n\nNote that market maker protection must have been configured for the instrument's product group, and both bid\nand ask amount must not exceed the most recent protection configuration amount.\n",
+                            "description": "List of quotes (maximum 100).\n\nEach item is a double-sided quotes array on a single instrument. A quotes array atomically replaces a previous quotes array. Both\nbid and ask price may be specified. If either bid or ask is not specified, that side is *not* replaced or\nremoved. If a double-sided quotes array for an instrument that was specified in an earlier call is omitted from the next\ncall, these quotes are *not* removed or replaced.\n\nWhen a side quotes array is specified, any omitted previous quotes *will* be removed.\nTo remove all quotes on a side, send an empty quotes array.\n\nSending a quote with the exact same price and amount as in the previous call *will not* replace the quote, thus\npreserving the quote's priority.\n\nMass quoting allows for a maximum of 10 level quotes on each side on the instrument.\n\nNote that market maker protection must have been configured for the instrument's product group, and both bid\nand ask amount must not exceed the most recent protection configuration amount.\n",
                             "items": {
                               "$ref": "#/components/schemas/DoubleSidedQuote"
                             }
@@ -8287,7 +8568,7 @@
           "rpc_mm"
         ],
         "summary": "Bulk cancel mass quotes across all sessions",
-        "description": "Cancel mass quotes across all sessions. If a product is set, only the quotes \non that product will be cancelled. Otherwise all quotes are cancelled.\n\nNote that market maker protection groups are reset and must be re-initialised.\n",
+        "description": "Cancel mass quotes across all sessions. If a product is set, only the quotes\non that product will be cancelled. Otherwise all quotes are cancelled.\n\nNote that market maker protection groups are reset and must be re-initialised.\n",
         "requestBody": {
           "content": {
             "application/json": {
@@ -9800,6 +10081,7 @@
                                   "transaction_type": {
                                     "type": "string",
                                     "enum": [
+                                      "credit",
                                       "deposit",
                                       "withdrawal",
                                       "withdrawal fee",
@@ -9812,7 +10094,7 @@
                                       "market quality program payment",
                                       "daily interest"
                                     ],
-                                    "description": "Transaction type. Can be one of the following values:\n\n- `deposit` - Deposits and asset credits.\n- `withdrawal` - Withdrawals and asset debits.\n- `withdrawal fee` - Withdrawal fees.\n- `session settlement` - Settled session PNL.\n- `perpetual funding` - Settled perpetual funding.\n- `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer.\n- `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap.\n- `referral program payment` - Referral program rewards.\n- `market velocity program payment` - MVP program rewards.\n- `market quality program payment` - MQP program rewards.\n- `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.\n"
+                                    "description": "Transaction type. Can be one of the following values:\n- `credit` - Asset credits or debits.\n- `deposit` - Deposits.\n- `withdrawal` - Withdrawals.\n- `withdrawal fee` - Withdrawal fees.\n- `session settlement` - Settled session PNL.\n- `perpetual funding` - Settled perpetual funding.\n- `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer.\n- `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap.\n- `referral program payment` - Referral program rewards.\n- `market velocity program payment` - MVP program rewards.\n- `market quality program payment` - MQP program rewards.\n- `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.\n"
                                   },
                                   "description": {
                                     "type": "string",
@@ -10032,6 +10314,7 @@
                                       "transaction_type": {
                                         "type": "string",
                                         "enum": [
+                                          "credit",
                                           "deposit",
                                           "withdrawal",
                                           "withdrawal fee",
@@ -10044,7 +10327,7 @@
                                           "market quality program payment",
                                           "daily interest"
                                         ],
-                                        "description": "Transaction type. Can be one of the following values:\n\n- `deposit` - Deposits and asset credits.\n- `withdrawal` - Withdrawals and asset debits.\n- `withdrawal fee` - Withdrawal fees.\n- `session settlement` - Settled session PNL.\n- `perpetual funding` - Settled perpetual funding.\n- `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer.\n- `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap.\n- `referral program payment` - Referral program rewards.\n- `market velocity program payment` - MVP program rewards.\n- `market quality program payment` - MQP program rewards.\n- `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.\n"
+                                        "description": "Transaction type. Can be one of the following values:\n- `credit` - Asset credits or debits.\n- `deposit` - Deposits.\n- `withdrawal` - Withdrawals.\n- `withdrawal fee` - Withdrawal fees.\n- `session settlement` - Settled session PNL.\n- `perpetual funding` - Settled perpetual funding.\n- `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer.\n- `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap.\n- `referral program payment` - Referral program rewards.\n- `market velocity program payment` - MVP program rewards.\n- `market quality program payment` - MQP program rewards.\n- `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.\n"
                                       },
                                       "description": {
                                         "type": "string",

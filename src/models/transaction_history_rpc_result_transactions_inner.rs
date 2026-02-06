@@ -25,7 +25,7 @@ pub struct TransactionHistoryRpcResultTransactionsInner {
     /// Instrument name this transaction relates to. For example, settlement transactions are per instrument.  Not included for transactions that don't relate to an instrument.
     #[serde(rename = "instrument_name", skip_serializing_if = "Option::is_none")]
     pub instrument_name: Option<String>,
-    /// Transaction type. Can be one of the following values:  - `deposit` - Deposits and asset credits. - `withdrawal` - Withdrawals and asset debits. - `withdrawal fee` - Withdrawal fees. - `session settlement` - Settled session PNL. - `perpetual funding` - Settled perpetual funding. - `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer. - `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap. - `referral program payment` - Referral program rewards. - `market velocity program payment` - MVP program rewards. - `market quality program payment` - MQP program rewards. - `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.
+    /// Transaction type. Can be one of the following values: - `credit` - Asset credits or debits. - `deposit` - Deposits. - `withdrawal` - Withdrawals. - `withdrawal fee` - Withdrawal fees. - `session settlement` - Settled session PNL. - `perpetual funding` - Settled perpetual funding. - `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer. - `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap. - `referral program payment` - Referral program rewards. - `market velocity program payment` - MVP program rewards. - `market quality program payment` - MQP program rewards. - `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.
     #[serde(rename = "transaction_type", skip_serializing_if = "Option::is_none")]
     pub transaction_type: Option<TransactionType>,
     /// Description of this transaction.  Note that this field is not supposed to be machine-readable and the the format is not guaranteed to remain unchanged.
@@ -54,9 +54,11 @@ impl TransactionHistoryRpcResultTransactionsInner {
         }
     }
 }
-/// Transaction type. Can be one of the following values:  - `deposit` - Deposits and asset credits. - `withdrawal` - Withdrawals and asset debits. - `withdrawal fee` - Withdrawal fees. - `session settlement` - Settled session PNL. - `perpetual funding` - Settled perpetual funding. - `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer. - `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap. - `referral program payment` - Referral program rewards. - `market velocity program payment` - MVP program rewards. - `market quality program payment` - MQP program rewards. - `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.
+/// Transaction type. Can be one of the following values: - `credit` - Asset credits or debits. - `deposit` - Deposits. - `withdrawal` - Withdrawals. - `withdrawal fee` - Withdrawal fees. - `session settlement` - Settled session PNL. - `perpetual funding` - Settled perpetual funding. - `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer. - `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap. - `referral program payment` - Referral program rewards. - `market velocity program payment` - MVP program rewards. - `market quality program payment` - MQP program rewards. - `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum TransactionType {
+    #[serde(rename = "credit")]
+    Credit,
     #[serde(rename = "deposit")]
     Deposit,
     #[serde(rename = "withdrawal")]
@@ -83,6 +85,6 @@ pub enum TransactionType {
 
 impl Default for TransactionType {
     fn default() -> TransactionType {
-        Self::Deposit
+        Self::Credit
     }
 }

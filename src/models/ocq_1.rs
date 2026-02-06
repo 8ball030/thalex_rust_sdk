@@ -30,7 +30,7 @@ pub struct Ocq1 {
     /// Optional offset of the price of the exit quote from the signal price. Must be between `bid_offset` and `ask_offset`. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "exit_offset", skip_serializing_if = "Option::is_none")]
     pub exit_offset: Option<f64>,
-    /// The default size of both the bid and ask quote. Must not be greater than 250 volume ticks. See [the bot strategies section](#tag/bot_strategies) for more explanation.
+    /// The default size of both the bid and ask quote. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "quote_size")]
     pub quote_size: f64,
     /// The minimum portfolio position to maintain in the subaccount. Must be smaller than `max_position`. See [the bot strategies section](#tag/bot_strategies) for more explanation.
@@ -42,12 +42,18 @@ pub struct Ocq1 {
     /// Optional portfolio position to maintain in the subaccount. Must be between `min_position` and `max_position`. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "target_position", skip_serializing_if = "Option::is_none")]
     pub target_position: Option<f64>,
-    /// Timestamp when the bot should stop executing. Must not be further away than a week. When `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.
+    /// Timestamp when the bot should stop executing. When `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.
     #[serde(rename = "end_time")]
     pub end_time: f64,
     /// A label that the bot will add to all orders for easy identification.
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
+    /// Timestamp indicating when the bot was created.
+    #[serde(rename = "start_time")]
+    pub start_time: f64,
+    /// Timestamp indicating when the bot stopped working due to specified `stop_reason`.
+    #[serde(rename = "stop_time", skip_serializing_if = "Option::is_none")]
+    pub stop_time: Option<f64>,
 }
 
 impl Ocq1 {
@@ -61,6 +67,7 @@ impl Ocq1 {
         min_position: f64,
         max_position: f64,
         end_time: f64,
+        start_time: f64,
     ) -> Ocq1 {
         Ocq1 {
             strategy,
@@ -75,6 +82,8 @@ impl Ocq1 {
             target_position: None,
             end_time,
             label: None,
+            start_time,
+            stop_time: None,
         }
     }
 }
