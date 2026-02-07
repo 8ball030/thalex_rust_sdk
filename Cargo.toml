@@ -6,8 +6,6 @@ description = "Trading client for Thalex exchange"
 repository = "https://github.com/8ball030/thalex_rust_sdk"
 license = "MIT OR Apache-2.0"
 
-[workspace]
-
 [dependencies]
 tokio = { version = "1", features = ["fs", "time", "sync", "rt-multi-thread", "macros"] }
 tokio-tungstenite = { version = "0.28", features = ["rustls-tls-webpki-roots"] }

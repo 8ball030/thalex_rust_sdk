@@ -46,7 +46,7 @@ pub struct WsClient {
     pub private_subscriptions: Arc<DashMap<String, ChannelSender>>,
     next_id: Arc<AtomicU64>,
     shutdown_tx: watch::Sender<bool>,
-    instruments_cache: Arc<DashMap<String, Instrument>>,
+    pub instruments_cache: Arc<DashMap<String, Instrument>>,
     login_state: LoginState,
     connection_state_rx: watch::Receiver<ExternalEvent>,
     current_connection_state: Arc<Mutex<ExternalEvent>>,
