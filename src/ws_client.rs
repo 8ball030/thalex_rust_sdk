@@ -141,6 +141,8 @@ impl WsClient {
             supervisor_handle: Arc::new(Mutex::new(Some(supervisor_handle))),
             subscription_tasks: Arc::new(Mutex::new(Vec::new())),
         };
+
+        client.cache_instruments().await?;
         Ok(client)
     }
 
