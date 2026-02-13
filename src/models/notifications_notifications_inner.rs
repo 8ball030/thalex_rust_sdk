@@ -18,7 +18,7 @@ pub struct NotificationsNotificationsInner {
     pub id: String,
     /// Time of notification (Unix timestamp).
     #[serde(rename = "time")]
-    pub time: f64,
+    pub time: rust_decimal::Decimal,
     /// Notification category (see API description / Notifications).
     #[serde(rename = "category")]
     pub category: String,
@@ -48,7 +48,7 @@ pub struct NotificationsNotificationsInner {
 impl NotificationsNotificationsInner {
     pub fn new(
         id: String,
-        time: f64,
+        time: rust_decimal::Decimal,
         category: String,
         title: String,
         message: String,

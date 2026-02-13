@@ -18,70 +18,70 @@ pub struct PortfolioMarginBreakdownPortfolioUnderlyingsInnerScenariosInner {
         rename = "underlying_change_pct",
         skip_serializing_if = "Option::is_none"
     )]
-    pub underlying_change_pct: Option<f64>,
+    pub underlying_change_pct: Option<rust_decimal::Decimal>,
     /// Simulated volatility change, %
     #[serde(
         rename = "vol_change_pct_point",
         skip_serializing_if = "Option::is_none"
     )]
-    pub vol_change_pct_point: Option<f64>,
+    pub vol_change_pct_point: Option<rust_decimal::Decimal>,
     /// P&L resulting from this scenario.
     #[serde(rename = "pnl", skip_serializing_if = "Option::is_none")]
-    pub pnl: Option<f64>,
+    pub pnl: Option<rust_decimal::Decimal>,
     /// Effect factor of P&L on the loss margin.
     #[serde(rename = "coverage_factor", skip_serializing_if = "Option::is_none")]
-    pub coverage_factor: Option<f64>,
+    pub coverage_factor: Option<rust_decimal::Decimal>,
     /// Total required margin in this scenario.
     #[serde(rename = "required_margin", skip_serializing_if = "Option::is_none")]
-    pub required_margin: Option<f64>,
+    pub required_margin: Option<rust_decimal::Decimal>,
     /// Margin based on scenario loss coverage.
     #[serde(rename = "loss_margin", skip_serializing_if = "Option::is_none")]
-    pub loss_margin: Option<f64>,
+    pub loss_margin: Option<rust_decimal::Decimal>,
     /// Roll position x index price in this underlying.
     #[serde(rename = "roll_cash_position", skip_serializing_if = "Option::is_none")]
-    pub roll_cash_position: Option<f64>,
+    pub roll_cash_position: Option<rust_decimal::Decimal>,
     /// Margin based on roll position.
     #[serde(
         rename = "roll_contingency_margin",
         skip_serializing_if = "Option::is_none"
     )]
-    pub roll_contingency_margin: Option<f64>,
+    pub roll_contingency_margin: Option<rust_decimal::Decimal>,
     /// Delta one roll position x index price in this underlying.
     #[serde(
         rename = "d1_roll_cash_position",
         skip_serializing_if = "Option::is_none"
     )]
-    pub d1_roll_cash_position: Option<f64>,
+    pub d1_roll_cash_position: Option<rust_decimal::Decimal>,
     /// Margin based on delta one roll position.
     #[serde(
         rename = "d1_roll_contingency_margin",
         skip_serializing_if = "Option::is_none"
     )]
-    pub d1_roll_contingency_margin: Option<f64>,
+    pub d1_roll_contingency_margin: Option<rust_decimal::Decimal>,
     /// Options roll position x index price in this underlying.
     #[serde(
         rename = "options_roll_cash_position",
         skip_serializing_if = "Option::is_none"
     )]
-    pub options_roll_cash_position: Option<f64>,
+    pub options_roll_cash_position: Option<rust_decimal::Decimal>,
     /// Margin based on options roll position.
     #[serde(
         rename = "options_roll_contingency_margin",
         skip_serializing_if = "Option::is_none"
     )]
-    pub options_roll_contingency_margin: Option<f64>,
+    pub options_roll_contingency_margin: Option<rust_decimal::Decimal>,
     /// Total short options position x index price in this underlying.
     #[serde(
         rename = "options_short_cash_position",
         skip_serializing_if = "Option::is_none"
     )]
-    pub options_short_cash_position: Option<f64>,
+    pub options_short_cash_position: Option<rust_decimal::Decimal>,
     /// Margin based on options short position.
     #[serde(
         rename = "options_contingency_margin",
         skip_serializing_if = "Option::is_none"
     )]
-    pub options_contingency_margin: Option<f64>,
+    pub options_contingency_margin: Option<rust_decimal::Decimal>,
     #[serde(rename = "positions", skip_serializing_if = "Option::is_none")]
     pub positions: Option<
         Vec<models::PortfolioMarginBreakdownPortfolioUnderlyingsInnerScenariosInnerPositionsInner>,

@@ -24,16 +24,16 @@ pub struct UnderlyingStatisticsOpenInterestExpirationsInner {
     pub expiry_date: Option<String>,
     /// Total count of outstanding unsettled call options for the given expiration and underlying.
     #[serde(rename = "call", skip_serializing_if = "Option::is_none")]
-    pub call: Option<f64>,
+    pub call: Option<rust_decimal::Decimal>,
     /// Total count of outstanding unsettled put options for the given expiration and underlying.
     #[serde(rename = "put", skip_serializing_if = "Option::is_none")]
-    pub put: Option<f64>,
+    pub put: Option<rust_decimal::Decimal>,
     /// Total count of outstanding unsettled options for the given expiration and underlying.
     #[serde(rename = "option", skip_serializing_if = "Option::is_none")]
-    pub option: Option<f64>,
+    pub option: Option<rust_decimal::Decimal>,
     /// Total count of outstanding unsettled future contracts for the given expiration and underlying.
     #[serde(rename = "future", skip_serializing_if = "Option::is_none")]
-    pub future: Option<f64>,
+    pub future: Option<rust_decimal::Decimal>,
 }
 
 impl UnderlyingStatisticsOpenInterestExpirationsInner {

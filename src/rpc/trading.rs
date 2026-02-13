@@ -6,6 +6,7 @@ use crate::{
     },
     ws_client::WsClient,
 };
+use rust_decimal::Decimal;
 use serde_json::Value;
 
 pub struct TradingRpc<'a> {
@@ -98,8 +99,8 @@ impl<'a> TradingRpc<'a> {
     }
 
     /// Bulk cancel all orders
-    /// returns: f64
-    pub async fn cancel_all(&self) -> Result<f64, RpcErrorResponse> {
+    /// returns: Decimal
+    pub async fn cancel_all(&self) -> Result<Decimal, RpcErrorResponse> {
         let result: CancelAllResponse = self
             .client
             .send_rpc(

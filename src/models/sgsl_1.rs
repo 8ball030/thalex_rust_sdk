@@ -23,31 +23,31 @@ pub struct Sgsl1 {
     pub signal: Signal,
     /// Price to compare `signal` price to, to determine necessary adjustments to the portfolio. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "entry_price")]
-    pub entry_price: f64,
+    pub entry_price: rust_decimal::Decimal,
     /// The target position to maintain in the subaccount if `signal` price is above `entry_price`. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "target_position")]
-    pub target_position: f64,
+    pub target_position: rust_decimal::Decimal,
     /// Price to compare `signal` price to, to determine necessary adjustments to the portfolio. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "exit_price")]
-    pub exit_price: f64,
+    pub exit_price: rust_decimal::Decimal,
     /// The target position to maintain in the subaccount if `signal` price is below `exit_price`. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "exit_position")]
-    pub exit_position: f64,
+    pub exit_position: rust_decimal::Decimal,
     /// Maximum slippage per trade, expressed as % of the traded instruments mark price.
     #[serde(rename = "max_slippage", skip_serializing_if = "Option::is_none")]
-    pub max_slippage: Option<f64>,
+    pub max_slippage: Option<rust_decimal::Decimal>,
     /// Timestamp when the bot should stop executing. When `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.
     #[serde(rename = "end_time")]
-    pub end_time: f64,
+    pub end_time: rust_decimal::Decimal,
     /// A label that the bot will add to all orders for easy identification.
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
     /// Timestamp indicating when the bot was created.
     #[serde(rename = "start_time")]
-    pub start_time: f64,
+    pub start_time: rust_decimal::Decimal,
     /// Timestamp indicating when the bot stopped working due to specified `stop_reason`.
     #[serde(rename = "stop_time", skip_serializing_if = "Option::is_none")]
-    pub stop_time: Option<f64>,
+    pub stop_time: Option<rust_decimal::Decimal>,
 }
 
 impl Sgsl1 {
@@ -55,12 +55,12 @@ impl Sgsl1 {
         strategy: String,
         instrument_name: String,
         signal: Signal,
-        entry_price: f64,
-        target_position: f64,
-        exit_price: f64,
-        exit_position: f64,
-        end_time: f64,
-        start_time: f64,
+        entry_price: rust_decimal::Decimal,
+        target_position: rust_decimal::Decimal,
+        exit_price: rust_decimal::Decimal,
+        exit_position: rust_decimal::Decimal,
+        end_time: rust_decimal::Decimal,
+        start_time: rust_decimal::Decimal,
     ) -> Sgsl1 {
         Sgsl1 {
             strategy,

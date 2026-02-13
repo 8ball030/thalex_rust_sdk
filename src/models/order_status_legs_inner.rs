@@ -18,21 +18,21 @@ pub struct OrderStatusLegsInner {
     pub instrument_name: String,
     /// Quantity of this leg in a unit of the combination. A non-zero integer, negative for short legs.
     #[serde(rename = "quantity")]
-    pub quantity: f64,
+    pub quantity: rust_decimal::Decimal,
     /// Amount executed on this leg.  Legs are filled proportionally to their quantities.
     #[serde(rename = "filled_amount")]
-    pub filled_amount: f64,
+    pub filled_amount: rust_decimal::Decimal,
     /// Amount on this leg that remains in the book; if 0, order is now inactive.  Note that the only `time_in_force` for combination orders currently supported is `immediate_or_cancel`. Therefore, combination orders will never remain on a book, and this field will always be zero.
     #[serde(rename = "remaining_amount")]
-    pub remaining_amount: f64,
+    pub remaining_amount: rust_decimal::Decimal,
 }
 
 impl OrderStatusLegsInner {
     pub fn new(
         instrument_name: String,
-        quantity: f64,
-        filled_amount: f64,
-        remaining_amount: f64,
+        quantity: rust_decimal::Decimal,
+        filled_amount: rust_decimal::Decimal,
+        remaining_amount: rust_decimal::Decimal,
     ) -> OrderStatusLegsInner {
         OrderStatusLegsInner {
             instrument_name,

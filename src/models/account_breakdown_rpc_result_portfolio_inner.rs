@@ -16,48 +16,48 @@ pub struct AccountBreakdownRpcResultPortfolioInner {
     #[serde(rename = "instrument_name")]
     pub instrument_name: String,
     #[serde(rename = "position")]
-    pub position: f64,
+    pub position: rust_decimal::Decimal,
     #[serde(rename = "mark_price", skip_serializing_if = "Option::is_none")]
-    pub mark_price: Option<f64>,
+    pub mark_price: Option<rust_decimal::Decimal>,
     #[serde(rename = "start_price", skip_serializing_if = "Option::is_none")]
-    pub start_price: Option<f64>,
+    pub start_price: Option<rust_decimal::Decimal>,
     #[serde(rename = "average_price", skip_serializing_if = "Option::is_none")]
-    pub average_price: Option<f64>,
+    pub average_price: Option<rust_decimal::Decimal>,
     #[serde(rename = "unrealised_pnl_positional")]
-    pub unrealised_pnl_positional: f64,
+    pub unrealised_pnl_positional: rust_decimal::Decimal,
     #[serde(
         rename = "unrealised_pnl_perpetual",
         skip_serializing_if = "Option::is_none"
     )]
-    pub unrealised_pnl_perpetual: Option<f64>,
+    pub unrealised_pnl_perpetual: Option<rust_decimal::Decimal>,
     #[serde(rename = "unrealised_pnl")]
-    pub unrealised_pnl: f64,
+    pub unrealised_pnl: rust_decimal::Decimal,
     #[serde(rename = "realised_position_pnl")]
-    pub realised_position_pnl: f64,
+    pub realised_position_pnl: rust_decimal::Decimal,
     #[serde(rename = "open_buy_amount")]
-    pub open_buy_amount: f64,
+    pub open_buy_amount: rust_decimal::Decimal,
     #[serde(rename = "open_sell_amount")]
-    pub open_sell_amount: f64,
+    pub open_sell_amount: rust_decimal::Decimal,
     #[serde(rename = "session_realised_pnl")]
-    pub session_realised_pnl: f64,
+    pub session_realised_pnl: rust_decimal::Decimal,
     #[serde(rename = "realised_perpetual_funding")]
-    pub realised_perpetual_funding: f64,
+    pub realised_perpetual_funding: rust_decimal::Decimal,
     #[serde(rename = "session_fees")]
-    pub session_fees: f64,
+    pub session_fees: rust_decimal::Decimal,
 }
 
 impl AccountBreakdownRpcResultPortfolioInner {
     pub fn new(
         instrument_name: String,
-        position: f64,
-        unrealised_pnl_positional: f64,
-        unrealised_pnl: f64,
-        realised_position_pnl: f64,
-        open_buy_amount: f64,
-        open_sell_amount: f64,
-        session_realised_pnl: f64,
-        realised_perpetual_funding: f64,
-        session_fees: f64,
+        position: rust_decimal::Decimal,
+        unrealised_pnl_positional: rust_decimal::Decimal,
+        unrealised_pnl: rust_decimal::Decimal,
+        realised_position_pnl: rust_decimal::Decimal,
+        open_buy_amount: rust_decimal::Decimal,
+        open_sell_amount: rust_decimal::Decimal,
+        session_realised_pnl: rust_decimal::Decimal,
+        realised_perpetual_funding: rust_decimal::Decimal,
+        session_fees: rust_decimal::Decimal,
     ) -> AccountBreakdownRpcResultPortfolioInner {
         AccountBreakdownRpcResultPortfolioInner {
             instrument_name,

@@ -17,11 +17,14 @@ pub struct RequiredMarginForOrderParamsLegsInner {
     pub instrument_name: String,
     /// Quantity for this leg. May be negative.
     #[serde(rename = "quantity")]
-    pub quantity: f64,
+    pub quantity: rust_decimal::Decimal,
 }
 
 impl RequiredMarginForOrderParamsLegsInner {
-    pub fn new(instrument_name: String, quantity: f64) -> RequiredMarginForOrderParamsLegsInner {
+    pub fn new(
+        instrument_name: String,
+        quantity: rust_decimal::Decimal,
+    ) -> RequiredMarginForOrderParamsLegsInner {
         RequiredMarginForOrderParamsLegsInner {
             instrument_name,
             quantity,

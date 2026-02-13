@@ -24,35 +24,40 @@ pub struct DHedge1 {
     pub position: Option<String>,
     /// Delta to target. Defaults to 0.
     #[serde(rename = "target_delta", skip_serializing_if = "Option::is_none")]
-    pub target_delta: Option<f64>,
+    pub target_delta: Option<rust_decimal::Decimal>,
     /// Hedging threshold. Defaults to 0.
     #[serde(rename = "threshold", skip_serializing_if = "Option::is_none")]
-    pub threshold: Option<f64>,
+    pub threshold: Option<rust_decimal::Decimal>,
     /// Maximum deviation allowed from target deltas at any time.
     #[serde(rename = "tolerance", skip_serializing_if = "Option::is_none")]
-    pub tolerance: Option<f64>,
+    pub tolerance: Option<rust_decimal::Decimal>,
     /// Number of seconds to let the deltas stay outside of `[target-threshold, target+threshold]`, before hedging them.
     #[serde(rename = "period")]
-    pub period: f64,
+    pub period: rust_decimal::Decimal,
     /// Maximum slippage per trade, expressed as % of the traded instruments mark price.
     #[serde(rename = "max_slippage", skip_serializing_if = "Option::is_none")]
-    pub max_slippage: Option<f64>,
+    pub max_slippage: Option<rust_decimal::Decimal>,
     /// Timestamp when the bot should stop executing. If not specified, the bot will run until it's manually stopped. When `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.
     #[serde(rename = "end_time", skip_serializing_if = "Option::is_none")]
-    pub end_time: Option<f64>,
+    pub end_time: Option<rust_decimal::Decimal>,
     /// A label that the bot will add to all orders for easy identification.
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
     /// Timestamp indicating when the bot was created.
     #[serde(rename = "start_time")]
-    pub start_time: f64,
+    pub start_time: rust_decimal::Decimal,
     /// Timestamp indicating when the bot stopped working due to specified `stop_reason`.
     #[serde(rename = "stop_time", skip_serializing_if = "Option::is_none")]
-    pub stop_time: Option<f64>,
+    pub stop_time: Option<rust_decimal::Decimal>,
 }
 
 impl DHedge1 {
-    pub fn new(strategy: String, instrument_name: String, period: f64, start_time: f64) -> DHedge1 {
+    pub fn new(
+        strategy: String,
+        instrument_name: String,
+        period: rust_decimal::Decimal,
+        start_time: rust_decimal::Decimal,
+    ) -> DHedge1 {
         DHedge1 {
             strategy,
             instrument_name,

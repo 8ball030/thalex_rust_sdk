@@ -15,28 +15,28 @@ use serde::{Deserialize, Serialize};
 pub struct UnderlyingStatisticsOpenInterestTotals {
     /// Total count of outstanding unsettled call options for the given underlying.
     #[serde(rename = "call")]
-    pub call: f64,
+    pub call: rust_decimal::Decimal,
     /// Total count of outstanding unsettled put options for the given underlying.
     #[serde(rename = "put")]
-    pub put: f64,
+    pub put: rust_decimal::Decimal,
     /// Total count of outstanding unsettled options for the given underlying.
     #[serde(rename = "option")]
-    pub option: f64,
+    pub option: rust_decimal::Decimal,
     /// Total count of outstanding unsettled future contracts for the given underlying.
     #[serde(rename = "future")]
-    pub future: f64,
+    pub future: rust_decimal::Decimal,
     /// Total count of outstanding unsettled delta one (future and perpetual) contracts for the given underlying.
     #[serde(rename = "delta_one")]
-    pub delta_one: f64,
+    pub delta_one: rust_decimal::Decimal,
 }
 
 impl UnderlyingStatisticsOpenInterestTotals {
     pub fn new(
-        call: f64,
-        put: f64,
-        option: f64,
-        future: f64,
-        delta_one: f64,
+        call: rust_decimal::Decimal,
+        put: rust_decimal::Decimal,
+        option: rust_decimal::Decimal,
+        future: rust_decimal::Decimal,
+        delta_one: rust_decimal::Decimal,
     ) -> UnderlyingStatisticsOpenInterestTotals {
         UnderlyingStatisticsOpenInterestTotals {
             call,

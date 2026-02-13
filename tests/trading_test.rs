@@ -1,5 +1,6 @@
 mod common;
 
+use rust_decimal_macros::dec;
 use thalex_rust_sdk::{
     manual_models::error_code::ErrorCode,
     models::{CancelParams, InsertParams},
@@ -37,8 +38,8 @@ params_private_trading_rpc_test!(
     test_limit_order_success,
     InsertParams {
         instrument_name: Some("BTC-PERPETUAL".to_string()),
-        amount: 0.001,
-        price: Some(10000.0),
+        amount: dec!(0.001),
+        price: Some(dec!(10000.0)),
         legs: None,
         ..Default::default()
     },
@@ -56,8 +57,8 @@ async fn test_limit_order_failure() {
             .trading()
             .insert(InsertParams {
                 instrument_name: Some("BTC-PERPETUAL".to_string()),
-                amount: 0.00100001,
-                price: Some(10000.92),
+                amount: dec!(0.00100001),
+                price: Some(dec!(10000.92)),
                 legs: None,
                 ..Default::default()
             })

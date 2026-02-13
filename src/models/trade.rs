@@ -25,55 +25,55 @@ pub struct Trade {
     pub direction: Option<models::DirectionEnum>,
     /// Trade price.
     #[serde(rename = "price", skip_serializing_if = "Option::is_none")]
-    pub price: Option<f64>,
+    pub price: Option<rust_decimal::Decimal>,
     /// Traded amount.
     #[serde(rename = "amount", skip_serializing_if = "Option::is_none")]
-    pub amount: Option<f64>,
+    pub amount: Option<rust_decimal::Decimal>,
     /// User label.
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
     /// Time of trade (Unix timestamp).
     #[serde(rename = "time", skip_serializing_if = "Option::is_none")]
-    pub time: Option<f64>,
+    pub time: Option<rust_decimal::Decimal>,
     /// Position in this instrument right after the trade.
     #[serde(rename = "position_after", skip_serializing_if = "Option::is_none")]
-    pub position_after: Option<f64>,
+    pub position_after: Option<rust_decimal::Decimal>,
     /// Session realised P&L for this instrument right after the trade.
     #[serde(
         rename = "session_realised_after",
         skip_serializing_if = "Option::is_none"
     )]
-    pub session_realised_after: Option<f64>,
+    pub session_realised_after: Option<rust_decimal::Decimal>,
     /// If trade closed a position, the positional P&L that was realised.
     #[serde(rename = "position_pnl", skip_serializing_if = "Option::is_none")]
-    pub position_pnl: Option<f64>,
+    pub position_pnl: Option<rust_decimal::Decimal>,
     /// If trade closed a position in a perpetual, the funding P&L that was realised.
     #[serde(
         rename = "perpetual_funding_pnl",
         skip_serializing_if = "Option::is_none"
     )]
-    pub perpetual_funding_pnl: Option<f64>,
+    pub perpetual_funding_pnl: Option<rust_decimal::Decimal>,
     /// The fee paid for this trade.  The fee for a trade is calculated as `fee_basis * fee_rate * amount`, and is then subject to clamping to minimum and maximum fee. Depending on the instrument, `fee_basis` can be different (e.g. it can be equal to the underlying index, trade price or combo mark price). Please refer to trading information pages for more details.
     #[serde(rename = "fee", skip_serializing_if = "Option::is_none")]
-    pub fee: Option<f64>,
+    pub fee: Option<rust_decimal::Decimal>,
     /// The relevant index at time of trade.
     #[serde(rename = "index", skip_serializing_if = "Option::is_none")]
-    pub index: Option<f64>,
+    pub index: Option<rust_decimal::Decimal>,
     /// The fee rate applied to calculate the fee.
     #[serde(rename = "fee_rate", skip_serializing_if = "Option::is_none")]
-    pub fee_rate: Option<f64>,
+    pub fee_rate: Option<rust_decimal::Decimal>,
     /// The fee basis on which the fee is calculated.
     #[serde(rename = "fee_basis", skip_serializing_if = "Option::is_none")]
-    pub fee_basis: Option<f64>,
+    pub fee_basis: Option<rust_decimal::Decimal>,
     /// The perpetual funding mark as applied to the trade (see `Ticker`).
     #[serde(rename = "funding_mark", skip_serializing_if = "Option::is_none")]
-    pub funding_mark: Option<f64>,
+    pub funding_mark: Option<rust_decimal::Decimal>,
     /// Fee paid in case of liquidation.
     #[serde(rename = "liquidation_fee", skip_serializing_if = "Option::is_none")]
-    pub liquidation_fee: Option<f64>,
+    pub liquidation_fee: Option<rust_decimal::Decimal>,
     /// Client order reference as set in related order.
     #[serde(rename = "client_order_id", skip_serializing_if = "Option::is_none")]
-    pub client_order_id: Option<f64>,
+    pub client_order_id: Option<rust_decimal::Decimal>,
     #[serde(rename = "maker_taker", skip_serializing_if = "Option::is_none")]
     pub maker_taker: Option<models::MakerTakerEnum>,
     /// If the trade was made by a bot, the ID of that bot. Otherwise omitted.
@@ -81,7 +81,7 @@ pub struct Trade {
     pub bot_id: Option<String>,
     /// Index of a leg on which the trade happened for combination orders. Zero for single-leg orders.  For combination orders the direction of the trade is defined by the direction of the order and the sign of the leg quantity.
     #[serde(rename = "leg_index", skip_serializing_if = "Option::is_none")]
-    pub leg_index: Option<f64>,
+    pub leg_index: Option<rust_decimal::Decimal>,
 }
 
 impl Trade {

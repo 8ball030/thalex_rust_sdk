@@ -15,28 +15,28 @@ use serde::{Deserialize, Serialize};
 pub struct UnderlyingStatistics {
     /// Total amount traded in 24 hours, including futures and options.
     #[serde(rename = "trade_volume_24h", skip_serializing_if = "Option::is_none")]
-    pub trade_volume_24h: Option<f64>,
+    pub trade_volume_24h: Option<rust_decimal::Decimal>,
     /// Total amount of options traded in the past 24 hours.
     #[serde(rename = "option_volume_24h", skip_serializing_if = "Option::is_none")]
-    pub option_volume_24h: Option<f64>,
+    pub option_volume_24h: Option<rust_decimal::Decimal>,
     /// Total amount of futures traded in the past 24 hours.
     #[serde(
         rename = "delta_one_volume_24h",
         skip_serializing_if = "Option::is_none"
     )]
-    pub delta_one_volume_24h: Option<f64>,
+    pub delta_one_volume_24h: Option<rust_decimal::Decimal>,
     /// Total underlying value traded in 24 hours. This is the sum of (amount * index price at time of trade).
     #[serde(rename = "trade_value_24h", skip_serializing_if = "Option::is_none")]
-    pub trade_value_24h: Option<f64>,
+    pub trade_value_24h: Option<rust_decimal::Decimal>,
     /// Total option value traded in 24 hours. This is the sum of (amount * index price at time of trade).
     #[serde(rename = "option_value_24h", skip_serializing_if = "Option::is_none")]
-    pub option_value_24h: Option<f64>,
+    pub option_value_24h: Option<rust_decimal::Decimal>,
     /// Total delta one value traded in 24 hours. This is the sum of (amount * index price at time of trade).
     #[serde(
         rename = "delta_one_value_24h",
         skip_serializing_if = "Option::is_none"
     )]
-    pub delta_one_value_24h: Option<f64>,
+    pub delta_one_value_24h: Option<rust_decimal::Decimal>,
     #[serde(rename = "open_interest", skip_serializing_if = "Option::is_none")]
     pub open_interest: Option<models::UnderlyingStatisticsOpenInterest>,
 }

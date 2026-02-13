@@ -18,11 +18,11 @@ pub struct InsertRequestLegsInner {
     pub instrument_name: String,
     /// Quantity of this leg in a unit of the combination. Must be integer. Must not be zero. Use a negative number for short legs.  Result of multiplication of `quantity` and order `amount` must be aligned to tick size for every leg.
     #[serde(rename = "quantity")]
-    pub quantity: f64,
+    pub quantity: rust_decimal::Decimal,
 }
 
 impl InsertRequestLegsInner {
-    pub fn new(instrument_name: String, quantity: f64) -> InsertRequestLegsInner {
+    pub fn new(instrument_name: String, quantity: rust_decimal::Decimal) -> InsertRequestLegsInner {
         InsertRequestLegsInner {
             instrument_name,
             quantity,

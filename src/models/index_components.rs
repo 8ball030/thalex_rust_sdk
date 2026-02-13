@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 pub struct IndexComponents {
     /// Price of the index.
     #[serde(rename = "index_price", skip_serializing_if = "Option::is_none")]
-    pub index_price: Option<f64>,
+    pub index_price: Option<rust_decimal::Decimal>,
     /// Components that were used in calculating the index price. Code name of the source is mapped to its price.
     #[serde(rename = "components", skip_serializing_if = "Option::is_none")]
     pub components: Option<serde_json::Value>,

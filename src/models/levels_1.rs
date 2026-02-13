@@ -21,54 +21,54 @@ pub struct Levels1 {
     pub instrument_name: String,
     /// The default price levels the bot will be bidding at. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "bids")]
-    pub bids: Vec<f64>,
+    pub bids: Vec<rust_decimal::Decimal>,
     /// The default price levels the bot will be quoting on the ask side. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "asks")]
-    pub asks: Vec<f64>,
+    pub asks: Vec<rust_decimal::Decimal>,
     /// The default size to quote on one level. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "step_size")]
-    pub step_size: f64,
+    pub step_size: rust_decimal::Decimal,
     /// Will be used as a reference to compare the subaccount's portfolio position in the instrument that this bot is trading to. Defaults to the portfolio position of the subaccount in `instrument_name` at the time of sending the request. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "base_position", skip_serializing_if = "Option::is_none")]
-    pub base_position: Option<f64>,
+    pub base_position: Option<rust_decimal::Decimal>,
     /// The price level to exit positions at.
     #[serde(rename = "target_mean_price", skip_serializing_if = "Option::is_none")]
-    pub target_mean_price: Option<f64>,
+    pub target_mean_price: Option<rust_decimal::Decimal>,
     /// If the mark price of the instrument this bot is trading goes above `upside_exit_price`, the bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.
     #[serde(rename = "upside_exit_price", skip_serializing_if = "Option::is_none")]
-    pub upside_exit_price: Option<f64>,
+    pub upside_exit_price: Option<rust_decimal::Decimal>,
     /// If the mark price of the instrument this bot is trading goes below `downside_exit_price`, the bot cancels the maker orders, aggressively trades into `base_position`, and then stops executing.
     #[serde(
         rename = "downside_exit_price",
         skip_serializing_if = "Option::is_none"
     )]
-    pub downside_exit_price: Option<f64>,
+    pub downside_exit_price: Option<rust_decimal::Decimal>,
     /// Maximum slippage per trade when exiting any position, expressed as % of the traded instruments mark price.
     #[serde(rename = "max_slippage", skip_serializing_if = "Option::is_none")]
-    pub max_slippage: Option<f64>,
+    pub max_slippage: Option<rust_decimal::Decimal>,
     /// Timestamp when the bot should stop executing. When `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.
     #[serde(rename = "end_time")]
-    pub end_time: f64,
+    pub end_time: rust_decimal::Decimal,
     /// A label that the bot will add to all orders for easy identification.
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
     /// Timestamp indicating when the bot was created.
     #[serde(rename = "start_time")]
-    pub start_time: f64,
+    pub start_time: rust_decimal::Decimal,
     /// Timestamp indicating when the bot stopped working due to specified `stop_reason`.
     #[serde(rename = "stop_time", skip_serializing_if = "Option::is_none")]
-    pub stop_time: Option<f64>,
+    pub stop_time: Option<rust_decimal::Decimal>,
 }
 
 impl Levels1 {
     pub fn new(
         strategy: String,
         instrument_name: String,
-        bids: Vec<f64>,
-        asks: Vec<f64>,
-        step_size: f64,
-        end_time: f64,
-        start_time: f64,
+        bids: Vec<rust_decimal::Decimal>,
+        asks: Vec<rust_decimal::Decimal>,
+        step_size: rust_decimal::Decimal,
+        end_time: rust_decimal::Decimal,
+        start_time: rust_decimal::Decimal,
     ) -> Levels1 {
         Levels1 {
             strategy,

@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 pub struct MarginBreakdownWithOrderWithBuy {
     /// Total required margin for account with the order inserted as buy.
     #[serde(rename = "required_margin", skip_serializing_if = "Option::is_none")]
-    pub required_margin: Option<f64>,
+    pub required_margin: Option<rust_decimal::Decimal>,
     #[serde(rename = "underlying", skip_serializing_if = "Option::is_none")]
     pub underlying: Option<models::MarginBreakdownWithOrderCurrentUnderlying>,
 }

@@ -18,43 +18,43 @@ pub struct PortfolioEntry {
     pub instrument_name: Option<String>,
     /// Amount of this contract currently held; short positions are negative.
     #[serde(rename = "position", skip_serializing_if = "Option::is_none")]
-    pub position: Option<f64>,
+    pub position: Option<rust_decimal::Decimal>,
     /// Current mark price for the instrument.
     #[serde(rename = "mark_price", skip_serializing_if = "Option::is_none")]
-    pub mark_price: Option<f64>,
+    pub mark_price: Option<rust_decimal::Decimal>,
     /// Implied volatility calculated at time of marking.
     #[serde(rename = "iv", skip_serializing_if = "Option::is_none")]
-    pub iv: Option<f64>,
+    pub iv: Option<rust_decimal::Decimal>,
     /// Index price at time of marking.
     #[serde(rename = "index", skip_serializing_if = "Option::is_none")]
-    pub index: Option<f64>,
+    pub index: Option<rust_decimal::Decimal>,
     /// Average price paid to obtain position.  Note: for instruments that are subject to daily futures-style settlement, the start price is reset to the mark price at the end of each session and all the unrealized P&L is thus realized. Use `private/daily_mark_history` API endpoint to get information about daily settlements.
     #[serde(rename = "start_price", skip_serializing_if = "Option::is_none")]
-    pub start_price: Option<f64>,
+    pub start_price: Option<rust_decimal::Decimal>,
     /// Average price paid to obtain position. Doesn't reset at settlement.
     #[serde(rename = "average_price", skip_serializing_if = "Option::is_none")]
-    pub average_price: Option<f64>,
+    pub average_price: Option<rust_decimal::Decimal>,
     /// Unrealised P&L in the current session for this position based on current mark price, equal to `(mark_price - start_price) * position`.  Note: for instruments that are subject to daily futures-style settlement, the start price is reset to the mark price at the end of each session and all the unrealized P&L is thus realized. Use `private/daily_mark_history` API endpoint to get information about daily settlements.
     #[serde(rename = "unrealised_pnl", skip_serializing_if = "Option::is_none")]
-    pub unrealised_pnl: Option<f64>,
+    pub unrealised_pnl: Option<rust_decimal::Decimal>,
     /// Realized P&L in the current session.  Realized P&L is settled into a settlement asset at the end of each session.
     #[serde(rename = "realised_pnl", skip_serializing_if = "Option::is_none")]
-    pub realised_pnl: Option<f64>,
+    pub realised_pnl: Option<rust_decimal::Decimal>,
     /// Total entry value, equal to `start_price * position`.
     #[serde(rename = "entry_value", skip_serializing_if = "Option::is_none")]
-    pub entry_value: Option<f64>,
+    pub entry_value: Option<rust_decimal::Decimal>,
     /// Entry mark value for perpetual funding. Unrealised perpetual funding is (current perp funding mark * position) - perpetual funding entry value. Not included if zero.
     #[serde(
         rename = "perpetual_funding_entry_value",
         skip_serializing_if = "Option::is_none"
     )]
-    pub perpetual_funding_entry_value: Option<f64>,
+    pub perpetual_funding_entry_value: Option<rust_decimal::Decimal>,
     /// For perpetual positions, current unrealized perpetual funding.  The funding is realized as P&L and settled into settlement asset at the end of each session.
     #[serde(
         rename = "unrealised_perpetual_funding",
         skip_serializing_if = "Option::is_none"
     )]
-    pub unrealised_perpetual_funding: Option<f64>,
+    pub unrealised_perpetual_funding: Option<rust_decimal::Decimal>,
 }
 
 impl PortfolioEntry {

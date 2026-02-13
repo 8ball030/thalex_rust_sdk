@@ -26,10 +26,10 @@ pub struct InsertParams {
     pub legs: Option<Vec<models::InsertRequestLegsInner>>,
     /// Limit price; required for limit orders.  For combination orders this specifies limit price per unit of the combination.
     #[serde(rename = "price", skip_serializing_if = "Option::is_none")]
-    pub price: Option<f64>,
+    pub price: Option<rust_decimal::Decimal>,
     /// Amount of currency to trade (e.g. BTC for futures).  For combination orders this specifies the amount of units of the combination to trade.
     #[serde(rename = "amount")]
-    pub amount: f64,
+    pub amount: rust_decimal::Decimal,
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
     #[serde(rename = "order_type", skip_serializing_if = "Option::is_none")]
@@ -54,7 +54,7 @@ pub struct InsertParams {
 }
 
 impl InsertParams {
-    pub fn new(direction: models::DirectionEnum, amount: f64) -> InsertParams {
+    pub fn new(direction: models::DirectionEnum, amount: rust_decimal::Decimal) -> InsertParams {
         InsertParams {
             direction,
             client_order_id: None,

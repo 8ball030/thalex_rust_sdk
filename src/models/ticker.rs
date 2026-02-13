@@ -15,79 +15,79 @@ use serde::{Deserialize, Serialize};
 pub struct Ticker {
     /// Price of the best (highest) bid in the orderbook, or `null` if the orderbook is empty.
     #[serde(rename = "best_bid_price", skip_serializing_if = "Option::is_none")]
-    pub best_bid_price: Option<f64>,
+    pub best_bid_price: Option<rust_decimal::Decimal>,
     /// Size of best bid, or `null` if the orderbook is empty.
     #[serde(rename = "best_bid_amount", skip_serializing_if = "Option::is_none")]
-    pub best_bid_amount: Option<f64>,
+    pub best_bid_amount: Option<rust_decimal::Decimal>,
     /// Price of best (lowest) ask in the orderbook, or `null` if the orderbook is empty.
     #[serde(rename = "best_ask_price", skip_serializing_if = "Option::is_none")]
-    pub best_ask_price: Option<f64>,
+    pub best_ask_price: Option<rust_decimal::Decimal>,
     /// Size of best ask, or `null` if the orderbook is empty.
     #[serde(rename = "best_ask_amount", skip_serializing_if = "Option::is_none")]
-    pub best_ask_amount: Option<f64>,
+    pub best_ask_amount: Option<rust_decimal::Decimal>,
     /// Price of last trade, or `null` if no trades have been registered yet.  Not included for combinations.
     #[serde(rename = "last_price", skip_serializing_if = "Option::is_none")]
-    pub last_price: Option<f64>,
+    pub last_price: Option<rust_decimal::Decimal>,
     /// Current mark price.
     #[serde(rename = "mark_price", skip_serializing_if = "Option::is_none")]
-    pub mark_price: Option<f64>,
+    pub mark_price: Option<rust_decimal::Decimal>,
     /// The unix timestamp when the price was marked.
     #[serde(rename = "mark_timestamp", skip_serializing_if = "Option::is_none")]
-    pub mark_timestamp: Option<f64>,
+    pub mark_timestamp: Option<rust_decimal::Decimal>,
     /// Implied volatility calculated at time of marking.  Only included for options. Not included for combinations.
     #[serde(rename = "iv", skip_serializing_if = "Option::is_none")]
-    pub iv: Option<f64>,
+    pub iv: Option<rust_decimal::Decimal>,
     /// Delta calculated at time of marking.  Not included for combinations.
     #[serde(rename = "delta", skip_serializing_if = "Option::is_none")]
-    pub delta: Option<f64>,
+    pub delta: Option<rust_decimal::Decimal>,
     /// Index price at time of marking.
     #[serde(rename = "index", skip_serializing_if = "Option::is_none")]
-    pub index: Option<f64>,
+    pub index: Option<rust_decimal::Decimal>,
     /// Forward price at time of marking.  Only included for options.
     #[serde(rename = "forward", skip_serializing_if = "Option::is_none")]
-    pub forward: Option<f64>,
+    pub forward: Option<rust_decimal::Decimal>,
     /// Total volume traded over the last 24 hours.  Not included for combinations.
     #[serde(rename = "volume_24h", skip_serializing_if = "Option::is_none")]
-    pub volume_24h: Option<f64>,
+    pub volume_24h: Option<rust_decimal::Decimal>,
     /// Total value traded over the last 24 hours.  Not included for combinations.
     #[serde(rename = "value_24h", skip_serializing_if = "Option::is_none")]
-    pub value_24h: Option<f64>,
+    pub value_24h: Option<rust_decimal::Decimal>,
     /// Lowest price in the last 24 hours.  Not included for combinations.
     #[serde(rename = "low_price_24h", skip_serializing_if = "Option::is_none")]
-    pub low_price_24h: Option<f64>,
+    pub low_price_24h: Option<rust_decimal::Decimal>,
     /// Highest price in the last 24 hours.  Not included for combinations.
     #[serde(rename = "high_price_24h", skip_serializing_if = "Option::is_none")]
-    pub high_price_24h: Option<f64>,
+    pub high_price_24h: Option<rust_decimal::Decimal>,
     /// Difference in price between the first and the last trades in the last 24 hours, `null` if there were no trades.  Not included for combinations.
     #[serde(rename = "change_24h", skip_serializing_if = "Option::is_none")]
-    pub change_24h: Option<f64>,
+    pub change_24h: Option<rust_decimal::Decimal>,
     /// Current price collar low (checks new asks)
     #[serde(rename = "collar_low", skip_serializing_if = "Option::is_none")]
-    pub collar_low: Option<f64>,
+    pub collar_low: Option<rust_decimal::Decimal>,
     /// Current price collar high (checks new bids)
     #[serde(rename = "collar_high", skip_serializing_if = "Option::is_none")]
-    pub collar_high: Option<f64>,
+    pub collar_high: Option<rust_decimal::Decimal>,
     /// Total number of outstanding unsettled contracts.  Not included for combinations.
     #[serde(rename = "open_interest", skip_serializing_if = "Option::is_none")]
-    pub open_interest: Option<f64>,
+    pub open_interest: Option<rust_decimal::Decimal>,
     /// Current rate at which long position pays and short position earns, in funding interval.  Only included for perpetuals.
     #[serde(rename = "funding_rate", skip_serializing_if = "Option::is_none")]
-    pub funding_rate: Option<f64>,
+    pub funding_rate: Option<rust_decimal::Decimal>,
     /// Funding value of a single contract long position since last settlement.  Only included for perpetuals.
     #[serde(rename = "funding_mark", skip_serializing_if = "Option::is_none")]
-    pub funding_mark: Option<f64>,
+    pub funding_mark: Option<rust_decimal::Decimal>,
     /// Total funding accumulated for a single contract long position over the last 24 hours.  Only included for perpetuals.
     #[serde(
         rename = "realised_funding_24h",
         skip_serializing_if = "Option::is_none"
     )]
-    pub realised_funding_24h: Option<f64>,
+    pub realised_funding_24h: Option<rust_decimal::Decimal>,
     /// Average funding rate for the last 24 hours.  Only included for perpetuals.
     #[serde(
         rename = "average_funding_rate_24h",
         skip_serializing_if = "Option::is_none"
     )]
-    pub average_funding_rate_24h: Option<f64>,
+    pub average_funding_rate_24h: Option<rust_decimal::Decimal>,
 }
 
 impl Ticker {

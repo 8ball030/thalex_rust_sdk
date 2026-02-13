@@ -21,14 +21,17 @@ pub struct RequiredMarginForOrderParams {
     pub legs: Option<Vec<models::RequiredMarginForOrderParamsLegsInner>>,
     /// The price of the hypothetical order.
     #[serde(rename = "price")]
-    pub price: f64,
+    pub price: rust_decimal::Decimal,
     /// The amount that would be traded.
     #[serde(rename = "amount")]
-    pub amount: f64,
+    pub amount: rust_decimal::Decimal,
 }
 
 impl RequiredMarginForOrderParams {
-    pub fn new(price: f64, amount: f64) -> RequiredMarginForOrderParams {
+    pub fn new(
+        price: rust_decimal::Decimal,
+        amount: rust_decimal::Decimal,
+    ) -> RequiredMarginForOrderParams {
         RequiredMarginForOrderParams {
             instrument_name: None,
             legs: None,

@@ -29,28 +29,28 @@ pub struct DFollow {
     pub target_instrument: String,
     /// Amount of `target_instrument` contracts to follow the deltas of.
     #[serde(rename = "target_amount")]
-    pub target_amount: f64,
+    pub target_amount: rust_decimal::Decimal,
     /// Tolerance threshold.
     #[serde(rename = "threshold")]
-    pub threshold: f64,
+    pub threshold: rust_decimal::Decimal,
     /// Maximum deviation allowed from target deltas at any time.
     #[serde(rename = "tolerance", skip_serializing_if = "Option::is_none")]
-    pub tolerance: Option<f64>,
+    pub tolerance: Option<rust_decimal::Decimal>,
     /// Number of seconds to let the deltas of the following position stay outside of `[target-threshold, target+threshold]`, before correcting them, where `target = deltas of target_instrument * target_amount`.
     #[serde(rename = "period")]
-    pub period: f64,
+    pub period: rust_decimal::Decimal,
     /// Maximum slippage per trade, expressed as % of the traded instruments mark price.
     #[serde(rename = "max_slippage", skip_serializing_if = "Option::is_none")]
-    pub max_slippage: Option<f64>,
+    pub max_slippage: Option<rust_decimal::Decimal>,
     /// Timestamp when the bot should stop executing. When `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.
     #[serde(rename = "end_time")]
-    pub end_time: f64,
+    pub end_time: rust_decimal::Decimal,
     /// Timestamp indicating when the bot was created.
     #[serde(rename = "start_time")]
-    pub start_time: f64,
+    pub start_time: rust_decimal::Decimal,
     /// Timestamp indicating when the bot stopped working due to specified `stop_reason`.
     #[serde(rename = "stop_time", skip_serializing_if = "Option::is_none")]
-    pub stop_time: Option<f64>,
+    pub stop_time: Option<rust_decimal::Decimal>,
     /// The reason why the bot stopped executing.
     #[serde(rename = "stop_reason", skip_serializing_if = "Option::is_none")]
     pub stop_reason: Option<StopReason>,
@@ -59,19 +59,19 @@ pub struct DFollow {
     pub label: Option<String>,
     /// Realized P&L made by this bot since the start.
     #[serde(rename = "realized_pnl")]
-    pub realized_pnl: f64,
+    pub realized_pnl: rust_decimal::Decimal,
     /// Trade fees by this bot.
     #[serde(rename = "fee")]
-    pub fee: f64,
+    pub fee: rust_decimal::Decimal,
     /// Average entry price of the position (if any).
     #[serde(rename = "average_price", skip_serializing_if = "Option::is_none")]
-    pub average_price: Option<f64>,
+    pub average_price: Option<rust_decimal::Decimal>,
     /// Position size (if any).
     #[serde(rename = "position_size", skip_serializing_if = "Option::is_none")]
-    pub position_size: Option<f64>,
+    pub position_size: Option<rust_decimal::Decimal>,
     /// Mark price of the bot instrument at the moment the bot was stopped.
     #[serde(rename = "mark_price_at_stop", skip_serializing_if = "Option::is_none")]
-    pub mark_price_at_stop: Option<f64>,
+    pub mark_price_at_stop: Option<rust_decimal::Decimal>,
 }
 
 impl DFollow {
@@ -81,13 +81,13 @@ impl DFollow {
         status: Status,
         instrument_name: String,
         target_instrument: String,
-        target_amount: f64,
-        threshold: f64,
-        period: f64,
-        end_time: f64,
-        start_time: f64,
-        realized_pnl: f64,
-        fee: f64,
+        target_amount: rust_decimal::Decimal,
+        threshold: rust_decimal::Decimal,
+        period: rust_decimal::Decimal,
+        end_time: rust_decimal::Decimal,
+        start_time: rust_decimal::Decimal,
+        realized_pnl: rust_decimal::Decimal,
+        fee: rust_decimal::Decimal,
     ) -> DFollow {
         DFollow {
             bot_id,

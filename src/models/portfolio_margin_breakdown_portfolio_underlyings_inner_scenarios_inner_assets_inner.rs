@@ -17,19 +17,19 @@ pub struct PortfolioMarginBreakdownPortfolioUnderlyingsInnerScenariosInnerAssets
     #[serde(rename = "asset_name", skip_serializing_if = "Option::is_none")]
     pub asset_name: Option<String>,
     #[serde(rename = "position", skip_serializing_if = "Option::is_none")]
-    pub position: Option<f64>,
+    pub position: Option<rust_decimal::Decimal>,
     /// P&L for a single unit of this asset.
     #[serde(rename = "underlying_pnl", skip_serializing_if = "Option::is_none")]
-    pub underlying_pnl: Option<f64>,
+    pub underlying_pnl: Option<rust_decimal::Decimal>,
     /// Total P&L for the position in this asset.
     #[serde(rename = "pnl", skip_serializing_if = "Option::is_none")]
-    pub pnl: Option<f64>,
+    pub pnl: Option<rust_decimal::Decimal>,
     /// The price at the moment of scenario calculation.
     #[serde(rename = "current_price", skip_serializing_if = "Option::is_none")]
-    pub current_price: Option<f64>,
+    pub current_price: Option<rust_decimal::Decimal>,
     /// The price calculated for the scenario.
     #[serde(rename = "scenario_price", skip_serializing_if = "Option::is_none")]
-    pub scenario_price: Option<f64>,
+    pub scenario_price: Option<rust_decimal::Decimal>,
 }
 
 impl PortfolioMarginBreakdownPortfolioUnderlyingsInnerScenariosInnerAssetsInner {

@@ -15,13 +15,13 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct RecentTrade {
     #[serde(rename = "price", skip_serializing_if = "Option::is_none")]
-    pub price: Option<f64>,
+    pub price: Option<rust_decimal::Decimal>,
     #[serde(rename = "size", skip_serializing_if = "Option::is_none")]
-    pub size: Option<f64>,
+    pub size: Option<rust_decimal::Decimal>,
     #[serde(rename = "side", skip_serializing_if = "Option::is_none")]
     pub side: Option<Side>,
     #[serde(rename = "timestamp", skip_serializing_if = "Option::is_none")]
-    pub timestamp: Option<f64>,
+    pub timestamp: Option<rust_decimal::Decimal>,
     #[serde(rename = "instrument_name", skip_serializing_if = "Option::is_none")]
     pub instrument_name: Option<String>,
     #[serde(rename = "implied_taker", skip_serializing_if = "Option::is_none")]

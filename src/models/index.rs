@@ -16,38 +16,42 @@ pub struct Index {
     #[serde(rename = "index_name")]
     pub index_name: String,
     #[serde(rename = "price")]
-    pub price: f64,
+    pub price: rust_decimal::Decimal,
     /// The unix timestamp when the index price was recorded in the database.
     #[serde(rename = "timestamp")]
-    pub timestamp: f64,
+    pub timestamp: rust_decimal::Decimal,
     /// The average price so far over the current expiration, if any.
     #[serde(
         rename = "expiration_print_average",
         skip_serializing_if = "Option::is_none"
     )]
-    pub expiration_print_average: Option<f64>,
+    pub expiration_print_average: Option<rust_decimal::Decimal>,
     /// A number between 0.0 and 1.0 indicating the progress of the current expiration.
     #[serde(
         rename = "expiration_progress",
         skip_serializing_if = "Option::is_none"
     )]
-    pub expiration_progress: Option<f64>,
+    pub expiration_progress: Option<rust_decimal::Decimal>,
     /// If expiration is in progress, and the index price will not change any more, this is the expiration price. Equals `expiration_progress * expiration_print_average + (1 - expiration_progress) * price`.
     #[serde(
         rename = "expected_expiration_price",
         skip_serializing_if = "Option::is_none"
     )]
-    pub expected_expiration_price: Option<f64>,
+    pub expected_expiration_price: Option<rust_decimal::Decimal>,
     /// The last known settlement price (expiration price, underlying delivery price).
     #[serde(
         rename = "previous_settlement_price",
         skip_serializing_if = "Option::is_none"
     )]
-    pub previous_settlement_price: Option<f64>,
+    pub previous_settlement_price: Option<rust_decimal::Decimal>,
 }
 
 impl Index {
-    pub fn new(index_name: String, price: f64, timestamp: f64) -> Index {
+    pub fn new(
+        index_name: String,
+        price: rust_decimal::Decimal,
+        timestamp: rust_decimal::Decimal,
+    ) -> Index {
         Index {
             index_name,
             price,

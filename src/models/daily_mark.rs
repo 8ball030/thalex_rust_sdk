@@ -15,34 +15,34 @@ use serde::{Deserialize, Serialize};
 pub struct DailyMark {
     /// Time of settlement (Unix timestamp).
     #[serde(rename = "time")]
-    pub time: f64,
+    pub time: rust_decimal::Decimal,
     /// Instrument name.
     #[serde(rename = "instrument_name")]
     pub instrument_name: String,
     /// Position in the instrument.
     #[serde(rename = "position")]
-    pub position: f64,
+    pub position: rust_decimal::Decimal,
     /// Mark price used for settlement.
     #[serde(rename = "mark_price")]
-    pub mark_price: f64,
+    pub mark_price: rust_decimal::Decimal,
     /// Realized profit or loss for this position.
     #[serde(rename = "realized_position_pnl")]
-    pub realized_position_pnl: f64,
+    pub realized_position_pnl: rust_decimal::Decimal,
     /// Realized perpetual funding. Only present for perpetuals.
     #[serde(
         rename = "realized_funding_pnl",
         skip_serializing_if = "Option::is_none"
     )]
-    pub realized_funding_pnl: Option<f64>,
+    pub realized_funding_pnl: Option<rust_decimal::Decimal>,
 }
 
 impl DailyMark {
     pub fn new(
-        time: f64,
+        time: rust_decimal::Decimal,
         instrument_name: String,
-        position: f64,
-        mark_price: f64,
-        realized_position_pnl: f64,
+        position: rust_decimal::Decimal,
+        mark_price: rust_decimal::Decimal,
+        realized_position_pnl: rust_decimal::Decimal,
     ) -> DailyMark {
         DailyMark {
             time,

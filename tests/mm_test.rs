@@ -1,3 +1,4 @@
+use rust_decimal_macros::dec;
 use thalex_rust_sdk::models::{
     CancelMassQuoteParams, DoubleSidedQuote, DoubleSidedQuoteB, MassQuoteParams,
     SetMmProtectionParams, SingleLevelQuote,
@@ -26,9 +27,9 @@ async fn test_mm_flow() {
         .mm()
         .set_mm_protection(SetMmProtectionParams {
             product: KNOWN_GROUP.to_string(),
-            amount: Some(0.01),
-            quote_amount: 30.0,
-            trade_amount: 0.01,
+            amount: Some(dec!(0.01)),
+            quote_amount: dec!(30.0),
+            trade_amount: dec!(0.01),
         })
         .await;
     assert!(
@@ -47,8 +48,8 @@ async fn test_mm_flow() {
             quotes: vec![DoubleSidedQuote {
                 i: KNOWN_PERP.to_string(),
                 b: Some(DoubleSidedQuoteB::SingleLevelQuote(SingleLevelQuote {
-                    p: 1500.0,
-                    a: 0.001,
+                    p: dec!(1500.0),
+                    a: dec!(0.001),
                 })),
                 a: None,
             }],

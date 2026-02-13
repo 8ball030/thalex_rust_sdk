@@ -23,37 +23,37 @@ pub struct Ocq1 {
     pub signal: Signal,
     /// The offset of the price of the bid quote from the signal price. Must be smaller than `ask_offset`. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "bid_offset")]
-    pub bid_offset: f64,
+    pub bid_offset: rust_decimal::Decimal,
     /// The offset of the price of the ask quote from the signal price. Must be greater than `bid_offset`. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "ask_offset")]
-    pub ask_offset: f64,
+    pub ask_offset: rust_decimal::Decimal,
     /// Optional offset of the price of the exit quote from the signal price. Must be between `bid_offset` and `ask_offset`. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "exit_offset", skip_serializing_if = "Option::is_none")]
-    pub exit_offset: Option<f64>,
+    pub exit_offset: Option<rust_decimal::Decimal>,
     /// The default size of both the bid and ask quote. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "quote_size")]
-    pub quote_size: f64,
+    pub quote_size: rust_decimal::Decimal,
     /// The minimum portfolio position to maintain in the subaccount. Must be smaller than `max_position`. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "min_position")]
-    pub min_position: f64,
+    pub min_position: rust_decimal::Decimal,
     /// The maximum portfolio position to maintain in the subaccount. Must be greater than `min_position`. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "max_position")]
-    pub max_position: f64,
+    pub max_position: rust_decimal::Decimal,
     /// Optional portfolio position to maintain in the subaccount. Must be between `min_position` and `max_position`. See [the bot strategies section](#tag/bot_strategies) for more explanation.
     #[serde(rename = "target_position", skip_serializing_if = "Option::is_none")]
-    pub target_position: Option<f64>,
+    pub target_position: Option<rust_decimal::Decimal>,
     /// Timestamp when the bot should stop executing. When `end_time` is reached, the bot will leave all positions intact, it will not open/close any of them.
     #[serde(rename = "end_time")]
-    pub end_time: f64,
+    pub end_time: rust_decimal::Decimal,
     /// A label that the bot will add to all orders for easy identification.
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
     /// Timestamp indicating when the bot was created.
     #[serde(rename = "start_time")]
-    pub start_time: f64,
+    pub start_time: rust_decimal::Decimal,
     /// Timestamp indicating when the bot stopped working due to specified `stop_reason`.
     #[serde(rename = "stop_time", skip_serializing_if = "Option::is_none")]
-    pub stop_time: Option<f64>,
+    pub stop_time: Option<rust_decimal::Decimal>,
 }
 
 impl Ocq1 {
@@ -61,13 +61,13 @@ impl Ocq1 {
         strategy: String,
         instrument_name: String,
         signal: Signal,
-        bid_offset: f64,
-        ask_offset: f64,
-        quote_size: f64,
-        min_position: f64,
-        max_position: f64,
-        end_time: f64,
-        start_time: f64,
+        bid_offset: rust_decimal::Decimal,
+        ask_offset: rust_decimal::Decimal,
+        quote_size: rust_decimal::Decimal,
+        min_position: rust_decimal::Decimal,
+        max_position: rust_decimal::Decimal,
+        end_time: rust_decimal::Decimal,
+        start_time: rust_decimal::Decimal,
     ) -> Ocq1 {
         Ocq1 {
             strategy,

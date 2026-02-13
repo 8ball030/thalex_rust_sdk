@@ -18,16 +18,16 @@ pub struct AccountSummaryCashInner {
     pub currency: String,
     /// Current balance in this currency.
     #[serde(rename = "balance")]
-    pub balance: f64,
+    pub balance: rust_decimal::Decimal,
     /// The collateral quality of the asset i.e. the fraction of the asset that can be used as a collateral.
     #[serde(rename = "collateral_factor")]
-    pub collateral_factor: f64,
+    pub collateral_factor: rust_decimal::Decimal,
     /// Index price used to calculate collateral effect of this position. Can be `null` for assets that are not converted using an index, e.g. for stable coins.
     #[serde(
         rename = "collateral_index_price",
         skip_serializing_if = "Option::is_none"
     )]
-    pub collateral_index_price: Option<f64>,
+    pub collateral_index_price: Option<rust_decimal::Decimal>,
     /// If this flag is `true`, this currency can be deposited and withdrawn.
     #[serde(rename = "transactable")]
     pub transactable: bool,
@@ -36,8 +36,8 @@ pub struct AccountSummaryCashInner {
 impl AccountSummaryCashInner {
     pub fn new(
         currency: String,
-        balance: f64,
-        collateral_factor: f64,
+        balance: rust_decimal::Decimal,
+        collateral_factor: rust_decimal::Decimal,
         transactable: bool,
     ) -> AccountSummaryCashInner {
         AccountSummaryCashInner {

@@ -15,14 +15,14 @@ use serde::{Deserialize, Serialize};
 pub struct CancelAllResult {
     /// The number of orders successfully deleted.
     #[serde(rename = "result")]
-    pub result: f64,
+    pub result: rust_decimal::Decimal,
     /// The request ID
     #[serde(rename = "id", skip_serializing_if = "Option::is_none")]
     pub id: Option<u64>,
 }
 
 impl CancelAllResult {
-    pub fn new(result: f64) -> CancelAllResult {
+    pub fn new(result: rust_decimal::Decimal) -> CancelAllResult {
         CancelAllResult { result, id: None }
     }
 }

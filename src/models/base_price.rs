@@ -18,17 +18,21 @@ pub struct BasePrice {
     pub base_name: String,
     /// Forward price of the expiration.
     #[serde(rename = "price")]
-    pub price: f64,
+    pub price: rust_decimal::Decimal,
     /// Index price of the underlying of the instrument.
     #[serde(rename = "index")]
-    pub index: f64,
+    pub index: rust_decimal::Decimal,
     /// Before expiration, Thalex linearly scales the deltas of the expiring instruments to zero, over a time window. This number represents how far into this process the expiration is (i.e. delta used for margining = index_delta * actual delta of the instrument).
     #[serde(rename = "index_delta", skip_serializing_if = "Option::is_none")]
-    pub index_delta: Option<f64>,
+    pub index_delta: Option<rust_decimal::Decimal>,
 }
 
 impl BasePrice {
-    pub fn new(base_name: String, price: f64, index: f64) -> BasePrice {
+    pub fn new(
+        base_name: String,
+        price: rust_decimal::Decimal,
+        index: rust_decimal::Decimal,
+    ) -> BasePrice {
         BasePrice {
             base_name,
             price,
