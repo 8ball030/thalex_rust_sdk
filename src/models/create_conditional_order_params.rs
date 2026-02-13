@@ -18,24 +18,24 @@ pub struct CreateConditionalOrderParams {
     #[serde(rename = "instrument_name")]
     pub instrument_name: String,
     #[serde(rename = "amount")]
-    pub amount: f64,
+    pub amount: rust_decimal::Decimal,
     /// If set, creates a stop limit order
     #[serde(rename = "limit_price", skip_serializing_if = "Option::is_none")]
-    pub limit_price: Option<f64>,
+    pub limit_price: Option<rust_decimal::Decimal>,
     #[serde(rename = "target", skip_serializing_if = "Option::is_none")]
     pub target: Option<models::TargetEnum>,
     /// Trigger price
     #[serde(rename = "stop_price")]
-    pub stop_price: f64,
+    pub stop_price: rust_decimal::Decimal,
     /// If set, creates a bracket order
     #[serde(rename = "bracket_price", skip_serializing_if = "Option::is_none")]
-    pub bracket_price: Option<f64>,
+    pub bracket_price: Option<rust_decimal::Decimal>,
     /// If set, creates a trailing stop order
     #[serde(
         rename = "trailing_stop_callback_rate",
         skip_serializing_if = "Option::is_none"
     )]
-    pub trailing_stop_callback_rate: Option<f64>,
+    pub trailing_stop_callback_rate: Option<rust_decimal::Decimal>,
     /// Label will be set on the activated order
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
@@ -52,8 +52,8 @@ impl CreateConditionalOrderParams {
     pub fn new(
         direction: models::DirectionEnum,
         instrument_name: String,
-        amount: f64,
-        stop_price: f64,
+        amount: rust_decimal::Decimal,
+        stop_price: rust_decimal::Decimal,
     ) -> CreateConditionalOrderParams {
         CreateConditionalOrderParams {
             direction,

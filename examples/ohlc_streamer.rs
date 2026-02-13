@@ -5,7 +5,8 @@ use std::sync::Arc;
 
 use chrono::{DateTime, Utc};
 use log::{Level::Info, info};
-use rust_decimal::{Decimal, prelude::FromPrimitive};
+use rust_decimal::{Decimal, prelude::ToPrimitive};
+use rust_decimal_macros::dec;
 use simple_logger::init_with_level;
 use thalex_rust_sdk::{
     models::{Delay, Ticker},
@@ -32,13 +33,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let interval = 60; // 1 minute candles
 
-    let now_ms: i64 = Utc::now().timestamp_millis();
+    let now_ms: Decimal = Decimal::from(Utc::now().timestamp_millis());
     let now_dt = from_time_stamp_to_date_time(now_ms);
 
     info!("Starting interval timestamp: {now_ms} ({now_dt})");
 
     let interval_end_ms = round_timestamp_to_interval(now_ms, interval);
-    let interval_end_dt = from_time_stamp_to_date_time(interval_end_ms);
+    let interval_end_dt = from_time_stamp_to_date_time(interval_end_ms.into());
 
     let current_candle = Arc::new(Mutex::new(Candle {
         timestamp: interval_end_dt,
@@ -73,8 +74,10 @@ async fn on_ticker(msg: Ticker, candle: Arc<Mutex<Candle>>, interval: i64) {
     if msg.best_ask_price.is_none() || msg.best_bid_price.is_none() {
         return;
     }
-    let mark_price: Decimal = Decimal::from_f64(msg.mark_price.unwrap()).unwrap();
-    let timestamp = (msg.mark_timestamp.unwrap() * 1000.0) as i64;
+    let mark_price: Decimal = msg.mark_price.unwrap();
+    let timestamp: i64 = (msg.mark_timestamp.unwrap() * dec!(1000.0))
+        .to_i64()
+        .unwrap();
     let mut current_candle = candle.lock().await;
 
     if Some(current_candle.high) < Some(mark_price) {
@@ -98,19 +101,19 @@ async fn on_ticker(msg: Ticker, candle: Arc<Mutex<Candle>>, interval: i64) {
             current_candle.close,
         );
         // Reset candle
-        let interval_ending_timestamp = round_timestamp_to_interval(timestamp, interval);
+        let interval_ending_timestamp = round_timestamp_to_interval(timestamp.into(), interval);
         *current_candle = Candle {
             open: mark_price,
             high: mark_price,
             low: mark_price,
             close: mark_price,
-            timestamp: from_time_stamp_to_date_time(interval_ending_timestamp),
+            timestamp: from_time_stamp_to_date_time(interval_ending_timestamp.into()),
         };
     }
 }
 
-fn from_time_stamp_to_date_time(timestamp: i64) -> DateTime<Utc> {
-    let naive = DateTime::from_timestamp_millis(timestamp);
+fn from_time_stamp_to_date_time(timestamp: Decimal) -> DateTime<Utc> {
+    let naive = DateTime::from_timestamp_millis(timestamp.to_i64().unwrap());
     naive.unwrap().with_timezone(&Utc)
 }
 
@@ -118,7 +121,9 @@ fn from_datetime_to_timestamp(datetime: DateTime<Utc>) -> i64 {
     datetime.timestamp_millis()
 }
 
-fn round_timestamp_to_interval(timestamp_ms: i64, interval_seconds: i64) -> i64 {
-    let interval_ms = interval_seconds * 1000;
-    ((timestamp_ms as f64 / interval_ms as f64).ceil() * interval_ms as f64) as i64
+fn round_timestamp_to_interval(timestamp_ms: Decimal, interval_seconds: i64) -> i64 {
+    let interval_ms = Decimal::from(interval_seconds) * dec!(1000);
+    ((timestamp_ms / interval_ms).ceil() * interval_ms)
+        .to_i64()
+        .unwrap()
 }

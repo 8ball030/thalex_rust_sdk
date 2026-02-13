@@ -24,13 +24,13 @@ pub struct BookPayload {
     pub ask_changes: Option<Vec<serde_json::Value>>,
     /// The total amount of bid orders across all levels.
     #[serde(rename = "total_bid_amount", skip_serializing_if = "Option::is_none")]
-    pub total_bid_amount: Option<f64>,
+    pub total_bid_amount: Option<rust_decimal::Decimal>,
     /// The total amount of ask orders across all levels.
     #[serde(rename = "total_ask_amount", skip_serializing_if = "Option::is_none")]
-    pub total_ask_amount: Option<f64>,
+    pub total_ask_amount: Option<rust_decimal::Decimal>,
     /// Time of the last recorded update to this order book (Unix timestamp).
     #[serde(rename = "time", skip_serializing_if = "Option::is_none")]
-    pub time: Option<f64>,
+    pub time: Option<rust_decimal::Decimal>,
 }
 
 impl BookPayload {

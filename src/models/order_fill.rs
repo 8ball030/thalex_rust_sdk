@@ -18,26 +18,26 @@ pub struct OrderFill {
     pub trade_id: String,
     /// Fill price.
     #[serde(rename = "price")]
-    pub price: f64,
+    pub price: rust_decimal::Decimal,
     /// Filled amount
     #[serde(rename = "amount")]
-    pub amount: f64,
+    pub amount: rust_decimal::Decimal,
     #[serde(rename = "time", skip_serializing_if = "Option::is_none")]
-    pub time: Option<f64>,
+    pub time: Option<rust_decimal::Decimal>,
     #[serde(rename = "maker_taker")]
     pub maker_taker: models::MakerTakerEnum,
     /// Index of a leg on which the trade happened for combination orders. Zero for single-leg orders.  For combination orders the direction of the trade is defined by the direction of the order and the sign of the leg quantity.
     #[serde(rename = "leg_index")]
-    pub leg_index: f64,
+    pub leg_index: rust_decimal::Decimal,
 }
 
 impl OrderFill {
     pub fn new(
         trade_id: String,
-        price: f64,
-        amount: f64,
+        price: rust_decimal::Decimal,
+        amount: rust_decimal::Decimal,
         maker_taker: models::MakerTakerEnum,
-        leg_index: f64,
+        leg_index: rust_decimal::Decimal,
     ) -> OrderFill {
         OrderFill {
             trade_id,

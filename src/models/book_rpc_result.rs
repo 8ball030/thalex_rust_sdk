@@ -15,20 +15,24 @@ use serde::{Deserialize, Serialize};
 pub struct BookRpcResult {
     /// Bids (list of price, amount, outright-amount)
     #[serde(rename = "bids")]
-    pub bids: Vec<Vec<f64>>,
+    pub bids: Vec<Vec<rust_decimal::Decimal>>,
     /// Asks (list of price, amount, outright-amount)
     #[serde(rename = "asks")]
-    pub asks: Vec<Vec<f64>>,
+    pub asks: Vec<Vec<rust_decimal::Decimal>>,
     /// Last traded price
     #[serde(rename = "last", skip_serializing_if = "Option::is_none")]
-    pub last: Option<f64>,
+    pub last: Option<rust_decimal::Decimal>,
     /// Time of the last recorded update to this order book (Unix timestamp).
     #[serde(rename = "time")]
-    pub time: f64,
+    pub time: rust_decimal::Decimal,
 }
 
 impl BookRpcResult {
-    pub fn new(bids: Vec<Vec<f64>>, asks: Vec<Vec<f64>>, time: f64) -> BookRpcResult {
+    pub fn new(
+        bids: Vec<Vec<rust_decimal::Decimal>>,
+        asks: Vec<Vec<rust_decimal::Decimal>>,
+        time: rust_decimal::Decimal,
+    ) -> BookRpcResult {
         BookRpcResult {
             bids,
             asks,

@@ -18,17 +18,21 @@ pub struct SetMmProtectionParams {
     pub product: String,
     /// Total amount of mass quote orders (number of contracts) on this protection group that is allowed to be executed before the remaining mass quotes are canceled. The value must be lower or equal to the `quote_amount`.
     #[serde(rename = "trade_amount")]
-    pub trade_amount: f64,
+    pub trade_amount: rust_decimal::Decimal,
     /// Maximum amount of a single quote on this protection group. Any orders larger than this will be rejected. Mass quote margin requirements are calculated for this amount.
     #[serde(rename = "quote_amount")]
-    pub quote_amount: f64,
+    pub quote_amount: rust_decimal::Decimal,
     /// Deprecated. Overwrites 'trade_amount' and 'quote_amount' with this value.
     #[serde(rename = "amount", skip_serializing_if = "Option::is_none")]
-    pub amount: Option<f64>,
+    pub amount: Option<rust_decimal::Decimal>,
 }
 
 impl SetMmProtectionParams {
-    pub fn new(product: String, trade_amount: f64, quote_amount: f64) -> SetMmProtectionParams {
+    pub fn new(
+        product: String,
+        trade_amount: rust_decimal::Decimal,
+        quote_amount: rust_decimal::Decimal,
+    ) -> SetMmProtectionParams {
         SetMmProtectionParams {
             product,
             trade_amount,

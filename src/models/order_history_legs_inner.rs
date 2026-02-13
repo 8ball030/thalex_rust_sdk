@@ -18,17 +18,17 @@ pub struct OrderHistoryLegsInner {
     pub instrument_name: String,
     /// Quantity of this leg in a unit of the combination. A non-zero integer, negative for short legs.
     #[serde(rename = "quantity")]
-    pub quantity: f64,
+    pub quantity: rust_decimal::Decimal,
     /// Amount executed on this leg.  Legs are filled proportionally to their quantities.
     #[serde(rename = "filled_amount")]
-    pub filled_amount: f64,
+    pub filled_amount: rust_decimal::Decimal,
 }
 
 impl OrderHistoryLegsInner {
     pub fn new(
         instrument_name: String,
-        quantity: f64,
-        filled_amount: f64,
+        quantity: rust_decimal::Decimal,
+        filled_amount: rust_decimal::Decimal,
     ) -> OrderHistoryLegsInner {
         OrderHistoryLegsInner {
             instrument_name,

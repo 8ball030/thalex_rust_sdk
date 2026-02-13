@@ -18,10 +18,10 @@ pub struct OrderHistoryParams {
     pub limit: Option<i32>,
     /// Start time (Unix timestamp) defaults to 90 days ago.
     #[serde(rename = "time_low", skip_serializing_if = "Option::is_none")]
-    pub time_low: Option<f64>,
+    pub time_low: Option<rust_decimal::Decimal>,
     /// End time (Unix timestamp) defaults to now.
     #[serde(rename = "time_high", skip_serializing_if = "Option::is_none")]
-    pub time_high: Option<f64>,
+    pub time_high: Option<rust_decimal::Decimal>,
     /// Set to bookmark from previous call to get next page.
     #[serde(rename = "bookmark", skip_serializing_if = "Option::is_none")]
     pub bookmark: Option<String>,

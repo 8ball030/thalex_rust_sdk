@@ -1,4 +1,5 @@
 use dashmap::DashMap;
+use rust_decimal::Decimal;
 use serde::de::DeserializeOwned;
 
 use tokio::{
@@ -160,9 +161,9 @@ impl WsClient {
 
     pub async fn round_price_to_ticks(
         &self,
-        price: f64,
+        price: Decimal,
         instrument_name: &str,
-    ) -> Result<f64, Error> {
+    ) -> Result<Decimal, Error> {
         let instrument = self.instruments_cache.get(instrument_name);
         // refresh cache if not found
         if let Some(instr) = instrument {

@@ -17,14 +17,18 @@ pub struct RfqLegsInner {
     pub instrument_name: String,
     /// Quantity for this leg. May be negative.
     #[serde(rename = "quantity")]
-    pub quantity: f64,
+    pub quantity: rust_decimal::Decimal,
     /// Quantity for fee calculations. Anywhere between 0 and abs(quantity).
     #[serde(rename = "fee_quantity")]
-    pub fee_quantity: f64,
+    pub fee_quantity: rust_decimal::Decimal,
 }
 
 impl RfqLegsInner {
-    pub fn new(instrument_name: String, quantity: f64, fee_quantity: f64) -> RfqLegsInner {
+    pub fn new(
+        instrument_name: String,
+        quantity: rust_decimal::Decimal,
+        fee_quantity: rust_decimal::Decimal,
+    ) -> RfqLegsInner {
         RfqLegsInner {
             instrument_name,
             quantity,

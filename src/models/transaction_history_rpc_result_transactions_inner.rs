@@ -15,13 +15,13 @@ use serde::{Deserialize, Serialize};
 pub struct TransactionHistoryRpcResultTransactionsInner {
     /// Timestamp when the transaction was performed.  For actions that produce multiple transactions (e.g. asset swaps, internal transfers), all transactions will have the same timestamp.
     #[serde(rename = "time")]
-    pub time: f64,
+    pub time: rust_decimal::Decimal,
     /// Asset name.
     #[serde(rename = "asset")]
     pub asset: String,
     /// Amount credited (positive number) or debited (negative number).
     #[serde(rename = "amount")]
-    pub amount: f64,
+    pub amount: rust_decimal::Decimal,
     /// Instrument name this transaction relates to. For example, settlement transactions are per instrument.  Not included for transactions that don't relate to an instrument.
     #[serde(rename = "instrument_name", skip_serializing_if = "Option::is_none")]
     pub instrument_name: Option<String>,
@@ -33,14 +33,14 @@ pub struct TransactionHistoryRpcResultTransactionsInner {
     pub description: String,
     /// Account balance in this asset right after transaction.
     #[serde(rename = "balance_after", skip_serializing_if = "Option::is_none")]
-    pub balance_after: Option<f64>,
+    pub balance_after: Option<rust_decimal::Decimal>,
 }
 
 impl TransactionHistoryRpcResultTransactionsInner {
     pub fn new(
-        time: f64,
+        time: rust_decimal::Decimal,
         asset: String,
-        amount: f64,
+        amount: rust_decimal::Decimal,
         description: String,
     ) -> TransactionHistoryRpcResultTransactionsInner {
         TransactionHistoryRpcResultTransactionsInner {

@@ -21,13 +21,13 @@ pub struct Lwt {
     pub a: Option<Vec<serde_json::Value>>,
     /// Mark price.
     #[serde(rename = "m", skip_serializing_if = "Option::is_none")]
-    pub m: Option<f64>,
+    pub m: Option<rust_decimal::Decimal>,
     /// Mark volatility.  Only included for options. Not included for combinations.
     #[serde(rename = "v", skip_serializing_if = "Option::is_none")]
-    pub v: Option<f64>,
+    pub v: Option<rust_decimal::Decimal>,
     /// Price of last trade (if any).  Not included for combinations.
     #[serde(rename = "l", skip_serializing_if = "Option::is_none")]
-    pub l: Option<f64>,
+    pub l: Option<rust_decimal::Decimal>,
 }
 
 impl Lwt {

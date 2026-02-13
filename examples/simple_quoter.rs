@@ -1,6 +1,8 @@
 use std::sync::Arc;
 
 use log::{Level::Info, info};
+use rust_decimal::Decimal;
+use rust_decimal_macros::dec;
 use simple_logger::init_with_level;
 use thalex_rust_sdk::{
     models::{
@@ -13,16 +15,19 @@ use thalex_rust_sdk::{
 use tokio::sync::Mutex;
 
 const MARKET_NAME: &str = "BTC-PERPETUAL";
-const ORDER_SIZE: f64 = 0.0001;
-const PRICE_TOLERANCE_MIN_BPS: f64 = 1.0;
-const PRICE_TOLERANCE_MAX_BPS: f64 = 5.0;
-const ORDER_OFFSET_BPS: f64 = (PRICE_TOLERANCE_MAX_BPS + PRICE_TOLERANCE_MIN_BPS) / 2.0;
-const MAX_POSITION_SIZE: f64 = 0.001;
+const ORDER_SIZE: Decimal = dec!(0.0001);
+const PRICE_TOLERANCE_MIN_BPS: Decimal = dec!(1.0);
+const PRICE_TOLERANCE_MAX_BPS: Decimal = dec!(5.0);
+const MAX_POSITION_SIZE: Decimal = dec!(0.001);
+
+fn get_order_offset_bps() -> Decimal {
+    (PRICE_TOLERANCE_MAX_BPS + PRICE_TOLERANCE_MIN_BPS) / dec!(2)
+}
 
 struct StrategyState {
     bid_order: Option<OrderStatus>,
     ask_order: Option<OrderStatus>,
-    position_size: f64,
+    position_size: Decimal,
 }
 
 #[tokio::main]
@@ -43,7 +48,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let state = StrategyState {
         bid_order: None,
         ask_order: None,
-        position_size: position.map_or(0.0, |p| p.position.unwrap_or(0.0)),
+        position_size: position.map_or(dec!(0.0), |p| p.position.unwrap_or(dec!(0.0))),
     };
 
     // We make a mutex to allow mutable access inside the closure
@@ -62,16 +67,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let client = Arc::clone(&client_for_callback);
 
             async move {
-                let best_bid_price: f64 = msg.best_bid_price.unwrap();
-                let best_ask_price: f64 = msg.best_ask_price.unwrap();
+                let best_bid_price: Decimal = msg.best_bid_price.unwrap();
+                let best_ask_price: Decimal = msg.best_ask_price.unwrap();
 
-                let raw_bid_price = best_bid_price * (1.0 - ORDER_OFFSET_BPS / 10000.0);
+                let raw_bid_price =
+                    best_bid_price * (dec!(1.0) - get_order_offset_bps() / dec!(10000.0));
                 let bid_price = client
                     .round_price_to_ticks(raw_bid_price, MARKET_NAME)
                     .await
                     .unwrap();
 
-                let raw_ask_price = best_ask_price * (1.0 + ORDER_OFFSET_BPS / 10000.0);
+                let raw_ask_price =
+                    best_ask_price * (dec!(1.0) + get_order_offset_bps() / dec!(10000.0));
                 let ask_price = client
                     .round_price_to_ticks(raw_ask_price, MARKET_NAME)
                     .await
@@ -126,7 +133,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     let bid_order = state.bid_order.as_ref().unwrap();
                     let price_diff_bps = ((bid_price - bid_order.price.unwrap())
                         / bid_order.price.unwrap())
-                        * 10000.0;
+                        * dec!(10000.0);
                     if price_diff_bps.abs() > PRICE_TOLERANCE_MIN_BPS
                         || price_diff_bps.abs() > PRICE_TOLERANCE_MAX_BPS
                     {
@@ -154,7 +161,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     let ask_order = state.ask_order.as_ref().unwrap();
                     let price_diff_bps = ((ask_price - ask_order.price.unwrap())
                         / ask_order.price.unwrap())
-                        * 10000.0;
+                        * dec!(10000.0);
                     if price_diff_bps.abs() > PRICE_TOLERANCE_MIN_BPS
                         || price_diff_bps.abs() > PRICE_TOLERANCE_MAX_BPS
                     {
@@ -228,7 +235,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         continue;
                     }
                     let mut state = state.lock().await;
-                    state.position_size = portfolio.position.unwrap_or(0.0);
+                    state.position_size = portfolio.position.unwrap_or(dec!(0.0));
                     info!(
                         "Portfolio Update: instrument_name={:?} position={:?} mark_price={:?} average_price={:?} realised_pnl={:?}",
                         portfolio.instrument_name, portfolio.position, portfolio.mark_price, portfolio.average_price, portfolio.realised_pnl

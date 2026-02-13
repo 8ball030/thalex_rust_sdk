@@ -20,15 +20,15 @@ pub struct AmendParams {
     #[serde(rename = "order_id", skip_serializing_if = "Option::is_none")]
     pub order_id: Option<String>,
     #[serde(rename = "price")]
-    pub price: f64,
+    pub price: rust_decimal::Decimal,
     #[serde(rename = "amount")]
-    pub amount: f64,
+    pub amount: rust_decimal::Decimal,
     #[serde(rename = "collar", skip_serializing_if = "Option::is_none")]
     pub collar: Option<models::CollarEnum>,
 }
 
 impl AmendParams {
-    pub fn new(price: f64, amount: f64) -> AmendParams {
+    pub fn new(price: rust_decimal::Decimal, amount: rust_decimal::Decimal) -> AmendParams {
         AmendParams {
             client_order_id: None,
             order_id: None,

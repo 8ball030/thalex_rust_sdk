@@ -21,21 +21,21 @@ pub struct RfqOrder {
     pub order_id: String,
     /// Client-supplied order id. Field is omitted if no client order id was supplied.
     #[serde(rename = "client_order_id", skip_serializing_if = "Option::is_none")]
-    pub client_order_id: Option<f64>,
+    pub client_order_id: Option<rust_decimal::Decimal>,
     #[serde(rename = "direction")]
     pub direction: models::DirectionEnum,
     #[serde(rename = "price")]
-    pub price: f64,
+    pub price: rust_decimal::Decimal,
     #[serde(rename = "amount")]
-    pub amount: f64,
+    pub amount: rust_decimal::Decimal,
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
     /// the price at which this order traded.
     #[serde(rename = "trade_price", skip_serializing_if = "Option::is_none")]
-    pub trade_price: Option<f64>,
+    pub trade_price: Option<rust_decimal::Decimal>,
     /// the number of combinations that traded.
     #[serde(rename = "trade_amount", skip_serializing_if = "Option::is_none")]
-    pub trade_amount: Option<f64>,
+    pub trade_amount: Option<rust_decimal::Decimal>,
     #[serde(rename = "delete_reason", skip_serializing_if = "Option::is_none")]
     pub delete_reason: Option<models::DeleteReasonEnum>,
     #[serde(rename = "event", skip_serializing_if = "Option::is_none")]
@@ -47,8 +47,8 @@ impl RfqOrder {
         rfq_id: String,
         order_id: String,
         direction: models::DirectionEnum,
-        price: f64,
-        amount: f64,
+        price: rust_decimal::Decimal,
+        amount: rust_decimal::Decimal,
     ) -> RfqOrder {
         RfqOrder {
             rfq_id,

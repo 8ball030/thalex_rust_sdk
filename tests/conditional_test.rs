@@ -1,5 +1,6 @@
 mod common;
 
+use rust_decimal_macros::dec;
 use thalex_rust_sdk::{
     models::{
         CancelConditionalOrderParams, CreateConditionalOrderParams, DirectionEnum, TargetEnum,
@@ -51,9 +52,9 @@ params_private_conditional_rpc_test!(
     test_conditional_order_create,
     CreateConditionalOrderParams {
         instrument_name: "BTC-PERPETUAL".to_string(),
-        amount: 0.0001,
-        stop_price: 30000.0,
-        trailing_stop_callback_rate: Some(0.05), // 5%
+        amount: dec!(0.0001),
+        stop_price: dec!(30000.0),
+        trailing_stop_callback_rate: Some(dec!(0.05)), // 5%
         reduce_only: Some(true),
         direction: DirectionEnum::Sell,
         target: Some(TargetEnum::Index),

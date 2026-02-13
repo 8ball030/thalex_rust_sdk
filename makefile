@@ -73,6 +73,7 @@ codegen:
 	  -i ws_spec_updated.json \
 	  -g rust \
 	  -o ./generated \
+	--type-mappings number=rust_decimal::Decimal \
 	--additional-properties=supportAsync=false,useSingleRequestParameter=true,avoidBoxedModels=true,generateAliasAsModel=true
 	rm -rf ./src/models/*
 	cp ./generated/src/models/* ./src/models/

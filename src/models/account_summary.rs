@@ -15,22 +15,22 @@ use serde::{Deserialize, Serialize};
 pub struct AccountSummary {
     /// Total unrealised profit or loss.
     #[serde(rename = "unrealised_pnl")]
-    pub unrealised_pnl: f64,
+    pub unrealised_pnl: rust_decimal::Decimal,
     /// Total margin based on cash holdings.
     #[serde(rename = "cash_collateral")]
-    pub cash_collateral: f64,
+    pub cash_collateral: rust_decimal::Decimal,
     /// Total margin from unrealised P&L and cash holdings.
     #[serde(rename = "margin")]
-    pub margin: f64,
+    pub margin: rust_decimal::Decimal,
     /// Required margin based on current position.
     #[serde(rename = "required_margin")]
-    pub required_margin: f64,
+    pub required_margin: rust_decimal::Decimal,
     /// Difference between margin and required margin.
     #[serde(rename = "remaining_margin")]
-    pub remaining_margin: f64,
+    pub remaining_margin: rust_decimal::Decimal,
     /// Realised profit or loss in current session.
     #[serde(rename = "session_realised_pnl")]
-    pub session_realised_pnl: f64,
+    pub session_realised_pnl: rust_decimal::Decimal,
     /// List of cash holdings, for each relevant currency, and how they contribute to margin.
     #[serde(rename = "cash")]
     pub cash: Vec<models::AccountSummaryCashInner>,
@@ -38,12 +38,12 @@ pub struct AccountSummary {
 
 impl AccountSummary {
     pub fn new(
-        unrealised_pnl: f64,
-        cash_collateral: f64,
-        margin: f64,
-        required_margin: f64,
-        remaining_margin: f64,
-        session_realised_pnl: f64,
+        unrealised_pnl: rust_decimal::Decimal,
+        cash_collateral: rust_decimal::Decimal,
+        margin: rust_decimal::Decimal,
+        required_margin: rust_decimal::Decimal,
+        remaining_margin: rust_decimal::Decimal,
+        session_realised_pnl: rust_decimal::Decimal,
         cash: Vec<models::AccountSummaryCashInner>,
     ) -> AccountSummary {
         AccountSummary {

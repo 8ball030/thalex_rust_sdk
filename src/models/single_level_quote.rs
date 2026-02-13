@@ -16,15 +16,15 @@ use serde::{Deserialize, Serialize};
 pub struct SingleLevelQuote {
     /// Limit price.
     #[serde(rename = "p")]
-    pub p: f64,
+    pub p: rust_decimal::Decimal,
     /// Amount; set to zero to delete quote.
     #[serde(rename = "a")]
-    pub a: f64,
+    pub a: rust_decimal::Decimal,
 }
 
 impl SingleLevelQuote {
     /// bid quote
-    pub fn new(p: f64, a: f64) -> SingleLevelQuote {
+    pub fn new(p: rust_decimal::Decimal, a: rust_decimal::Decimal) -> SingleLevelQuote {
         SingleLevelQuote { p, a }
     }
 }

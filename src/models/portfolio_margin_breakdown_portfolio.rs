@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 pub struct PortfolioMarginBreakdownPortfolio {
     /// Total required margin for account.
     #[serde(rename = "required_margin", skip_serializing_if = "Option::is_none")]
-    pub required_margin: Option<f64>,
+    pub required_margin: Option<rust_decimal::Decimal>,
     #[serde(rename = "underlyings", skip_serializing_if = "Option::is_none")]
     pub underlyings: Option<Vec<models::PortfolioMarginBreakdownPortfolioUnderlyingsInner>>,
 }

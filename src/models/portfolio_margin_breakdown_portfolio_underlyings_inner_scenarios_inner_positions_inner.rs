@@ -19,19 +19,19 @@ pub struct PortfolioMarginBreakdownPortfolioUnderlyingsInnerScenariosInnerPositi
     pub instrument_name: Option<String>,
     /// Position/order size in contracts.
     #[serde(rename = "position", skip_serializing_if = "Option::is_none")]
-    pub position: Option<f64>,
+    pub position: Option<rust_decimal::Decimal>,
     /// P&L for a single contract of this instrument.
     #[serde(rename = "instrument_pnl", skip_serializing_if = "Option::is_none")]
-    pub instrument_pnl: Option<f64>,
+    pub instrument_pnl: Option<rust_decimal::Decimal>,
     /// Total P&L for the position/order in this instrument.
     #[serde(rename = "pnl", skip_serializing_if = "Option::is_none")]
-    pub pnl: Option<f64>,
+    pub pnl: Option<rust_decimal::Decimal>,
     /// The price at the moment of scenario calculation.  For positions this is set to the current mark price.  For open orders this is the order limit price.
     #[serde(rename = "current_price", skip_serializing_if = "Option::is_none")]
-    pub current_price: Option<f64>,
+    pub current_price: Option<rust_decimal::Decimal>,
     /// The price simulated for the scenario.
     #[serde(rename = "scenario_price", skip_serializing_if = "Option::is_none")]
-    pub scenario_price: Option<f64>,
+    pub scenario_price: Option<rust_decimal::Decimal>,
     /// Indicates whether this position is implied from an open order.
     #[serde(rename = "open_order", skip_serializing_if = "Option::is_none")]
     pub open_order: Option<bool>,

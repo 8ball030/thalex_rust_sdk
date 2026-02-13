@@ -1,3 +1,5 @@
-pub fn round_to_ticks(price: f64, tick_size: f64) -> f64 {
+use rust_decimal::Decimal;
+
+pub fn round_to_ticks(price: Decimal, tick_size: Decimal) -> Decimal {
     (price / tick_size).round() * tick_size
 }

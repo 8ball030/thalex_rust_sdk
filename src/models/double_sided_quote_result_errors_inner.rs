@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 pub struct DoubleSidedQuoteResultErrorsInner {
     /// Error code.
     #[serde(rename = "code", skip_serializing_if = "Option::is_none")]
-    pub code: Option<f64>,
+    pub code: Option<rust_decimal::Decimal>,
     /// Error message.
     #[serde(rename = "message", skip_serializing_if = "Option::is_none")]
     pub message: Option<String>,
@@ -24,7 +24,7 @@ pub struct DoubleSidedQuoteResultErrorsInner {
     pub side: Option<String>,
     /// Optional price level.
     #[serde(rename = "price", skip_serializing_if = "Option::is_none")]
-    pub price: Option<f64>,
+    pub price: Option<rust_decimal::Decimal>,
 }
 
 impl DoubleSidedQuoteResultErrorsInner {

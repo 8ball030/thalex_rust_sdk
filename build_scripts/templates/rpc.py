@@ -43,6 +43,7 @@ use crate::{models::{
     Error, 
 }};
 use serde_json::Value;
+use rust_decimal::Decimal;
 
 pub struct $tag<'a> {
     pub client: &'a WsClient,

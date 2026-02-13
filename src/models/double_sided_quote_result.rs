@@ -15,10 +15,10 @@ use serde::{Deserialize, Serialize};
 pub struct DoubleSidedQuoteResult {
     /// The number of individual quote sides failed to insert.
     #[serde(rename = "n_fail")]
-    pub n_fail: f64,
+    pub n_fail: rust_decimal::Decimal,
     /// The number of individual quote sides successfully replaced or deleted.
     #[serde(rename = "n_success")]
-    pub n_success: f64,
+    pub n_success: rust_decimal::Decimal,
     /// A collection of errors assembled during execution.
     #[serde(rename = "errors")]
     pub errors: Vec<models::DoubleSidedQuoteResultErrorsInner>,
@@ -26,8 +26,8 @@ pub struct DoubleSidedQuoteResult {
 
 impl DoubleSidedQuoteResult {
     pub fn new(
-        n_fail: f64,
-        n_success: f64,
+        n_fail: rust_decimal::Decimal,
+        n_success: rust_decimal::Decimal,
         errors: Vec<models::DoubleSidedQuoteResultErrorsInner>,
     ) -> DoubleSidedQuoteResult {
         DoubleSidedQuoteResult {

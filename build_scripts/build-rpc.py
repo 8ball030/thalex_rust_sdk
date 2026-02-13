@@ -41,7 +41,7 @@ RPC_RESULT_IMPORT_ALIASES = {
     "SellRpcResult": "OrderStatus",
     "AmendRpcResult": "OrderStatus",
     "CancelRpcResult": "OrderStatus",
-    "CancelAllRpcResult": "f64",
+    "CancelAllRpcResult": "Decimal",  # will be covered by decimal in template
     "CancelSessionRpcResult": "Value",
     "TickerRpcResult": "Ticker",
     "TickersRpcResult": "Ticker",
@@ -124,6 +124,7 @@ IMPORTS_TO_SKIP = [
     "CancelAllRpcResult",
     "f64",
     "Value",
+    "Decimal",
     # accounting
     "OpenOrdersRpcResult",
     "PortfolioRpcResult",
@@ -482,6 +483,8 @@ def generate_from_spec():
         "-o",
         GENERATION_OUTPUT,
         "--generate-alias-as-model",
+        "--type-mappings",  
+        "number=rust_decimal::Decimal",
         "--additional-properties=supportAsync=false,useSingleRequestParameter=true,avoidBoxedModels=true",
         "--global-property",
         "models"

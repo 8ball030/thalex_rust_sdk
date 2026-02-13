@@ -18,31 +18,31 @@ pub struct AccountBreakdownRpcResult {
     pub account_number: String,
     /// Total unrealised profit or loss.
     #[serde(rename = "unrealised_pnl")]
-    pub unrealised_pnl: f64,
+    pub unrealised_pnl: rust_decimal::Decimal,
     /// Total margin based on cash holdings.
     #[serde(rename = "cash_collateral")]
-    pub cash_collateral: f64,
+    pub cash_collateral: rust_decimal::Decimal,
     /// Total margin from unrealised P&L and cash holdings.
     #[serde(rename = "margin")]
-    pub margin: f64,
+    pub margin: rust_decimal::Decimal,
     /// Required margin based on current position.
     #[serde(rename = "required_margin")]
-    pub required_margin: f64,
+    pub required_margin: rust_decimal::Decimal,
     /// Difference between margin and required margin.
     #[serde(rename = "remaining_margin")]
-    pub remaining_margin: f64,
+    pub remaining_margin: rust_decimal::Decimal,
     /// Total realised profit or loss in current session.
     #[serde(rename = "session_realised_pnl")]
-    pub session_realised_pnl: f64,
+    pub session_realised_pnl: rust_decimal::Decimal,
     /// Position profit or loss in current session.
     #[serde(rename = "realised_position_pnl")]
-    pub realised_position_pnl: f64,
+    pub realised_position_pnl: rust_decimal::Decimal,
     /// Realised perpetual funding profit or loss in current session.
     #[serde(rename = "realised_perpetual_funding")]
-    pub realised_perpetual_funding: f64,
+    pub realised_perpetual_funding: rust_decimal::Decimal,
     /// Fees paid in current session.
     #[serde(rename = "session_fees")]
-    pub session_fees: f64,
+    pub session_fees: rust_decimal::Decimal,
     /// List of positions each with unrealised P&L.
     #[serde(rename = "portfolio")]
     pub portfolio: Vec<models::AccountBreakdownRpcResultPortfolioInner>,
@@ -54,15 +54,15 @@ pub struct AccountBreakdownRpcResult {
 impl AccountBreakdownRpcResult {
     pub fn new(
         account_number: String,
-        unrealised_pnl: f64,
-        cash_collateral: f64,
-        margin: f64,
-        required_margin: f64,
-        remaining_margin: f64,
-        session_realised_pnl: f64,
-        realised_position_pnl: f64,
-        realised_perpetual_funding: f64,
-        session_fees: f64,
+        unrealised_pnl: rust_decimal::Decimal,
+        cash_collateral: rust_decimal::Decimal,
+        margin: rust_decimal::Decimal,
+        required_margin: rust_decimal::Decimal,
+        remaining_margin: rust_decimal::Decimal,
+        session_realised_pnl: rust_decimal::Decimal,
+        realised_position_pnl: rust_decimal::Decimal,
+        realised_perpetual_funding: rust_decimal::Decimal,
+        session_fees: rust_decimal::Decimal,
         portfolio: Vec<models::AccountBreakdownRpcResultPortfolioInner>,
         cash: Vec<models::AccountBreakdownRpcResultCashInner>,
     ) -> AccountBreakdownRpcResult {

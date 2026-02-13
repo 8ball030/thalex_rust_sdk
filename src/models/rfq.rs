@@ -18,13 +18,13 @@ pub struct Rfq {
     pub rfq_id: String,
     /// Requested amount for this RFQ
     #[serde(rename = "amount")]
-    pub amount: f64,
+    pub amount: rust_decimal::Decimal,
     /// Timestamp of creation (unix timestamp)
     #[serde(rename = "create_time")]
-    pub create_time: f64,
+    pub create_time: rust_decimal::Decimal,
     /// Timestamp at which this RFQ will be automatically cancelled (unix timestamp)
     #[serde(rename = "valid_until", skip_serializing_if = "Option::is_none")]
-    pub valid_until: Option<f64>,
+    pub valid_until: Option<rust_decimal::Decimal>,
     /// Combo legs. A minimalised version of the request such that quantities are integer.
     #[serde(rename = "legs")]
     pub legs: Vec<models::RfqLegsInner>,
@@ -37,20 +37,20 @@ pub struct Rfq {
     pub delete_reason: Option<models::RfqDeleteReasonEnum>,
     /// The minimum size / size increase for quotes.
     #[serde(rename = "volume_tick_size", skip_serializing_if = "Option::is_none")]
-    pub volume_tick_size: Option<f64>,
+    pub volume_tick_size: Option<rust_decimal::Decimal>,
     #[serde(rename = "quoted_bid", skip_serializing_if = "Option::is_none")]
     pub quoted_bid: Option<models::RfqQuotedBid>,
     #[serde(rename = "quoted_ask", skip_serializing_if = "Option::is_none")]
     pub quoted_ask: Option<models::RfqQuotedAsk>,
     /// Combo price for which this RFQ was traded.
     #[serde(rename = "trade_price", skip_serializing_if = "Option::is_none")]
-    pub trade_price: Option<f64>,
+    pub trade_price: Option<rust_decimal::Decimal>,
     /// Amount in which this RFQ was traded.
     #[serde(rename = "trade_amount", skip_serializing_if = "Option::is_none")]
-    pub trade_amount: Option<f64>,
+    pub trade_amount: Option<rust_decimal::Decimal>,
     /// Time at which this RFQ was cancelled or traded.
     #[serde(rename = "close_time", skip_serializing_if = "Option::is_none")]
-    pub close_time: Option<f64>,
+    pub close_time: Option<rust_decimal::Decimal>,
     #[serde(rename = "event", skip_serializing_if = "Option::is_none")]
     pub event: Option<models::RfqEventEnum>,
 }
@@ -58,8 +58,8 @@ pub struct Rfq {
 impl Rfq {
     pub fn new(
         rfq_id: String,
-        amount: f64,
-        create_time: f64,
+        amount: rust_decimal::Decimal,
+        create_time: rust_decimal::Decimal,
         legs: Vec<models::RfqLegsInner>,
     ) -> Rfq {
         Rfq {

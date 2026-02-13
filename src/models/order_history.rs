@@ -29,19 +29,19 @@ pub struct OrderHistory {
     pub direction: models::DirectionEnum,
     /// Limit price. May be omitted if no price was supplied (e.g. for a market order).  For combination orders this specifies limit price per unit of the combination.
     #[serde(rename = "price", skip_serializing_if = "Option::is_none")]
-    pub price: Option<f64>,
+    pub price: Option<rust_decimal::Decimal>,
     /// Order size (as inserted or amended to).  For combination orders this specifies the amount of units of the combination to trade.
     #[serde(rename = "amount")]
-    pub amount: f64,
+    pub amount: rust_decimal::Decimal,
     /// Part of the order that has been executed.  For combination orders this specifies the amount of units of the combination filled. Legs are filled proportionally to their quantities.
     #[serde(rename = "filled_amount")]
-    pub filled_amount: f64,
+    pub filled_amount: rust_decimal::Decimal,
     /// Label supplied with insert. Can also be a number. Field is omitted if no label was supplied.
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
     /// Client-supplied order id. Field is omitted if no client order id was supplied.
     #[serde(rename = "client_order_id", skip_serializing_if = "Option::is_none")]
-    pub client_order_id: Option<f64>,
+    pub client_order_id: Option<rust_decimal::Decimal>,
     #[serde(rename = "status")]
     pub status: models::StatusEnum,
     /// All fills for this order.
@@ -62,10 +62,10 @@ pub struct OrderHistory {
     pub bot_id: Option<String>,
     /// Creation time (Unix timestamp).
     #[serde(rename = "create_time")]
-    pub create_time: f64,
+    pub create_time: rust_decimal::Decimal,
     /// Time when this order was closed or canceled (Unix timestamp).
     #[serde(rename = "close_time")]
-    pub close_time: f64,
+    pub close_time: rust_decimal::Decimal,
     /// True if the order is a reduce only order, omitted otherwise.
     #[serde(rename = "reduce_only", skip_serializing_if = "Option::is_none")]
     pub reduce_only: Option<bool>,
@@ -77,14 +77,14 @@ impl OrderHistory {
         order_id: String,
         order_type: models::OrderTypeEnum,
         direction: models::DirectionEnum,
-        amount: f64,
-        filled_amount: f64,
+        amount: rust_decimal::Decimal,
+        filled_amount: rust_decimal::Decimal,
         status: models::StatusEnum,
         fills: Vec<models::OrderFill>,
         delete_reason: models::OrderHistoryDeleteReasonEnum,
         insert_reason: models::InsertReasonEnum,
-        create_time: f64,
-        close_time: f64,
+        create_time: rust_decimal::Decimal,
+        close_time: rust_decimal::Decimal,
     ) -> OrderHistory {
         OrderHistory {
             order_id,

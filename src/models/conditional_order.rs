@@ -22,37 +22,37 @@ pub struct ConditionalOrder {
     pub direction: models::DirectionEnum,
     /// Size of the order when activated
     #[serde(rename = "amount")]
-    pub amount: f64,
+    pub amount: rust_decimal::Decimal,
     #[serde(rename = "target")]
     pub target: models::TargetEnum,
     /// Trigger price at which the order will be activated
     #[serde(rename = "stop_price")]
-    pub stop_price: f64,
+    pub stop_price: rust_decimal::Decimal,
     /// For stop limit order, the price at which the order will be placed
     #[serde(rename = "limit_price", skip_serializing_if = "Option::is_none")]
-    pub limit_price: Option<f64>,
+    pub limit_price: Option<rust_decimal::Decimal>,
     /// For bracket order, the price at which profit will be taken (upper activation price)
     #[serde(rename = "bracket_price", skip_serializing_if = "Option::is_none")]
-    pub bracket_price: Option<f64>,
+    pub bracket_price: Option<rust_decimal::Decimal>,
     /// For trailing stop loss, the callback rate as a ratio (e.g. 0.05 for 5%)
     #[serde(
         rename = "trailing_stop_callback_rate",
         skip_serializing_if = "Option::is_none"
     )]
-    pub trailing_stop_callback_rate: Option<f64>,
+    pub trailing_stop_callback_rate: Option<rust_decimal::Decimal>,
     /// Optional user label
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
     #[serde(rename = "status")]
     pub status: models::ConditionalOrderStatusEnum,
     #[serde(rename = "create_time")]
-    pub create_time: f64,
+    pub create_time: rust_decimal::Decimal,
     /// Time of last update (conversion or change of trailing stop price)
     #[serde(rename = "update_time")]
-    pub update_time: f64,
+    pub update_time: rust_decimal::Decimal,
     /// Time of trigger
     #[serde(rename = "convert_time", skip_serializing_if = "Option::is_none")]
-    pub convert_time: Option<f64>,
+    pub convert_time: Option<rust_decimal::Decimal>,
     /// System order ID of the created order.
     #[serde(rename = "converted_order_id", skip_serializing_if = "Option::is_none")]
     pub converted_order_id: Option<String>,
@@ -68,12 +68,12 @@ impl ConditionalOrder {
         order_id: String,
         instrument_name: String,
         direction: models::DirectionEnum,
-        amount: f64,
+        amount: rust_decimal::Decimal,
         target: models::TargetEnum,
-        stop_price: f64,
+        stop_price: rust_decimal::Decimal,
         status: models::ConditionalOrderStatusEnum,
-        create_time: f64,
-        update_time: f64,
+        create_time: rust_decimal::Decimal,
+        update_time: rust_decimal::Decimal,
         reduce_only: bool,
     ) -> ConditionalOrder {
         ConditionalOrder {

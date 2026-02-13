@@ -15,10 +15,10 @@ use serde::{Deserialize, Serialize};
 pub struct Banner {
     /// The id of this banner.
     #[serde(rename = "id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<f64>,
+    pub id: Option<rust_decimal::Decimal>,
     /// Time when this banner was posted (Unix timestamp).
     #[serde(rename = "time")]
-    pub time: f64,
+    pub time: rust_decimal::Decimal,
     /// Severity of the banner message. Used to choose appropriate styling for banner display.
     #[serde(rename = "severity")]
     pub severity: Severity,
@@ -31,7 +31,7 @@ pub struct Banner {
 }
 
 impl Banner {
-    pub fn new(time: f64, severity: Severity, message: String) -> Banner {
+    pub fn new(time: rust_decimal::Decimal, severity: Severity, message: String) -> Banner {
         Banner {
             id: None,
             time,

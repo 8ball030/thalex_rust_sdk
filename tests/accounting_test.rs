@@ -1,5 +1,6 @@
 mod common;
 
+use rust_decimal_macros::dec;
 use thalex_rust_sdk::{
     models::{
         DailyMarkHistoryParams, OrderHistoryParams, RequiredMarginForOrderParams, RfqHistoryParams,
@@ -77,8 +78,8 @@ params_private_rpc_test!(
     test_required_margin_for_order,
     RequiredMarginForOrderParams {
         instrument_name: Some("BTC-PERPETUAL".to_string()),
-        amount: 0.001,
-        price: 85_000.0,
+        amount: dec!(0.001),
+        price: dec!(85_000.0),
         legs: None,
     },
     required_margin_for_order,

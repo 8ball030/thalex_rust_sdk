@@ -20,13 +20,13 @@ pub struct Instrument {
     pub product: Option<String>,
     /// Price alignment.
     #[serde(rename = "tick_size", skip_serializing_if = "Option::is_none")]
-    pub tick_size: Option<f64>,
+    pub tick_size: Option<rust_decimal::Decimal>,
     /// Amount alignment.
     #[serde(rename = "volume_tick_size", skip_serializing_if = "Option::is_none")]
-    pub volume_tick_size: Option<f64>,
+    pub volume_tick_size: Option<rust_decimal::Decimal>,
     /// Minimum order amount for this instrument. This value is always greater or equal to `volume_tick_size`.  If this value is greater than `volume_tick_size`, it is not possible to insert an order of a smaller amount, or amend an existing order to a smaller amount. However, orders in the books can have smaller remaining amounts as they get partially filled, down to the minimum of `volume_tick_size`.
     #[serde(rename = "min_order_amount", skip_serializing_if = "Option::is_none")]
-    pub min_order_amount: Option<f64>,
+    pub min_order_amount: Option<rust_decimal::Decimal>,
     /// Related index, e.g. \"BTCUSD\".
     #[serde(rename = "underlying", skip_serializing_if = "Option::is_none")]
     pub underlying: Option<String>,
@@ -45,7 +45,7 @@ pub struct Instrument {
     pub expiration_timestamp: Option<i32>,
     /// Strike price of option.
     #[serde(rename = "strike_price", skip_serializing_if = "Option::is_none")]
-    pub strike_price: Option<f64>,
+    pub strike_price: Option<rust_decimal::Decimal>,
     /// Base currency for pricing (i.e. USD).
     #[serde(rename = "base_currency", skip_serializing_if = "Option::is_none")]
     pub base_currency: Option<String>,
@@ -54,16 +54,16 @@ pub struct Instrument {
     pub legs: Option<Vec<models::InstrumentLegsInner>>,
     /// Creation time (Unix timestamp).
     #[serde(rename = "create_time", skip_serializing_if = "Option::is_none")]
-    pub create_time: Option<f64>,
+    pub create_time: Option<rust_decimal::Decimal>,
     /// For expired instruments, the final settlement price.
     #[serde(rename = "settlement_price", skip_serializing_if = "Option::is_none")]
-    pub settlement_price: Option<f64>,
+    pub settlement_price: Option<rust_decimal::Decimal>,
     /// For expired instruments, the underlying delivery price.
     #[serde(
         rename = "settlement_index_price",
         skip_serializing_if = "Option::is_none"
     )]
-    pub settlement_index_price: Option<f64>,
+    pub settlement_index_price: Option<rust_decimal::Decimal>,
 }
 
 impl Instrument {
