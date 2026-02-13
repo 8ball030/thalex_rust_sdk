@@ -2391,96 +2391,58 @@
             "description": "instrument name"
           },
           "b": {
-            "oneOf": [
-              {
-                "type": "array",
-                "title": "Multi-level quotes",
-                "description": "an array of bid quotes",
-                "minItems": 0,
-                "maxItems": 10,
-                "items": {
-                  "type": "array",
-                  "minItems": 2,
-                  "maxItems": 2,
-                  "prefixItems": [
-                    {
-                      "type": "number",
-                      "description": "Limit price."
-                    },
-                    {
-                      "type": "number",
-                      "description": "Amount; set to zero to delete quote."
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "object",
-                "title": "Single-level quote",
-                "description": "bid quote",
-                "properties": {
-                  "p": {
-                    "type": "number",
-                    "description": "Limit price."
-                  },
-                  "a": {
-                    "type": "number",
-                    "description": "Amount; set to zero to delete quote."
-                  }
-                },
-                "required": [
-                  "p",
-                  "a"
-                ]
-              }
-            ]
+            "$ref": "#/components/schemas/MassQuoteSingleLevelQuote"
           },
           "a": {
-            "oneOf": [
-              {
-                "type": "array",
-                "title": "Multi-level quotes",
-                "description": "an array of ask quotes",
-                "minItems": 0,
-                "maxItems": 10,
-                "items": {
-                  "type": "array",
-                  "minItems": 2,
-                  "maxItems": 2,
-                  "prefixItems": [
-                    {
-                      "type": "number",
-                      "description": "Limit price."
-                    },
-                    {
-                      "type": "number",
-                      "description": "Amount; set to zero to delete quote."
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "object",
-                "title": "Single-level quote",
-                "description": "ask quote",
-                "properties": {
-                  "p": {
-                    "type": "number",
-                    "description": "Limit price."
-                  },
-                  "a": {
-                    "type": "number",
-                    "description": "Amount; set to zero to delete quote."
-                  }
-                },
-                "required": [
-                  "p",
-                  "a"
-                ]
-              }
-            ]
+            "$ref": "#/components/schemas/MassQuoteSingleLevelQuote"
           }
         }
+      },
+      "MassQuoteSingleLevelQuote": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "array",
+            "title": "Multi-level quotes",
+            "description": "an array of ask quotes",
+            "minItems": 0,
+            "maxItems": 10,
+            "items": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number",
+                  "description": "Limit price."
+                },
+                {
+                  "type": "number",
+                  "description": "Amount; set to zero to delete quote."
+                }
+              ]
+            }
+          },
+          {
+            "type": "object",
+            "title": "Single-level quote",
+            "description": "ask quote",
+            "properties": {
+              "p": {
+                "type": "number",
+                "description": "Limit price."
+              },
+              "a": {
+                "type": "number",
+                "description": "Amount; set to zero to delete quote."
+              }
+            },
+            "required": [
+              "p",
+              "a"
+            ]
+          }
+        ]
       },
       "DoubleSidedQuoteResult": {
         "type": "object",

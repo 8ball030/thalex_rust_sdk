@@ -56,7 +56,7 @@ run:
 	cargo run --all-features
 
 codegen:
-	curl https://thalex.com/docs/api.yaml | yq '.' > openapi.json
+	# curl https://thalex.com/docs/api.yaml | yq '.' > openapi.json
 
 	python build_scripts/pre-process.py
 	python build_scripts/build_ws_schema.py

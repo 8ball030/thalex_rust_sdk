@@ -112,6 +112,7 @@ MODELS_TO_LIFT = [
     "DoubleSidedQuoteResult",
     "DoubleSidedQuote",
     "Bot",
+    "MassQuoteSingleLevelQuote"
 
 ]
 
