@@ -15,10 +15,10 @@ use serde::{Deserialize, Serialize};
 pub struct AllInstrumentsParams {
     /// Start time (Unix timestamp) defaults to `time_high` - 3 days.
     #[serde(rename = "time_low", skip_serializing_if = "Option::is_none")]
-    pub time_low: Option<rust_decimal::Decimal>,
+    pub time_low: Option<i64>,
     /// End time (Unix timestamp) defaults to `now`.
     #[serde(rename = "time_high", skip_serializing_if = "Option::is_none")]
-    pub time_high: Option<rust_decimal::Decimal>,
+    pub time_high: Option<i64>,
 }
 
 impl AllInstrumentsParams {
