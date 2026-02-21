@@ -10,7 +10,7 @@ struct Claims {
 
 pub fn make_auth_token(
     kid: &str,
-    private_key_pem: String,
+    private_key_pem: &String,
 ) -> Result<String, jsonwebtoken::errors::Error> {
     // jsonwebtoken expects iat as an integer timestamp (seconds)
     let claims = Claims {

@@ -14,6 +14,7 @@ pub type WsStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
 pub type ResponseSender = oneshot::Sender<Bytes>;
 pub type ChannelSender = tokio::sync::mpsc::UnboundedSender<Bytes>;
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
+pub type Result<T> = core::result::Result<T, Error>;
 
 pub enum InternalCommand {
     Send(Message),
@@ -31,7 +32,7 @@ pub enum ExternalEvent {
 pub struct LoginState {
     pub key_id: String,
     pub account_id: String,
-    pub key_path: String,
+    pub private_key_pem: String,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -94,7 +95,7 @@ impl Environment {
 }
 impl FromStr for Environment {
     type Err = ();
-    fn from_str(env: &str) -> Result<Self, Self::Err> {
+    fn from_str(env: &str) -> core::result::Result<Self, Self::Err> {
         match env.to_lowercase().as_str() {
             "mainnet" => Ok(Environment::Mainnet),
             "testnet" => Ok(Environment::Testnet),

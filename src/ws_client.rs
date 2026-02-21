@@ -100,7 +100,17 @@ impl WsClient {
         key_path: String,
     ) -> Result<Self, Error> {
         let url = env.get_url();
+        let private_key_pem = tokio::fs::read_to_string(key_path).await?;
+        Self::new_with_key_and_url(url, key_id, account_id, private_key_pem, env.clone()).await
+    }
 
+    pub async fn new_with_key_and_url(
+        url: &str,
+        key_id: String,
+        account_id: String,
+        private_key_pem: String,
+        env: Environment,
+    ) -> Result<Self, Error> {
         let (cmd_tx, cmd_rx) = mpsc::unbounded_channel::<InternalCommand>();
         let (shutdown_tx, shutdown_rx) = watch::channel(false);
 
@@ -116,7 +126,7 @@ impl WsClient {
         let login_state = LoginState {
             key_id,
             account_id,
-            key_path,
+            private_key_pem,
         };
 
         let supervisor_handle = tokio::spawn(connection_supervisor(
@@ -362,8 +372,7 @@ impl WsClient {
     }
 
     pub async fn login(&self) -> Result<(), Error> {
-        let private_key_pem = tokio::fs::read_to_string(&self.login_state.key_path).await?;
-        let token = make_auth_token(&self.login_state.key_id, private_key_pem)?;
+        let token = make_auth_token(&self.login_state.key_id, &self.login_state.private_key_pem)?;
         let result: Value = self
             .send_rpc(
                 "public/login",
