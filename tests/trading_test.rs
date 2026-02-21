@@ -15,7 +15,6 @@ macro_rules! params_private_trading_rpc_test {
             let result =
                 with_private_client!(client, { client.rpc().$namespace().$method($params).await });
             assert!(result.is_ok(), "{} failed: {:?}", $label, result.err());
-            println!("Sent order!");
             let cancel_result = with_private_client!(client, {
                 client
                     .rpc()
@@ -76,5 +75,3 @@ async fn test_limit_order_failure() {
         _ => panic!("Expected PriceNotAlignedWithTick error code, got {code:?}"),
     }
 }
-
-// we test cancelation 
