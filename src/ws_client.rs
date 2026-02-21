@@ -61,7 +61,14 @@ pub fn deserialise_to_type<T>(s: &Bytes) -> Result<T, serde_json::Error>
 where
     T: DeserializeOwned,
 {
-    serde_json::from_slice::<T>(s)
+    match serde_json::from_slice::<T>(s) {
+        Ok(val) => Ok(val),
+        Err(e) => {
+            error!("Deserialization error: {e:?}");
+            error!("Raw response: {}", String::from_utf8_lossy(s));
+            Err(e)
+        }
+    }
 }
 
 impl WsClient {
