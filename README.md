@@ -210,10 +210,10 @@ The api is fully documented and available [here](https://thalex.com/docs).
 - - [x] account management
 - - [x] trading
 - - [x] historical data
-- - [ ] market maker protection
-- - [ ] notifications
-- - [ ] bot management
+- - [x] market maker protection
+- - [x] bot management
 - - [ ] wallet operations
+- - [ ] notifications
 - - [ ] rfq management
 - [ ] Add more examples and documentation.
 
