@@ -13,13 +13,13 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DoubleSidedQuoteB {
-    /// an array of bid quotes
+pub enum MassQuoteSingleLevelQuote {
+    /// an array of ask quotes
     Array(Vec<Vec<serde_json::Value>>),
     SingleLevelQuote(models::SingleLevelQuote),
 }
 
-impl Default for DoubleSidedQuoteB {
+impl Default for MassQuoteSingleLevelQuote {
     fn default() -> Self {
         Self::Array(Default::default())
     }

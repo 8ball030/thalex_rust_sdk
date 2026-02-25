@@ -17,9 +17,9 @@ pub struct DoubleSidedQuote {
     #[serde(rename = "i")]
     pub i: String,
     #[serde(rename = "b", skip_serializing_if = "Option::is_none")]
-    pub b: Option<models::DoubleSidedQuoteB>,
+    pub b: Option<models::MassQuoteSingleLevelQuote>,
     #[serde(rename = "a", skip_serializing_if = "Option::is_none")]
-    pub a: Option<models::DoubleSidedQuoteA>,
+    pub a: Option<models::MassQuoteSingleLevelQuote>,
 }
 
 impl DoubleSidedQuote {

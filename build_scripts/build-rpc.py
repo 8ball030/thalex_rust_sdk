@@ -113,7 +113,7 @@ MODELS_TO_LIFT = [
     "DoubleSidedQuote",
     "Bot",
     "TradeValue",
-
+    "MassQuoteSingleLevelQuote",
 ]
 
 
