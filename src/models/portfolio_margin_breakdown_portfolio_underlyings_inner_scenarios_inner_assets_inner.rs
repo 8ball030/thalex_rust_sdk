@@ -24,7 +24,13 @@ pub struct PortfolioMarginBreakdownPortfolioUnderlyingsInnerScenariosInnerAssets
     /// Total P&L for the position in this asset.
     #[serde(rename = "pnl", skip_serializing_if = "Option::is_none")]
     pub pnl: Option<rust_decimal::Decimal>,
-    /// The price at the moment of scenario calculation.
+    /// The collateral quality of the asset i.e. the fraction of the asset that can be used as a collateral.
+    #[serde(rename = "collateral_factor", skip_serializing_if = "Option::is_none")]
+    pub collateral_factor: Option<rust_decimal::Decimal>,
+    /// Index price at the moment of scenario calculation.
+    #[serde(rename = "index_price", skip_serializing_if = "Option::is_none")]
+    pub index_price: Option<rust_decimal::Decimal>,
+    /// The price at the moment of scenario calculation. This is the margin effect of this asset position, i.e. index price multiplied by collateral factor.
     #[serde(rename = "current_price", skip_serializing_if = "Option::is_none")]
     pub current_price: Option<rust_decimal::Decimal>,
     /// The price calculated for the scenario.
@@ -39,6 +45,8 @@ impl PortfolioMarginBreakdownPortfolioUnderlyingsInnerScenariosInnerAssetsInner 
             position: None,
             underlying_pnl: None,
             pnl: None,
+            collateral_factor: None,
+            index_price: None,
             current_price: None,
             scenario_price: None,
         }
