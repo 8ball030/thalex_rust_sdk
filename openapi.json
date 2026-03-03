@@ -9377,6 +9377,252 @@
         ]
       }
     },
+    "/private/conditional_order_history": {
+      "get": {
+        "operationId": "rest_private/conditional_order_history",
+        "tags": [
+          "rest_accounting"
+        ],
+        "summary": "Conditional order history",
+        "description": "Exchange: `https://thalex.com/api/v2/private/conditional_order_history`\n\nTestnet: `https://testnet.thalex.com/api/v2/private/conditional_order_history`\n\nRetrieves a list of past conditional orders (i.e. orders that are not active anymore).\nAllows sorting and filtering by instrument name.\n\nNote that it is not real-time, data might appear with a slight delay.\n",
+        "required": true,
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "title": "Success",
+                      "type": "object",
+                      "properties": {
+                        "result": {
+                          "type": "object",
+                          "properties": {
+                            "orders": {
+                              "type": "array",
+                              "description": "List of historical conditional orders.",
+                              "items": {
+                                "$ref": "#/components/schemas/ConditionalOrder"
+                              }
+                            },
+                            "bookmark": {
+                              "type": "string",
+                              "description": "Bookmark to retrieve next page, or null (no more results)."
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "title": "Error",
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "description": "Max results to return.",
+              "maximum": 1000,
+              "default": 1000
+            },
+            "required": false
+          },
+          {
+            "name": "time_low",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "description": "Start time (Unix timestamp) defaults to 90 days ago.",
+              "format": "int64"
+            },
+            "required": false
+          },
+          {
+            "name": "time_high",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "description": "End time (Unix timestamp) defaults to now.",
+              "format": "int64"
+            },
+            "required": false
+          },
+          {
+            "name": "bookmark",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "description": "Set to bookmark from previous call to get next page."
+            },
+            "required": false
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ascending",
+                "descending"
+              ],
+              "description": "Sort direction by order create_time. Defaults to `descending` (i.e. newest items first)."
+            },
+            "required": false
+          },
+          {
+            "name": "instrument_names",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "description": "Comma-separated list of instrument names to request order history for. If omitted, order history for all instruments is returned."
+            },
+            "required": false
+          }
+        ]
+      }
+    },
+    "private/conditional_order_history": {
+      "rpc": {
+        "operationId": "rpc_private/conditional_order_history",
+        "tags": [
+          "rpc_accounting"
+        ],
+        "summary": "Conditional order history",
+        "description": "Retrieves a list of past conditional orders (i.e. orders that are not active anymore).\nAllows sorting and filtering by instrument name.\n\nNote that it is not real-time, data might appear with a slight delay.\n",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "required": [
+                      "method"
+                    ],
+                    "properties": {
+                      "method": {
+                        "type": "string",
+                        "const": "private/conditional_order_history"
+                      }
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/RpcRequest"
+                  },
+                  {
+                    "type": "object",
+                    "required": [
+                      "params"
+                    ],
+                    "properties": {
+                      "params": {
+                        "type": "object",
+                        "properties": {
+                          "limit": {
+                            "type": "integer",
+                            "description": "Max results to return.",
+                            "maximum": 1000,
+                            "default": 1000
+                          },
+                          "time_low": {
+                            "type": "integer",
+                            "description": "Start time (Unix timestamp) defaults to 90 days ago.",
+                            "format": "int64"
+                          },
+                          "time_high": {
+                            "type": "integer",
+                            "description": "End time (Unix timestamp) defaults to now.",
+                            "format": "int64"
+                          },
+                          "bookmark": {
+                            "type": "string",
+                            "description": "Set to bookmark from previous call to get next page."
+                          },
+                          "sort": {
+                            "type": "string",
+                            "enum": [
+                              "ascending",
+                              "descending"
+                            ],
+                            "description": "Sort direction by order create_time. Defaults to `descending` (i.e. newest items first)."
+                          },
+                          "instrument_names": {
+                            "type": "string",
+                            "description": "Comma-separated list of instrument names to request order history for. If omitted, order history for all instruments is returned."
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "title": "Success",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/RpcResponse"
+                        },
+                        {
+                          "type": "object",
+                          "required": [
+                            "result"
+                          ],
+                          "properties": {
+                            "result": {
+                              "type": "object",
+                              "properties": {
+                                "orders": {
+                                  "type": "array",
+                                  "description": "List of historical conditional orders.",
+                                  "items": {
+                                    "$ref": "#/components/schemas/ConditionalOrder"
+                                  }
+                                },
+                                "bookmark": {
+                                  "type": "string",
+                                  "description": "Bookmark to retrieve next page, or null (no more results)."
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "title": "Error",
+                      "$ref": "#/components/schemas/RpcErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "servers": [
+          {
+            "url": "RPC: "
+          }
+        ]
+      }
+    },
     "/private/trade_history": {
       "get": {
         "operationId": "rest_private/trade_history",

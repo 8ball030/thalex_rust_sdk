@@ -83,7 +83,7 @@ impl WsClient {
     pub async fn from_env() -> Result<Self, Error> {
         let key_path = var("THALEX_PRIVATE_KEY_PATH").unwrap();
         let key_id = var("THALEX_KEY_ID").unwrap();
-        let account_id = var("THALEX_ACCOUNT_ID").unwrap();
+        let account_id = var("THALEX_ACCOUNT_ID").ok();
         let env_str = var("THALEX_ENVIRONMENT")
             .expect("THALEX_ENVIRONMENT not set. Must be 'Mainnet' or 'Testnet'");
         let env = Environment::from_str(&env_str).expect("Invalid THALEX_ENVIRONMENT value");
@@ -98,7 +98,7 @@ impl WsClient {
     }
 
     pub async fn new_public(env: Environment) -> Result<Self, Error> {
-        let client = WsClient::new(env, "".to_string(), "".to_string(), "".to_string()).await?;
+        let client = WsClient::new(env, "".to_string(), None, "".to_string()).await?;
         client.wait_for_connection().await;
         Ok(client)
     }
@@ -106,7 +106,7 @@ impl WsClient {
     pub async fn new(
         env: Environment,
         key_id: String,
-        account_id: String,
+        account_id: Option<String>,
         private_key_pem: String,
     ) -> Result<Self, Error> {
         let url = env.get_url();

@@ -1,7 +1,8 @@
 use crate::{
     models::{
         AccountBreakdownResponse, AccountBreakdownRpcResult, AccountSummary,
-        AccountSummaryResponse, DailyMarkHistoryParams, DailyMarkHistoryResponse,
+        AccountSummaryResponse, ConditionalOrderHistoryParams, ConditionalOrderHistoryResponse,
+        ConditionalOrderHistoryRpcResult, DailyMarkHistoryParams, DailyMarkHistoryResponse,
         DailyMarkHistoryRpcResult, MarginBreakdownWithOrder, OpenOrdersResponse,
         OrderHistoryParams, OrderHistoryResponse, OrderHistoryRpcResult, OrderStatus,
         PortfolioEntry, PortfolioMarginBreakdown, PortfolioResponse,
@@ -69,6 +70,26 @@ impl<'a> AccountingRpc<'a> {
         match result {
             OrderHistoryResponse::OrderHistoryResult(res) => Ok(res.result),
             OrderHistoryResponse::RpcErrorResponse(err) => Err(err),
+        }
+    }
+
+    /// Conditional order history
+    /// returns: ConditionalOrderHistoryRpcResult
+    pub async fn conditional_order_history(
+        &self,
+        params: ConditionalOrderHistoryParams,
+    ) -> Result<ConditionalOrderHistoryRpcResult, RpcErrorResponse> {
+        let result: ConditionalOrderHistoryResponse = self
+            .client
+            .send_rpc(
+                "private/conditional_order_history",
+                serde_json::to_value(params).expect("Failed to serialize params"),
+            )
+            .await
+            .expect("Failed to send RPC request");
+        match result {
+            ConditionalOrderHistoryResponse::ConditionalOrderHistoryResult(res) => Ok(res.result),
+            ConditionalOrderHistoryResponse::RpcErrorResponse(err) => Err(err),
         }
     }
 
