@@ -31,7 +31,7 @@ pub enum ExternalEvent {
 #[derive(Clone, Debug)]
 pub struct LoginState {
     pub key_id: String,
-    pub account_id: String,
+    pub account_id: Option<String>,
     pub private_key_pem: String,
 }
 
