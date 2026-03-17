@@ -69,7 +69,10 @@ async fn test_limit_order_failure() {
         "Expected error but got success: {:?}",
         result.ok()
     );
-    let code = result.unwrap_err().error.unwrap().code;
+    let code = match result.err().unwrap() {
+        thalex_rust_sdk::types::ClientError::Rpc(err) => err.error.unwrap().code,
+        other => panic!("Expected Rpc error, got {other:?}"),
+    };
     match code {
         ErrorCode::PriceNotAlignedWithTick => (),
         _ => panic!("Expected PriceNotAlignedWithTick error code, got {code:?}"),

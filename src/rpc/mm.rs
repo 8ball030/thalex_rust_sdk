@@ -1,8 +1,9 @@
 use crate::{
     models::{
         CancelMassQuoteParams, CancelMassQuoteResponse, DoubleSidedQuoteResult, MassQuoteParams,
-        MassQuoteResponse, RpcErrorResponse, SetMmProtectionParams, SetMmProtectionResponse,
+        MassQuoteResponse, SetMmProtectionParams, SetMmProtectionResponse,
     },
+    types::ClientError,
     ws_client::WsClient,
 };
 use serde_json::Value;
@@ -16,18 +17,20 @@ impl<'a> MmRpc<'a> {
     pub async fn mass_quote(
         &self,
         params: MassQuoteParams,
-    ) -> Result<DoubleSidedQuoteResult, RpcErrorResponse> {
-        let result: MassQuoteResponse = self
+    ) -> Result<DoubleSidedQuoteResult, ClientError> {
+        let result: Result<MassQuoteResponse, ClientError> = self
             .client
             .send_rpc(
                 "private/mass_quote",
                 serde_json::to_value(params).expect("Failed to serialize params"),
             )
-            .await
-            .expect("Failed to send RPC request");
+            .await;
         match result {
-            MassQuoteResponse::MassQuoteResult(res) => Ok(res.result),
-            MassQuoteResponse::RpcErrorResponse(err) => Err(err),
+            Ok(res) => match res {
+                MassQuoteResponse::MassQuoteResult(res) => Ok(res.result),
+                MassQuoteResponse::RpcErrorResponse(err) => Err(ClientError::Rpc(err)),
+            },
+            Err(err) => Err(err),
         }
     }
 
@@ -36,18 +39,20 @@ impl<'a> MmRpc<'a> {
     pub async fn cancel_mass_quote(
         &self,
         params: CancelMassQuoteParams,
-    ) -> Result<Value, RpcErrorResponse> {
-        let result: CancelMassQuoteResponse = self
+    ) -> Result<Value, ClientError> {
+        let result: Result<CancelMassQuoteResponse, ClientError> = self
             .client
             .send_rpc(
                 "private/cancel_mass_quote",
                 serde_json::to_value(params).expect("Failed to serialize params"),
             )
-            .await
-            .expect("Failed to send RPC request");
+            .await;
         match result {
-            CancelMassQuoteResponse::CancelMassQuoteResult(res) => Ok(res.result),
-            CancelMassQuoteResponse::RpcErrorResponse(err) => Err(err),
+            Ok(res) => match res {
+                CancelMassQuoteResponse::CancelMassQuoteResult(res) => Ok(res.result),
+                CancelMassQuoteResponse::RpcErrorResponse(err) => Err(ClientError::Rpc(err)),
+            },
+            Err(err) => Err(err),
         }
     }
 
@@ -56,18 +61,20 @@ impl<'a> MmRpc<'a> {
     pub async fn set_mm_protection(
         &self,
         params: SetMmProtectionParams,
-    ) -> Result<Value, RpcErrorResponse> {
-        let result: SetMmProtectionResponse = self
+    ) -> Result<Value, ClientError> {
+        let result: Result<SetMmProtectionResponse, ClientError> = self
             .client
             .send_rpc(
                 "private/set_mm_protection",
                 serde_json::to_value(params).expect("Failed to serialize params"),
             )
-            .await
-            .expect("Failed to send RPC request");
+            .await;
         match result {
-            SetMmProtectionResponse::SetMmProtectionResult(res) => Ok(res.result),
-            SetMmProtectionResponse::RpcErrorResponse(err) => Err(err),
+            Ok(res) => match res {
+                SetMmProtectionResponse::SetMmProtectionResult(res) => Ok(res.result),
+                SetMmProtectionResponse::RpcErrorResponse(err) => Err(ClientError::Rpc(err)),
+            },
+            Err(err) => Err(err),
         }
     }
 }

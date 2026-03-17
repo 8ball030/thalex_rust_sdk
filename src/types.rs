@@ -48,7 +48,6 @@ pub enum RequestScope {
     Public,
     Private,
 }
-
 impl fmt::Display for RequestScope {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {

@@ -10624,9 +10624,10 @@
                                       "referral program payment",
                                       "market velocity program payment",
                                       "market quality program payment",
-                                      "daily interest"
+                                      "daily interest",
+                                      "balance sweep"
                                     ],
-                                    "description": "Transaction type. Can be one of the following values:\n- `credit` - Asset credits or debits.\n- `deposit` - Deposits.\n- `withdrawal` - Withdrawals.\n- `withdrawal fee` - Withdrawal fees.\n- `session settlement` - Settled session PNL.\n- `perpetual funding` - Settled perpetual funding.\n- `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer.\n- `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap.\n- `referral program payment` - Referral program rewards.\n- `market velocity program payment` - MVP program rewards.\n- `market quality program payment` - MQP program rewards.\n- `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.\n"
+                                    "description": "Transaction type. Can be one of the following values:\n- `credit` - Asset credits or debits.\n- `deposit` - Deposits.\n- `withdrawal` - Withdrawals.\n- `withdrawal fee` - Withdrawal fees.\n- `session settlement` - Settled session PNL.\n- `perpetual funding` - Settled perpetual funding.\n- `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer.\n- `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap.\n- `referral program payment` - Referral program rewards.\n- `market velocity program payment` - MVP program rewards.\n- `market quality program payment` - MQP program rewards.\n- `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.\n- `balance sweep` - Balance sweep between two accounts.\n"
                                   },
                                   "description": {
                                     "type": "string",
@@ -10635,6 +10636,75 @@
                                   "balance_after": {
                                     "type": "number",
                                     "description": "Account balance in this asset right after transaction."
+                                  },
+                                  "structured_data": {
+                                    "description": "Structured data specific to `transaction_type`.\n\nNote that not all transaction types carry structured data at the moment. Structured data can also be missing for very old transactions.\n",
+                                    "oneOf": [
+                                      {
+                                        "type": "object",
+                                        "title": "Session settlement",
+                                        "required": [
+                                          "base_currency",
+                                          "settled_pnl",
+                                          "position_pnl",
+                                          "conversion_price"
+                                        ],
+                                        "properties": {
+                                          "base_currency": {
+                                            "type": "string",
+                                            "description": "The base currency of the settled PnL."
+                                          },
+                                          "settled_pnl": {
+                                            "type": "number",
+                                            "description": "The settled profit and loss (PnL) amount before conversion."
+                                          },
+                                          "position_pnl": {
+                                            "type": "number",
+                                            "description": "The profit and loss (PnL) amount for the position."
+                                          },
+                                          "conversion_price": {
+                                            "type": "number",
+                                            "description": "The price at which the asset was converted."
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "object",
+                                        "title": "Perpetual funding",
+                                        "required": [
+                                          "base_currency",
+                                          "settled_funding",
+                                          "conversion_price"
+                                        ],
+                                        "properties": {
+                                          "base_currency": {
+                                            "type": "string",
+                                            "description": "The base currency of the settled perpetual funding PnL."
+                                          },
+                                          "settled_funding": {
+                                            "type": "number",
+                                            "description": "The settled perpetual funding amount before conversion."
+                                          },
+                                          "conversion_price": {
+                                            "type": "number",
+                                            "description": "The price at which the asset was converted."
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "object",
+                                        "title": "Balance Sweep",
+                                        "required": [
+                                          "sweep_account_id"
+                                        ],
+                                        "properties": {
+                                          "sweep_account_id": {
+                                            "type": "number",
+                                            "description": "The account ID to or from which the balance was swept."
+                                          }
+                                        }
+                                      }
+                                    ]
                                   }
                                 }
                               }
@@ -10649,11 +10719,42 @@
                               {
                                 "asset": "USDT",
                                 "time": 1629964800.012722,
-                                "amount": -643.70276425,
-                                "description": "daily settlement USD -643.83220000 @ 1.000201",
+                                "amount": -643,
+                                "description": "daily settlement USD -643.129243 @ 1.000201",
                                 "transaction_type": "session settlement",
                                 "instrument_name": "BTC-PERPETUAL",
-                                "balance_after": 1000000004483.9625
+                                "balance_after": 1000000004483.9625,
+                                "structured_data": {
+                                  "base_currency": "USD",
+                                  "settled_pnl": 400,
+                                  "position_pnl": -643,
+                                  "conversion_price": 1.000201
+                                }
+                              },
+                              {
+                                "asset": "USDT",
+                                "time": 1629964800.012722,
+                                "amount": -643,
+                                "description": "perpetual funding USD -643.129243 @ 1.000201",
+                                "transaction_type": "perpetual funding",
+                                "instrument_name": "BTC-PERPETUAL",
+                                "balance_after": 1000000004483.9625,
+                                "structured_data": {
+                                  "base_currency": "USD",
+                                  "settled_funding": 400,
+                                  "conversion_price": 1.000201
+                                }
+                              },
+                              {
+                                "asset": "USDT",
+                                "time": 1629964800.012722,
+                                "amount": -643,
+                                "description": "Balance sweep to account A123456789",
+                                "transaction_type": "balance sweep",
+                                "balance_after": 1000000004483.9625,
+                                "structured_data": {
+                                  "sweep_account_id": 123456789
+                                }
                               }
                             ]
                           }
@@ -10665,11 +10766,42 @@
                             {
                               "asset": "USDT",
                               "time": 1629964800.012722,
-                              "amount": -643.70276425,
-                              "description": "daily settlement USD -643.83220000 @ 1.000201",
+                              "amount": -643,
+                              "description": "daily settlement USD -643.129243 @ 1.000201",
                               "transaction_type": "session settlement",
                               "instrument_name": "BTC-PERPETUAL",
-                              "balance_after": 1000000004483.9625
+                              "balance_after": 1000000004483.9625,
+                              "structured_data": {
+                                "base_currency": "USD",
+                                "settled_pnl": 400,
+                                "position_pnl": -643,
+                                "conversion_price": 1.000201
+                              }
+                            },
+                            {
+                              "asset": "USDT",
+                              "time": 1629964800.012722,
+                              "amount": -643,
+                              "description": "perpetual funding USD -643.129243 @ 1.000201",
+                              "transaction_type": "perpetual funding",
+                              "instrument_name": "BTC-PERPETUAL",
+                              "balance_after": 1000000004483.9625,
+                              "structured_data": {
+                                "base_currency": "USD",
+                                "settled_funding": 400,
+                                "conversion_price": 1.000201
+                              }
+                            },
+                            {
+                              "asset": "USDT",
+                              "time": 1629964800.012722,
+                              "amount": -643,
+                              "description": "Balance sweep to account A123456789",
+                              "transaction_type": "balance sweep",
+                              "balance_after": 1000000004483.9625,
+                              "structured_data": {
+                                "sweep_account_id": 123456789
+                              }
                             }
                           ]
                         }
@@ -10895,9 +11027,10 @@
                                           "referral program payment",
                                           "market velocity program payment",
                                           "market quality program payment",
-                                          "daily interest"
+                                          "daily interest",
+                                          "balance sweep"
                                         ],
-                                        "description": "Transaction type. Can be one of the following values:\n- `credit` - Asset credits or debits.\n- `deposit` - Deposits.\n- `withdrawal` - Withdrawals.\n- `withdrawal fee` - Withdrawal fees.\n- `session settlement` - Settled session PNL.\n- `perpetual funding` - Settled perpetual funding.\n- `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer.\n- `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap.\n- `referral program payment` - Referral program rewards.\n- `market velocity program payment` - MVP program rewards.\n- `market quality program payment` - MQP program rewards.\n- `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.\n"
+                                        "description": "Transaction type. Can be one of the following values:\n- `credit` - Asset credits or debits.\n- `deposit` - Deposits.\n- `withdrawal` - Withdrawals.\n- `withdrawal fee` - Withdrawal fees.\n- `session settlement` - Settled session PNL.\n- `perpetual funding` - Settled perpetual funding.\n- `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer.\n- `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap.\n- `referral program payment` - Referral program rewards.\n- `market velocity program payment` - MVP program rewards.\n- `market quality program payment` - MQP program rewards.\n- `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.\n- `balance sweep` - Balance sweep between two accounts.\n"
                                       },
                                       "description": {
                                         "type": "string",
@@ -10906,6 +11039,75 @@
                                       "balance_after": {
                                         "type": "number",
                                         "description": "Account balance in this asset right after transaction."
+                                      },
+                                      "structured_data": {
+                                        "description": "Structured data specific to `transaction_type`.\n\nNote that not all transaction types carry structured data at the moment. Structured data can also be missing for very old transactions.\n",
+                                        "oneOf": [
+                                          {
+                                            "type": "object",
+                                            "title": "Session settlement",
+                                            "required": [
+                                              "base_currency",
+                                              "settled_pnl",
+                                              "position_pnl",
+                                              "conversion_price"
+                                            ],
+                                            "properties": {
+                                              "base_currency": {
+                                                "type": "string",
+                                                "description": "The base currency of the settled PnL."
+                                              },
+                                              "settled_pnl": {
+                                                "type": "number",
+                                                "description": "The settled profit and loss (PnL) amount before conversion."
+                                              },
+                                              "position_pnl": {
+                                                "type": "number",
+                                                "description": "The profit and loss (PnL) amount for the position."
+                                              },
+                                              "conversion_price": {
+                                                "type": "number",
+                                                "description": "The price at which the asset was converted."
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "title": "Perpetual funding",
+                                            "required": [
+                                              "base_currency",
+                                              "settled_funding",
+                                              "conversion_price"
+                                            ],
+                                            "properties": {
+                                              "base_currency": {
+                                                "type": "string",
+                                                "description": "The base currency of the settled perpetual funding PnL."
+                                              },
+                                              "settled_funding": {
+                                                "type": "number",
+                                                "description": "The settled perpetual funding amount before conversion."
+                                              },
+                                              "conversion_price": {
+                                                "type": "number",
+                                                "description": "The price at which the asset was converted."
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "title": "Balance Sweep",
+                                            "required": [
+                                              "sweep_account_id"
+                                            ],
+                                            "properties": {
+                                              "sweep_account_id": {
+                                                "type": "number",
+                                                "description": "The account ID to or from which the balance was swept."
+                                              }
+                                            }
+                                          }
+                                        ]
                                       }
                                     }
                                   }
@@ -10920,11 +11122,42 @@
                                   {
                                     "asset": "USDT",
                                     "time": 1629964800.012722,
-                                    "amount": -643.70276425,
-                                    "description": "daily settlement USD -643.83220000 @ 1.000201",
+                                    "amount": -643,
+                                    "description": "daily settlement USD -643.129243 @ 1.000201",
                                     "transaction_type": "session settlement",
                                     "instrument_name": "BTC-PERPETUAL",
-                                    "balance_after": 1000000004483.9625
+                                    "balance_after": 1000000004483.9625,
+                                    "structured_data": {
+                                      "base_currency": "USD",
+                                      "settled_pnl": 400,
+                                      "position_pnl": -643,
+                                      "conversion_price": 1.000201
+                                    }
+                                  },
+                                  {
+                                    "asset": "USDT",
+                                    "time": 1629964800.012722,
+                                    "amount": -643,
+                                    "description": "perpetual funding USD -643.129243 @ 1.000201",
+                                    "transaction_type": "perpetual funding",
+                                    "instrument_name": "BTC-PERPETUAL",
+                                    "balance_after": 1000000004483.9625,
+                                    "structured_data": {
+                                      "base_currency": "USD",
+                                      "settled_funding": 400,
+                                      "conversion_price": 1.000201
+                                    }
+                                  },
+                                  {
+                                    "asset": "USDT",
+                                    "time": 1629964800.012722,
+                                    "amount": -643,
+                                    "description": "Balance sweep to account A123456789",
+                                    "transaction_type": "balance sweep",
+                                    "balance_after": 1000000004483.9625,
+                                    "structured_data": {
+                                      "sweep_account_id": 123456789
+                                    }
                                   }
                                 ]
                               }
@@ -10936,11 +11169,42 @@
                                 {
                                   "asset": "USDT",
                                   "time": 1629964800.012722,
-                                  "amount": -643.70276425,
-                                  "description": "daily settlement USD -643.83220000 @ 1.000201",
+                                  "amount": -643,
+                                  "description": "daily settlement USD -643.129243 @ 1.000201",
                                   "transaction_type": "session settlement",
                                   "instrument_name": "BTC-PERPETUAL",
-                                  "balance_after": 1000000004483.9625
+                                  "balance_after": 1000000004483.9625,
+                                  "structured_data": {
+                                    "base_currency": "USD",
+                                    "settled_pnl": 400,
+                                    "position_pnl": -643,
+                                    "conversion_price": 1.000201
+                                  }
+                                },
+                                {
+                                  "asset": "USDT",
+                                  "time": 1629964800.012722,
+                                  "amount": -643,
+                                  "description": "perpetual funding USD -643.129243 @ 1.000201",
+                                  "transaction_type": "perpetual funding",
+                                  "instrument_name": "BTC-PERPETUAL",
+                                  "balance_after": 1000000004483.9625,
+                                  "structured_data": {
+                                    "base_currency": "USD",
+                                    "settled_funding": 400,
+                                    "conversion_price": 1.000201
+                                  }
+                                },
+                                {
+                                  "asset": "USDT",
+                                  "time": 1629964800.012722,
+                                  "amount": -643,
+                                  "description": "Balance sweep to account A123456789",
+                                  "transaction_type": "balance sweep",
+                                  "balance_after": 1000000004483.9625,
+                                  "structured_data": {
+                                    "sweep_account_id": 123456789
+                                  }
                                 }
                               ]
                             }

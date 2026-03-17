@@ -24,7 +24,7 @@ use tokio_tungstenite::{
 
 use crate::{
     auth_utils::make_auth_token,
-    models::{Instrument, RpcErrorResponse, RpcResponse},
+    models::{Instrument, RpcResponse},
     routing::{extract_channel, extract_id},
     types::{
         ChannelSender, ClientError, Environment, Error, ExternalEvent, InternalCommand, LoginState,
@@ -193,7 +193,7 @@ impl WsClient {
         }
     }
 
-    async fn get_instruments(&self) -> Result<Vec<Instrument>, RpcErrorResponse> {
+    async fn get_instruments(&self) -> Result<Vec<Instrument>, ClientError> {
         self.rpc().market_data().instruments().await
     }
 
