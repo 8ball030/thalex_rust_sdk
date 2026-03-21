@@ -372,25 +372,32 @@ impl WsClient {
     }
 
     pub async fn login(&self) -> Result<(), Error> {
-        let token = make_auth_token(&self.login_state.key_id, &self.login_state.private_key_pem)?;
-        let result: Value = self
-            .send_rpc(
-                "public/login",
-                serde_json::json!({
-                    "token": token,
-                    "account": &self.login_state.account_id
-                }),
-            )
-            .await?;
-        debug!("Sent login message, received response: {result:?}");
-        if let Some(error) = result.get("error") {
-            warn!("Login error: {error:?}");
-            Err(Box::new(std::io::Error::other(format!(
-                "Login error: {error:?}"
-            ))))
-        } else {
-            debug!("Login successful");
-            Ok(())
+        let mut attempts = 5;
+        loop {
+            if attempts == 0 {
+                warn!("Login attempts exhausted");
+                return Err(Box::new(std::io::Error::other("Login error: exhausted all attempts".to_string())));
+            }
+            attempts -= 1;
+            let token =
+                make_auth_token(&self.login_state.key_id, &self.login_state.private_key_pem)?;
+            let result: Value = self
+                .send_rpc(
+                    "public/login",
+                    serde_json::json!({
+                        "token": token,
+                        "account": &self.login_state.account_id
+                    }),
+                )
+                .await?;
+            debug!("Sent login message, received response: {result:?}");
+            if let Some(error) = result.get("error") {
+                warn!("Login error: {error:?}");
+                tokio::time::sleep(Duration::from_secs(3)).await;
+            } else {
+                debug!("Login successful");
+                return Ok(());
+            }
         }
     }
 
