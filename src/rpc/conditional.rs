@@ -3,6 +3,7 @@ use crate::{
         CancelAllConditionalOrdersResponse, CancelConditionalOrderParams,
         CancelConditionalOrderResponse, ConditionalOrder, ConditionalOrdersResponse,
         CreateConditionalOrderParams, CreateConditionalOrderResponse,
+        OpenConditionalOrdersResponse,
     },
     types::ClientError,
     ws_client::WsClient,
@@ -27,6 +28,25 @@ impl<'a> ConditionalRpc<'a> {
             Ok(res) => match res {
                 ConditionalOrdersResponse::ConditionalOrdersResult(res) => Ok(res.result),
                 ConditionalOrdersResponse::RpcErrorResponse(err) => Err(ClientError::Rpc(err)),
+            },
+            Err(err) => Err(err),
+        }
+    }
+
+    /// Active conditional orders
+    /// returns: Vec<ConditionalOrder>
+    pub async fn open_conditional_orders(&self) -> Result<Vec<ConditionalOrder>, ClientError> {
+        let result: Result<OpenConditionalOrdersResponse, ClientError> = self
+            .client
+            .send_rpc(
+                "private/open_conditional_orders",
+                serde_json::to_value(()).expect("Failed to serialize params"),
+            )
+            .await;
+        match result {
+            Ok(res) => match res {
+                OpenConditionalOrdersResponse::OpenConditionalOrdersResult(res) => Ok(res.result),
+                OpenConditionalOrdersResponse::RpcErrorResponse(err) => Err(ClientError::Rpc(err)),
             },
             Err(err) => Err(err),
         }

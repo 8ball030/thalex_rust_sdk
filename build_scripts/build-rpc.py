@@ -31,7 +31,8 @@ TAGS_TO_PROCESS = [
     "rpc_accounting",
     "rpc_conditional",
     "rpc_mm",
-    "rpc_bot"
+    "rpc_bot",
+    "rpc_wallet"
 ]
 
 
@@ -74,6 +75,7 @@ RETURN_MODEL_TO_VECTOR_ALIASES = {
     # conditional order
     "CreateConditionalOrderRpcResult": "ConditionalOrder",
     "ConditionalOrdersRpcResult": "Vec<ConditionalOrder>",
+    "OpenConditionalOrdersRpcResult": "Vec<ConditionalOrder>",
     "CancelConditionalOrderRpcResult": "Value", 
     "CancelAllConditionalOrdersRpcResult": "Value",
     # Bot
@@ -114,6 +116,7 @@ MODELS_TO_LIFT = [
     "Bot",
     "TradeValue",
     "MassQuoteSingleLevelQuote",
+    "Deposit"
 ]
 
 
@@ -136,6 +139,7 @@ IMPORTS_TO_SKIP = [
     "CreateConditionalOrderRpcResult",
     "ConditionalOrdersRpcResult",
     "CancelConditionalOrderRpcResult",
+    "OpenConditionalOrdersRpcResult",
     # Bot
     "CancelAllBotsRpcResult",
     "CancelBotRpcResult",
