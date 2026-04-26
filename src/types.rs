@@ -1,23 +1,23 @@
 use serde::Deserialize;
 use serde_json::Value;
+use yawc::MaybeTlsStream;
 use std::{fmt, str::FromStr};
 use thiserror::Error;
 use tokio::{net::TcpStream, sync::oneshot};
 use tokio_tungstenite::{
-    MaybeTlsStream, WebSocketStream,
-    tungstenite::{Bytes, Message},
+    tungstenite::Bytes,
 };
 
 use crate::models::{ErrorResponse, RpcErrorResponse};
 
-pub type WsStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
+pub type WsStream = yawc::WebSocket<MaybeTlsStream<TcpStream>>;
 pub type ResponseSender = oneshot::Sender<Bytes>;
 pub type ChannelSender = tokio::sync::mpsc::UnboundedSender<Bytes>;
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 pub type Result<T> = core::result::Result<T, Error>;
 
 pub enum InternalCommand {
-    Send(Message),
+    Send(yawc::Frame),
     Close,
 }
 

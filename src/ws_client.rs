@@ -11,6 +11,7 @@ use tokio::{
 use futures_util::{SinkExt, StreamExt};
 use log::{debug, error, info, warn};
 use serde_json::Value;
+use yawc::{Frame, OpCode};
 use std::env::var;
 use std::sync::{
     Arc,
@@ -18,8 +19,7 @@ use std::sync::{
 };
 use tokio::sync::{Mutex, mpsc, watch};
 use tokio_tungstenite::{
-    connect_async,
-    tungstenite::{Bytes, protocol::Message},
+    tungstenite::Bytes,
 };
 
 use crate::{
@@ -243,7 +243,7 @@ impl WsClient {
 
         if let Err(e) = self
             .write_tx
-            .send(InternalCommand::Send(Message::Text(text.into())))
+            .send(InternalCommand::Send(Frame::text(text)))
         {
             self.pending_requests.remove(&id);
             return Err(ClientError::Transport(Box::new(e)));
@@ -533,8 +533,8 @@ async fn connection_supervisor(
         }
 
         debug!("Attempting to connect to {url} (attempt {attempts})");
-        match connect_async(&url).await {
-            Ok((ws_stream, _)) => {
+        match yawc::WebSocket::connect(url.parse().unwrap()).await {
+            Ok(ws_stream) => {
                 connection_state_tx.send(ExternalEvent::Connected).ok();
                 attempts = 1;
                 debug!("Connected to {url}");
@@ -615,7 +615,7 @@ async fn run_single_connection(
     loop {
         tokio::select! {
             _ = ping_interval.tick() => {
-                if let Err(e) = ws.send(Message::Ping(Vec::new().into())).await {
+                if let Err(e) = ws.send(Frame::ping(Vec::default())).await {
                     warn!("Failed to send ping for {url}: {e}");
                     return Err(Box::new(e));
                 }
@@ -624,7 +624,7 @@ async fn run_single_connection(
             _ = shutdown_rx.changed() => {
                 if *shutdown_rx.borrow() {
                     info!("Shutdown requested for {url}");
-                    let _ = ws.close(None).await;
+                    let _ = ws.close().await;
                     return Ok(());
                 }
             }
@@ -636,12 +636,12 @@ async fn run_single_connection(
                     }
                     Some(InternalCommand::Close) => {
                         info!("Close command received for {url}");
-                        let _ = ws.close(None).await;
+                        let _ = ws.close().await;
                         return Err("websocket closed by command".into());
                     }
                     None => {
                         info!("Command channel closed for {url}");
-                        let _ = ws.close(None).await;
+                        let _ = ws.close().await;
                         return Ok(());
                     }
                 }
@@ -649,45 +649,41 @@ async fn run_single_connection(
 
             msg = ws.next() => {
                 read_deadline.as_mut().reset(Instant::now() + READ_TIMEOUT);
+                let Some(frame) = msg else {
+                    warn!("WebSocket stream ended for {url}");
+                    return Ok(());
+                };
 
-                match msg {
-                    Some(Ok(Message::Text(text))) => {
+                match frame.opcode() {
+                    OpCode::Text => {
                         handle_incoming(
-                            text.into(),
+                            frame.into_payload(),
                             pending_requests,
                             public_subscriptions,
                             private_subscriptions,
                         );
                     }
-                    Some(Ok(Message::Binary(bin))) => {
+                    OpCode::Binary => {
                         handle_incoming(
-                            bin,
+                            frame.into_payload(),
                             pending_requests,
                             public_subscriptions,
                             private_subscriptions,
                         );
                     }
-                    Some(Ok(Message::Ping(data))) => {
-                        ws.send(Message::Pong(data)).await?;
+                    OpCode::Ping => {
+                        ws.send(Frame::pong(Vec::default())).await?;
                     }
-                    Some(Ok(Message::Pong(_))) => {
+                    OpCode::Pong => {
                         // Pong received, connection is alive
                     }
-                    Some(Ok(Message::Close(frame))) => {
-                        warn!("WebSocket closed for {url}: {frame:?}");
+                    OpCode::Close => {
+                        warn!("WebSocket closed for {url}");
                         return Err("websocket closed".into());
                     }
-                    Some(Err(e)) => {
-                        warn!("WebSocket error for {url}: {e}");
-                        return Err(Box::new(e));
-                    }
-                    Some(Ok(Message::Frame(_))) => {
-                        warn!("Received unsupported Frame message on {url}");
-                    }
-                    None => {
-                        warn!("WebSocket stream ended for {url}");
-                        return Ok(());
-                    }
+                    OpCode::Continuation => {
+                        // wtf is a continuation
+                    },
                 }
             }
 
