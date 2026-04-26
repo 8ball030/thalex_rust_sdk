@@ -3,12 +3,12 @@ use std::{hint::black_box, sync::Arc};
 use criterion::{Criterion, criterion_group, criterion_main};
 use dashmap::DashMap;
 
+use bytes::Bytes;
 use thalex_rust_sdk::{
     types::{ChannelSender, ResponseSender},
     ws_client::handle_incoming,
 };
 use tokio::sync::mpsc::{self};
-use tokio_tungstenite::tungstenite::Bytes;
 
 fn bench_handle_incoming(c: &mut Criterion) {
     // ---- Shared state (NOT measured) ----
