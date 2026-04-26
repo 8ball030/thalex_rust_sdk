@@ -11,9 +11,8 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-/// SingleLevelQuote : ask quote
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SingleLevelQuote {
+pub struct SingleSidedSingleLevelQuote {
     /// Limit price.
     #[serde(rename = "p")]
     pub p: rust_decimal::Decimal,
@@ -22,9 +21,8 @@ pub struct SingleLevelQuote {
     pub a: rust_decimal::Decimal,
 }
 
-impl SingleLevelQuote {
-    /// ask quote
-    pub fn new(p: rust_decimal::Decimal, a: rust_decimal::Decimal) -> SingleLevelQuote {
-        SingleLevelQuote { p, a }
+impl SingleSidedSingleLevelQuote {
+    pub fn new(p: rust_decimal::Decimal, a: rust_decimal::Decimal) -> SingleSidedSingleLevelQuote {
+        SingleSidedSingleLevelQuote { p, a }
     }
 }

@@ -125,7 +125,9 @@ MODELS_TO_LIFT = [
     "DoubleSidedQuote",
     "Bot",
     "TradeValue",
-    "MassQuoteSingleLevelQuote",
+    # "MassQuoteSingleLevelQuote",
+    "SingleSidedSingleLevelQuote",
+    "SingleSidedMultiLevelQuote",
     "Deposit"
 ]
 

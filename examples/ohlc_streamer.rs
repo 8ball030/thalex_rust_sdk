@@ -74,10 +74,8 @@ async fn on_ticker(msg: Ticker, candle: Arc<Mutex<Candle>>, interval: i64) {
     if msg.best_ask_price.is_none() || msg.best_bid_price.is_none() {
         return;
     }
-    let mark_price: Decimal = msg.mark_price.unwrap();
-    let timestamp: i64 = (msg.mark_timestamp.unwrap() * dec!(1000.0))
-        .to_i64()
-        .unwrap();
+    let mark_price: Decimal = msg.mark_price;
+    let timestamp: i64 = (msg.mark_timestamp * dec!(1000.0)).to_i64().unwrap();
     let mut current_candle = candle.lock().await;
 
     if Some(current_candle.high) < Some(mark_price) {

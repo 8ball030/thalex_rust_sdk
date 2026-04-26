@@ -101,12 +101,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             async move {
             let best_bid_price: Decimal = msg.best_bid_price.unwrap();
             let best_ask_price: Decimal = msg.best_ask_price.unwrap();
-            let index_price = msg.index.unwrap();
+            let index_price = msg.index;
 
             // Check if all non-optional fields are present
             let spread = best_ask_price - best_bid_price;
 
-            let index_delta = msg.mark_price.unwrap() - index_price;
+            let index_delta = msg.mark_price - index_price;
             let index_delta_bps = if index_price != dec!(0.0) {
                 (index_delta / index_price) * dec!(10000.0)
             } else {

@@ -25,6 +25,11 @@ pub struct DailyMarkHistoryParams {
     /// Set to bookmark from previous call to get next page.
     #[serde(rename = "bookmark", skip_serializing_if = "Option::is_none")]
     pub bookmark: Option<String>,
+    /// Comma-separated list of instrument names to request daily marks for. If omitted, daily marks for all instruments is returned.
+    #[serde(rename = "instrument_names", skip_serializing_if = "Option::is_none")]
+    pub instrument_names: Option<String>,
+    #[serde(rename = "sort", skip_serializing_if = "Option::is_none")]
+    pub sort: Option<models::SortEnum>,
 }
 
 impl DailyMarkHistoryParams {
@@ -34,6 +39,8 @@ impl DailyMarkHistoryParams {
             time_low: None,
             time_high: None,
             bookmark: None,
+            instrument_names: None,
+            sort: None,
         }
     }
 }

@@ -13,13 +13,13 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct DoubleSidedQuote {
-    /// instrument name
+    /// Instrument name
     #[serde(rename = "i")]
     pub i: String,
     #[serde(rename = "b", skip_serializing_if = "Option::is_none")]
-    pub b: Option<models::MassQuoteSingleLevelQuote>,
+    pub b: Option<models::DoubleSidedQuoteB>,
     #[serde(rename = "a", skip_serializing_if = "Option::is_none")]
-    pub a: Option<models::MassQuoteSingleLevelQuote>,
+    pub a: Option<models::DoubleSidedQuoteA>,
 }
 
 impl DoubleSidedQuote {

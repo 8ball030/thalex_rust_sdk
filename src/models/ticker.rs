@@ -29,20 +29,20 @@ pub struct Ticker {
     #[serde(rename = "last_price", skip_serializing_if = "Option::is_none")]
     pub last_price: Option<rust_decimal::Decimal>,
     /// Current mark price.
-    #[serde(rename = "mark_price", skip_serializing_if = "Option::is_none")]
-    pub mark_price: Option<rust_decimal::Decimal>,
+    #[serde(rename = "mark_price")]
+    pub mark_price: rust_decimal::Decimal,
     /// The unix timestamp when the price was marked.
-    #[serde(rename = "mark_timestamp", skip_serializing_if = "Option::is_none")]
-    pub mark_timestamp: Option<rust_decimal::Decimal>,
+    #[serde(rename = "mark_timestamp")]
+    pub mark_timestamp: rust_decimal::Decimal,
     /// Implied volatility calculated at time of marking.  Only included for options. Not included for combinations.
     #[serde(rename = "iv", skip_serializing_if = "Option::is_none")]
     pub iv: Option<rust_decimal::Decimal>,
-    /// Delta calculated at time of marking.  Not included for combinations.
-    #[serde(rename = "delta", skip_serializing_if = "Option::is_none")]
-    pub delta: Option<rust_decimal::Decimal>,
+    /// Delta calculated at time of marking.
+    #[serde(rename = "delta")]
+    pub delta: rust_decimal::Decimal,
     /// Index price at time of marking.
-    #[serde(rename = "index", skip_serializing_if = "Option::is_none")]
-    pub index: Option<rust_decimal::Decimal>,
+    #[serde(rename = "index")]
+    pub index: rust_decimal::Decimal,
     /// Forward price at time of marking.  Only included for options.
     #[serde(rename = "forward", skip_serializing_if = "Option::is_none")]
     pub forward: Option<rust_decimal::Decimal>,
@@ -91,18 +91,23 @@ pub struct Ticker {
 }
 
 impl Ticker {
-    pub fn new() -> Ticker {
+    pub fn new(
+        mark_price: rust_decimal::Decimal,
+        mark_timestamp: rust_decimal::Decimal,
+        delta: rust_decimal::Decimal,
+        index: rust_decimal::Decimal,
+    ) -> Ticker {
         Ticker {
             best_bid_price: None,
             best_bid_amount: None,
             best_ask_price: None,
             best_ask_amount: None,
             last_price: None,
-            mark_price: None,
-            mark_timestamp: None,
+            mark_price,
+            mark_timestamp,
             iv: None,
-            delta: None,
-            index: None,
+            delta,
+            index,
             forward: None,
             volume_24h: None,
             value_24h: None,
