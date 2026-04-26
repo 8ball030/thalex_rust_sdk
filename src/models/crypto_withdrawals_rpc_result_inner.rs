@@ -31,6 +31,9 @@ pub struct CryptoWithdrawalsRpcResultInner {
     /// Time when this withdrawal was requested (Unix timestamp).
     #[serde(rename = "create_time")]
     pub create_time: rust_decimal::Decimal,
+    /// Time when this withdrawal was completed (Unix timestamp).
+    #[serde(rename = "execute_time", skip_serializing_if = "Option::is_none")]
+    pub execute_time: Option<rust_decimal::Decimal>,
     /// Optional label attached to the withdrawal request.
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
@@ -63,6 +66,7 @@ impl CryptoWithdrawalsRpcResultInner {
             blockchain: None,
             transaction_hash: None,
             create_time,
+            execute_time: None,
             label: None,
             state,
             remark: None,

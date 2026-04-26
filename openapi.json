@@ -124,42 +124,42 @@
     {
       "name": "subs_mm_prot",
       "x-displayName": "Market maker protection",
-      "description": "## Session MM protection\n\nChannel name: `session.mm_protection`\n\nSubscribes to updates in the status of market maker protection groups.\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/session.mm_protection_payload\" />\n\n"
+      "description": "## Session MM protection\n\nChannel name: `session.mm_protection`\n\nSubscribes to updates in the status of market maker protection groups.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/session.mm_protection_payload\" />\n\n"
     },
     {
       "name": "subs_mm_rfq",
       "x-displayName": "Request for Quote (MM)",
-      "description": "## Quote requests\n\nChannel name: `mm.rfqs`\n\nSubscribes to all RFQs created, for which this account is an eligible counterparty. When subscribing, a\nsnapshot will be sent with all currently open eligible RFQs.\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/mm.rfqs_payload\" />\n\n## Open RFQ quotes\n\nChannel name: `mm.rfq_quotes`\n\nSubscribes to RFQ quote events, including all quotes on all RFQs created by this account. When subscribing,\na snapshot will be sent with all currently active quotes.\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/mm.rfq_quotes_payload\" />\n\n"
+      "description": "## Quote requests\n\nChannel name: `mm.rfqs`\n\nSubscribes to all RFQs created, for which this account is an eligible counterparty. When subscribing, a\nsnapshot will be sent with all currently open eligible RFQs.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/mm.rfqs_payload\" />\n\n## Open RFQ quotes\n\nChannel name: `mm.rfq_quotes`\n\nSubscribes to RFQ quote events, including all quotes on all RFQs created by this account. When subscribing,\na snapshot will be sent with all currently active quotes.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/mm.rfq_quotes_payload\" />\n\n"
     },
     {
       "name": "subs_accounting",
       "x-displayName": "Accounting",
-      "description": "## Account orders\n\nChannel name: `account.orders`\n\nSubscribes to all active order changes. Notification value is a list of order\nstatus updates. Upon subscription, all current open orders are sent immediately,\nwith status \"existing\".\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/account.orders_payload\" />\n\n## Account orders, persistent only\n\nChannel name: `account.persistent_orders`\n\nSubscribes to all active order changes on persistent (non-market-maker) orders only.\nNotification value is a list of order\nstatus updates. Upon subscription, all current open orders are sent immediately,\nwith status \"existing\".\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/account.persistent_orders_payload\" />\n\n## Session orders\n\nChannel name: `session.orders`\n\nSubscribes to all active order changes, but only for orders that were inserted\nin the current WebSocket session.\nNotification value is a list of order\nstatus updates. Upon subscription, all current open orders are sent immediately,\nwith status \"existing\".\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/session.orders_payload\" />\n\n## Account trade history\n\nChannel name: `account.trade_history`\n\nSubscribes to trade history. Note that this feed is sent only after trades have\nbeen fully processed in the central database. For low-latency execution\nnotifications, check the `fills` field in `account.orders`.\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/account.trade_history_payload\" />\n\n## Account order history\n\nChannel name: `account.order_history`\n\nThis subscription notifies when inactive orders are recorded in the central\ndatabase (i.e. when they would show up in the `order_history` API call).\nUnfilled market maker orders are excluded.\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/account.order_history_payload\" />\n\n## Account portfolio\n\nChannel name: `account.portfolio`\n\nSubscribes to the total position for the account.\n\nUpon subscription, the full portfolio is sent, but afterwards only updated lines\nare transmitted (keyed by `instrument_name`). Lines are retransmitted if the position changes, or if the mark\nprice deviates by more than 1%.\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/account.portfolio_payload\" />\n\n## Account summary\n\nChannel name: `account.summary`\n\nPeriodic updates with current account summary.\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/account.summary_payload\" />\n\n## Account RFQs\n\nChannel name: `account.rfqs`\n\nSubscribes to RFQ events, for RFQs created by this account. When subscribing, a snapshot will be sent\nwith all currently open requests.\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/account.rfqs_payload\" />\n\n## Account RFQ history\n\nChannel name: `account.rfq_history`\n\nSubscribes to RFQ history, for RFQS created by this account. Note that this feed is sent only after\nRFQs have been fully processed in the central database, and will therefore be slightly behind\n`account.rfqs`.\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/account.rfq_history_payload\" />\n\n"
+      "description": "## Account orders\n\nChannel name: `account.orders`\n\nSubscribes to all active order changes. Notification value is a list of order\nstatus updates. Upon subscription, all current open orders are sent immediately,\nwith status \"existing\".\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/account.orders_payload\" />\n\n## Account orders, persistent only\n\nChannel name: `account.persistent_orders`\n\nSubscribes to all active order changes on persistent (non-market-maker) orders only.\nNotification value is a list of order\nstatus updates. Upon subscription, all current open orders are sent immediately,\nwith status \"existing\".\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/account.persistent_orders_payload\" />\n\n## Session orders\n\nChannel name: `session.orders`\n\nSubscribes to all active order changes, but only for orders that were inserted\nin the current WebSocket session.\nNotification value is a list of order\nstatus updates. Upon subscription, all current open orders are sent immediately,\nwith status \"existing\".\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/session.orders_payload\" />\n\n## Account trade history\n\nChannel name: `account.trade_history`\n\nSubscribes to trade history. Note that this feed is sent only after trades have\nbeen fully processed in the central database. For low-latency execution\nnotifications, check the `fills` field in `account.orders`.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/account.trade_history_payload\" />\n\n## Account order history\n\nChannel name: `account.order_history`\n\nThis subscription notifies when inactive orders are recorded in the central\ndatabase (i.e. when they would show up in the `order_history` API call).\nUnfilled market maker orders are excluded.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/account.order_history_payload\" />\n\n## Account portfolio\n\nChannel name: `account.portfolio`\n\nSubscribes to the total position for the account.\n\nUpon subscription, the full portfolio is sent, but afterwards only updated lines\nare transmitted (keyed by `instrument_name`). Lines are retransmitted if the position changes, or if the mark\nprice deviates by more than 1%.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/account.portfolio_payload\" />\n\n## Account summary\n\nChannel name: `account.summary`\n\nPeriodic updates with current account summary.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/account.summary_payload\" />\n\n## Account RFQs\n\nChannel name: `account.rfqs`\n\nSubscribes to RFQ events, for RFQs created by this account. When subscribing, a snapshot will be sent\nwith all currently open requests.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/account.rfqs_payload\" />\n\n## Account RFQ history\n\nChannel name: `account.rfq_history`\n\nSubscribes to RFQ history, for RFQS created by this account. Note that this feed is sent only after\nRFQs have been fully processed in the central database, and will therefore be slightly behind\n`account.rfqs`.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/account.rfq_history_payload\" />\n\n"
     },
     {
       "name": "subs_notifications",
       "x-displayName": "Notifications",
-      "description": "## User inbox notifications\n\nChannel name: `user.inbox_notifications`\n\nThis subscription notifies when new notifications are posted or\nexisting notifications are updated (e.g. marked as read) for this user.\n\nThe feed includes only the notifications for which `inbox` preference is set.\n\nNote: this feed only delivers updates that happen after the time of\nsubscription. To get a historical list of notifications use\n`private/notifications_inbox` call.\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/user.inbox_notifications_payload\" />\n\n"
+      "description": "## User inbox notifications\n\nChannel name: `user.inbox_notifications`\n\nThis subscription notifies when new notifications are posted or\nexisting notifications are updated (e.g. marked as read) for this user.\n\nThe feed includes only the notifications for which `inbox` preference is set.\n\nNote: this feed only delivers updates that happen after the time of\nsubscription. To get a historical list of notifications use\n`private/notifications_inbox` call.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/user.inbox_notifications_payload\" />\n\n"
     },
     {
       "name": "subs_conditional",
       "x-displayName": "Conditional orders",
-      "description": "## Account conditional orders\n\nChannel name: `account.conditional_orders`\n\nSubscribes to changes in the list of conditional orders. The feed contains a full set of orders every time, including\npast orders; it is identical to the output of the `private/conditional_orders` RPC call. No update is sent upon removal\nof old inactive orders.\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/account.conditional_orders_payload\" />\n\n"
+      "description": "## Account conditional orders\n\nChannel name: `account.conditional_orders`\n\nSubscribes to changes in the list of conditional orders. The feed contains a full set of orders every time, including\npast orders; it is identical to the output of the `private/conditional_orders` RPC call. No update is sent upon removal\nof old inactive orders.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/account.conditional_orders_payload\" />\n\n"
     },
     {
       "name": "subs_bot",
       "x-displayName": "Bots",
-      "description": "## Account bots\n\nChannel name: `account.bots`\n\nSubscribes to changes in the bots that the subaccount is running.\nThe feed contains a full set of bots every time, including stopped bots.\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/account.bots_payload\" />\n\n"
+      "description": "## Account bots\n\nChannel name: `account.bots`\n\nSubscribes to changes in the bots that the subaccount is running.\nThe feed contains a full set of bots every time, including stopped bots.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/account.bots_payload\" />\n\n"
     },
     {
       "name": "subs_market_data",
       "x-displayName": "Market data",
-      "description": "## Order book\n\nChannel name: `book.<instrument>.<grouping>.<nlevels>.<delay>`\n\nSubscribes to aggregated book updates and trade ticks on a single instrument or a combination.\n\nCombination order books _do not_ represent combination orders inserted by customers. Instead, each level in the virtual combination order book represents a possible proportional fill at a specific price for the whole combination that can be matched against orders in the outright books that correspond to the combination legs. Combination order books are updated in real time when outright order books they depend on change.\n\n\nChannel name parameters:\n\n- `instrument` - For single instrument order books this is the instrument name, e.g. \"BTC-PERPETUAL\".\n\nFor combinations, this is a string that specifies combination legs in the following format: `[<instrument_name>:<quantity>,<instrument_name>:<quantity>,...]`.\n\nFor example, \"[BTC-30MAY25-93000-C:-1,BTC-30MAY25-80000-C:1]\".\n\nYou can only subscribe to the books of combinations that are allowed for combination orders.\n\nThere must be at least two and at most four legs specified. All leg instruments must be distinct. Other constraints apply, please check trading information page on combination orders.\n\n- `grouping` - To group book levels by price, pass a USD value aligned to instrument or combination price tick size. Pass `none` for no grouping.\n- `nlevels` - Number of levels you want to see, or `all`.\n- `delay` - Minimum interval between feeds, possible value is one of `100ms`, `200ms`, `500ms`, `1000ms`, `5000ms`, `60000ms` or `raw`.\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/book.<instrument>.<grouping>.<nlevels>.<delay>_payload\" />\n\n## Ticker\n\nChannel name: `ticker.<instrument>.<delay>`\n\nSubscribes to a ticker feed for a single instrument or a combination.\n\nMark price of a combination is the quantity-weighted sum of mark prices of the leg instruments.\n\nBest bid and best ask for combinations represent top levels of a corresponding virtual combination order book. Combination order books _do not_ represent combination orders inserted by customers. Instead, each level in the virtual combination order book represents a possible proportional fill at a specific price for the whole combination that can be matched against orders in the outright books that correspond to the combination legs. Combination order books are updated in real time when outright order books they depend on change.\n\n\nChannel name parameters:\n\n- `instrument` - For single instrument tickers this is the instrument name, e.g. \"BTC-PERPETUAL\".\n\nFor combinations, this is a string that specifies combination legs in the following format: `[<instrument_name>:<quantity>,<instrument_name>:<quantity>,...]`.\n\nFor example, \"[BTC-30MAY25-93000-C:-1,BTC-30MAY25-80000-C:1]\".\n\nYou can only subscribe to combinations that are allowed for combination orders.\n\nThere must be at least two and at most four legs specified. All leg instruments must be distinct. Other constraints apply, please check trading information page on combination orders.\n\n- `delay` - Minimum interval between feeds, possible value is one of `100ms`, `200ms`, `500ms`, `1000ms`, `5000ms`, `60000ms` or `raw`.\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/ticker.<instrument>.<delay>_payload\" />\n\n## Ticker (lightweight payload)\n\nChannel name: `lwt.<instrument>.<delay>`\n\nSimilar to `ticker.<instrument>.<delay>`, but subscribes to a lightweight ticker consisting only of best bid and ask, mark price, volatility and last trade price. Other pricing elements can be derived from the base price feed.\n\n\nChannel name parameters:\n\n- `instrument` - For single instrument tickers this is the instrument name, e.g. \"BTC-PERPETUAL\".\n\nFor combinations, this is a string that specifies combination legs in the following format: `[<instrument_name>:<quantity>,<instrument_name>:<quantity>,...]`.\n\nFor example, \"[BTC-30MAY25-93000-C:-1,BTC-30MAY25-80000-C:1]\".\n\nYou can only subscribe to combinations that are allowed for combination orders.\n\nThere must be at least two and at most four legs specified. All leg instruments must be distinct. Other constraints apply, please check trading information page on combination orders.\n\n- `delay` - Minimum interval between feeds, possible value is one of `100ms`, `200ms`, `500ms`, `1000ms`, `5000ms`, `60000ms` or `raw`.\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt.<instrument>.<delay>_payload\" />\n\n## Recent trades\n\nChannel name: `recent_trades.<target>.<category>`\n\nSubscribes to notifications about recent trades of a specific category. The first notification after subscription contains a\nsnapshot of a certain number of last known trades. Subsequent notifications contain new trades. Note that this subscription\nhas a slight delay compared to order book subscriptions (`book.*`), but the snapshot functionality is more reliable.\n\n\nChannel name parameters:\n\n- `target` - Either underlying (e.g. `BTCUSD`), or instrument name (e.g. `BTC-PERPETUAL`).\n- `category` - Category that serves as a filter for which instruments' trades to include in the feed. Can be one of the following values:\n  - `single`: single instrument. Only valid for instrument recent trades. I.e. `recent_trades.BTC-11MAY22-32400-C.single` is valid but `recent_trade.BTCUSD.single` is not valid.\n  - `all`: all instruments in underlying. Only valid for underlying recent trades. I.e. `recent_trades.BTCUSD.all` is valid but `recent_trade.BTC-11MAY22-32400-C.all` is not valid.\n  - `options`: all options in underlying. Only valid for underlying recent trades. I.e. `recent_trades.BTCUSD.options` is valid but `recent_trade.BTC-11MAY22-32400-C.options` is not valid.\n  - `future_rolls`: all combination instruments in underlying that represent rolls between two futures or a future and a perpetual. Only valid for underlying recent trades. I.e. `recent_trades.BTCUSD.future_rolls` is valid but `recent_trade.BTC-11MAY22-32400-C.future_rolls` is not valid.\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/recent_trades.<target>.<category>_payload\" />\n\n## Index price\n\nChannel name: `price_index.<underlying>`\n\nSubscribes to index price stamps.\n\n\nChannel name parameters:\n\n- `underlying` - Underlying is e.g. `BTCUSD`.\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/price_index.<underlying>_payload\" />\n\n## Underlying statistics\n\nChannel name: `underlying_statistics.<underlying>`\n\nSubscribes to statistics of a single underlying.\n\n\nChannel name parameters:\n\n- `underlying` - Underlying is e.g. `BTCUSD`.\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/underlying_statistics.<underlying>_payload\" />\n\n## Forward price\n\nChannel name: `base_price.<underlying>.<expiration>`\n\nSubscribes to per-expiration forward prices. If a future exists with this\nexpiration date, the price equals the future's mark price. Otherwise, if one\nor more options exist with this expiration date, the price will be the\ninterpolated forward price as used in our marking process. If no instrument with\nthis expiration exists, the subscription will fail.\n\n\nChannel name parameters:\n\n- `underlying` - Underlying is e.g. `BTCUSD`.\n- `expiration` - Expiration date in `YYYY-MM-DD` format.\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/base_price.<underlying>.<expiration>_payload\" />\n\n## Instruments\n\nChannel name: `instruments`\n\nSubscribes to changes in active instruments.\n\nNew instruments may be added when others expire, or intraday when the index\nprice changes significantly. Instruments are removed when they expire.\n\nThis subscription immediately responds with a notification for all currently\nactive instruments.\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/instruments_payload\" />\n\n## Traded RFQs\n\nChannel name: `rfqs`\n\nSubscribed to traded RFQs. When subscribing, a snapshot will be sent containing recently traded RFQs.\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/rfqs_payload\" />\n\n## Index components\n\nChannel name: `index_components.<underlying>`\n\nSubscribes to the index price components channel.\n\n\nChannel name parameters:\n\n- `underlying` - Underlying is e.g. `BTCUSD`.\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/index_components.<underlying>_payload\" />\n\n"
+      "description": "## Order book\n\nChannel name: `book.<instrument>.<grouping>.<nlevels>.<delay>`\n\nSubscribes to aggregated book updates and trade ticks on a single instrument or a combination.\n\nCombination order books _do not_ represent combination orders inserted by customers. Instead, each level in the virtual combination order book represents a possible proportional fill at a specific price for the whole combination that can be matched against orders in the outright books that correspond to the combination legs. Combination order books are updated in real time when outright order books they depend on change.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/book.<instrument>.<grouping>.<nlevels>.<delay>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/book.<instrument>.<grouping>.<nlevels>.<delay>_payload\" />\n\n## Ticker\n\nChannel name: `ticker.<instrument>.<delay>`\n\nSubscribes to a ticker feed for a single instrument or a combination.\n\nMark price of a combination is the quantity-weighted sum of mark prices of the leg instruments.\n\nBest bid and best ask for combinations represent top levels of a corresponding virtual combination order book. Combination order books _do not_ represent combination orders inserted by customers. Instead, each level in the virtual combination order book represents a possible proportional fill at a specific price for the whole combination that can be matched against orders in the outright books that correspond to the combination legs. Combination order books are updated in real time when outright order books they depend on change.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/ticker.<instrument>.<delay>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/ticker.<instrument>.<delay>_payload\" />\n\n## Ticker (lightweight payload)\n\nChannel name: `lwt.<instrument>.<delay>`\n\nSimilar to `ticker.<instrument>.<delay>`, but subscribes to a lightweight ticker consisting only of best bid and ask, mark price, volatility and last trade price. Other pricing elements can be derived from the base price feed.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt.<instrument>.<delay>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt.<instrument>.<delay>_payload\" />\n\n## Tickers for options\n\nChannel name: `lwt_options.<underlying>.<expiration>.<delay>`\n\nSubscribes to lightweight tickers of multiple option instruments on a given underlying.\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt_options.<underlying>.<expiration>.<delay>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt_options.<underlying>.<expiration>.<delay>_payload\" />\n\n## Tickers for futures and perpetuals\n\nChannel name: `lwt_futures.<underlying>.<delay>`\n\nSubscribes to lightweight tickers of all dated futures and perpetual instruments on a given underlying.\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt_futures.<underlying>.<delay>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt_futures.<underlying>.<delay>_payload\" />\n\n## Tickers for futures rolls\n\nChannel name: `lwt_future_rolls.<underlying>.<delay>`\n\nSubscribes to lightweight tickers of all futures roll instruments on a given underlying.\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt_future_rolls.<underlying>.<delay>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt_future_rolls.<underlying>.<delay>_payload\" />\n\n## Recent trades\n\nChannel name: `recent_trades.<target>.<category>`\n\nSubscribes to notifications about recent trades of a specific category. The first notification after subscription contains a\nsnapshot of a certain number of last known trades. Subsequent notifications contain new trades. Note that this subscription\nhas a slight delay compared to order book subscriptions (`book.*`), but the snapshot functionality is more reliable.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/recent_trades.<target>.<category>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/recent_trades.<target>.<category>_payload\" />\n\n## Index price\n\nChannel name: `price_index.<underlying>`\n\nSubscribes to index price stamps.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/price_index.<underlying>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/price_index.<underlying>_payload\" />\n\n## Underlying statistics\n\nChannel name: `underlying_statistics.<underlying>`\n\nSubscribes to statistics of a single underlying.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/underlying_statistics.<underlying>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/underlying_statistics.<underlying>_payload\" />\n\n## Forward price\n\nChannel name: `base_price.<underlying>.<expiration>`\n\nSubscribes to per-expiration forward prices. If a future exists with this\nexpiration date, the price equals the future's mark price. Otherwise, if one\nor more options exist with this expiration date, the price will be the\ninterpolated forward price as used in our marking process. If no instrument with\nthis expiration exists, the subscription will fail.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/base_price.<underlying>.<expiration>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/base_price.<underlying>.<expiration>_payload\" />\n\n## Instruments\n\nChannel name: `instruments`\n\nSubscribes to changes in active instruments.\n\nNew instruments may be added when others expire, or intraday when the index\nprice changes significantly. Instruments are removed when they expire.\n\nThis subscription immediately responds with a notification for all currently\nactive instruments.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/instruments_payload\" />\n\n## Traded RFQs\n\nChannel name: `rfqs`\n\nSubscribed to traded RFQs. When subscribing, a snapshot will be sent containing recently traded RFQs.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/rfqs_payload\" />\n\n## Index components\n\nChannel name: `index_components.<underlying>`\n\nSubscribes to the index price components channel.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/index_components.<underlying>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/index_components.<underlying>_payload\" />\n\n"
     },
     {
       "name": "subs_system",
       "x-displayName": "System info",
-      "description": "## System events\n\nChannel name: `system`\n\nSubscribes to system and connection related events.\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/system_payload\" />\n\n## Banners\n\nChannel name: `banners`\n\nSubscribes to changes in currently shown banners. Each notification contains full list of banners.\n\nBanners are 'sticky' notifications visible to all users of the exchange. They are used\ne.g. for maintenance announcements etc.\n\n\n\n\nNotification payload:\n<SchemaDefinition schemaRef=\"#/components/schemas/banners_payload\" />\n\n"
+      "description": "## System events\n\nChannel name: `system`\n\nSubscribes to system and connection related events.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/system_payload\" />\n\n## Banners\n\nChannel name: `banners`\n\nSubscribes to changes in currently shown banners. Each notification contains full list of banners.\n\nBanners are 'sticky' notifications visible to all users of the exchange. They are used\ne.g. for maintenance announcements etc.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/banners_payload\" />\n\n"
     },
     {
       "name": "bot_strategies",
@@ -2433,61 +2433,70 @@
         "properties": {
           "i": {
             "type": "string",
-            "description": "instrument name"
+            "description": "Instrument name"
           },
           "b": {
-            "$ref": "#/components/schemas/MassQuoteSingleLevelQuote"
+            "description": "Bid quote(s)",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SingleSidedMultiLevelQuote"
+              },
+              {
+                "$ref": "#/components/schemas/SingleSidedSingleLevelQuote"
+              }
+            ]
           },
           "a": {
-            "$ref": "#/components/schemas/MassQuoteSingleLevelQuote"
+            "description": "Ask quote(s)",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SingleSidedMultiLevelQuote"
+              },
+              {
+                "$ref": "#/components/schemas/SingleSidedSingleLevelQuote"
+              }
+            ]
           }
         }
       },
-      "MassQuoteSingleLevelQuote": {
+      "SingleSidedSingleLevelQuote": {
         "type": "object",
-        "oneOf": [
-          {
-            "type": "array",
-            "title": "Multi-level quotes",
-            "description": "an array of ask quotes",
-            "minItems": 0,
-            "maxItems": 10,
-            "items": {
-              "type": "array",
-              "minItems": 2,
-              "maxItems": 2,
-              "prefixItems": [
-                {
-                  "type": "number",
-                  "description": "Limit price."
-                },
-                {
-                  "type": "number",
-                  "description": "Amount; set to zero to delete quote."
-                }
-              ]
-            }
+        "title": "Single-level quote",
+        "properties": {
+          "p": {
+            "type": "number",
+            "description": "Limit price."
           },
-          {
-            "type": "object",
-            "title": "Single-level quote",
-            "description": "ask quote",
-            "properties": {
-              "p": {
-                "type": "number",
-                "description": "Limit price."
-              },
-              "a": {
-                "type": "number",
-                "description": "Amount; set to zero to delete quote."
-              }
-            },
-            "required": [
-              "p",
-              "a"
-            ]
+          "a": {
+            "type": "number",
+            "description": "Amount; set to zero to delete quote."
           }
+        },
+        "required": [
+          "p",
+          "a"
         ]
+      },
+      "SingleSidedMultiLevelQuote": {
+        "type": "array",
+        "title": "Multi-level quotes",
+        "minItems": 0,
+        "maxItems": 10,
+        "items": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "prefixItems": [
+            {
+              "type": "number",
+              "description": "Limit price.\n\nPrice levels in the request don't need to be ordered, but must be distinct.\n"
+            },
+            {
+              "type": "number",
+              "description": "Amount; set to zero to delete quote."
+            }
+          ]
+        }
       },
       "DoubleSidedQuoteResult": {
         "type": "object",
@@ -2627,6 +2636,12 @@
       "Ticker": {
         "type": "object",
         "summary": "Ticker",
+        "required": [
+          "mark_price",
+          "mark_timestamp",
+          "delta",
+          "index"
+        ],
         "properties": {
           "best_bid_price": {
             "type": "number",
@@ -2662,7 +2677,7 @@
           },
           "delta": {
             "type": "number",
-            "description": "Delta calculated at time of marking.\n\nNot included for combinations.\n"
+            "description": "Delta calculated at time of marking.\n"
           },
           "index": {
             "type": "number",
@@ -2722,7 +2737,7 @@
           }
         },
         "example": {
-          "mark_price": 47238.64143906124,
+          "mark_price": 47238.64,
           "mark_timestamp": 946684800,
           "best_bid_price": 47240,
           "best_bid_amount": 0.4,
@@ -3514,7 +3529,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "account.orders"
+            "example": "account.orders"
           },
           "notification": {
             "type": "array",
@@ -3522,6 +3537,10 @@
               "$ref": "#/components/schemas/OrderStatus"
             },
             "description": "Channel-specific content"
+          },
+          "snapshot": {
+            "type": "boolean",
+            "description": "The snapshot flag is present only if true, and only for 'stateful' feeds that\ntransmit an initial state and subsequent updates.\n"
           }
         }
       },
@@ -3535,7 +3554,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "account.persistent_orders"
+            "example": "account.persistent_orders"
           },
           "notification": {
             "type": "array",
@@ -3543,6 +3562,10 @@
               "$ref": "#/components/schemas/OrderStatus"
             },
             "description": "Channel-specific content"
+          },
+          "snapshot": {
+            "type": "boolean",
+            "description": "The snapshot flag is present only if true, and only for 'stateful' feeds that\ntransmit an initial state and subsequent updates.\n"
           }
         }
       },
@@ -3556,7 +3579,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "session.orders"
+            "example": "session.orders"
           },
           "notification": {
             "type": "array",
@@ -3564,6 +3587,10 @@
               "$ref": "#/components/schemas/OrderStatus"
             },
             "description": "Channel-specific content"
+          },
+          "snapshot": {
+            "type": "boolean",
+            "description": "The snapshot flag is present only if true, and only for 'stateful' feeds that\ntransmit an initial state and subsequent updates.\n"
           }
         }
       },
@@ -3577,7 +3604,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "account.trade_history"
+            "example": "account.trade_history"
           },
           "notification": {
             "type": "array",
@@ -3598,7 +3625,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "account.order_history"
+            "example": "account.order_history"
           },
           "notification": {
             "type": "array",
@@ -3619,7 +3646,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "account.portfolio"
+            "example": "account.portfolio"
           },
           "notification": {
             "type": "array",
@@ -3627,6 +3654,10 @@
               "$ref": "#/components/schemas/PortfolioEntry"
             },
             "description": "Channel-specific content"
+          },
+          "snapshot": {
+            "type": "boolean",
+            "description": "The snapshot flag is present only if true, and only for 'stateful' feeds that\ntransmit an initial state and subsequent updates.\n"
           }
         }
       },
@@ -3640,7 +3671,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "account.conditional_orders"
+            "example": "account.conditional_orders"
           },
           "notification": {
             "type": "array",
@@ -3661,7 +3692,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "account.bots"
+            "example": "account.bots"
           },
           "notification": {
             "type": "array",
@@ -3682,7 +3713,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "account.summary"
+            "example": "account.summary"
           },
           "notification": {
             "$ref": "#/components/schemas/AccountSummary",
@@ -3700,7 +3731,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "session.mm_protection"
+            "example": "session.mm_protection"
           },
           "notification": {
             "type": "array",
@@ -3743,13 +3774,44 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "user.inbox_notifications"
+            "example": "user.inbox_notifications"
           },
           "notification": {
             "$ref": "#/components/schemas/Notifications",
             "description": "Channel-specific content"
           }
         }
+      },
+      "book.<instrument>.<grouping>.<nlevels>.<delay>_params": {
+        "type": "object",
+        "properties": {
+          "<instrument>": {
+            "description": "For single instrument order books this is the instrument name, e.g. \"BTC-PERPETUAL\".\n\nFor combinations, this is a string that specifies combination legs in the following format: `[<instrument_name>:<quantity>,<instrument_name>:<quantity>,...]`.\n\nFor example, `[BTC-30MAY25-93000-C:-1,BTC-30MAY25-80000-C:1]`.\n\nYou can only subscribe to the books of combinations that are allowed for combination orders.\n\nThere must be at least two and at most four legs specified. All leg instruments must be distinct. Other constraints apply, please check trading information page on combination orders.\n",
+            "type": "string"
+          },
+          "<grouping>": {
+            "description": "To group book levels by price, pass a USD value aligned to instrument or combination price tick size. Pass `none` for no grouping.",
+            "type": "string"
+          },
+          "<nlevels>": {
+            "description": "Number of levels you want to see, or `all`.",
+            "type": "string"
+          },
+          "<delay>": {
+            "enum": [
+              "100ms",
+              "200ms",
+              "500ms",
+              "1000ms",
+              "5000ms",
+              "60000ms",
+              "raw"
+            ],
+            "description": "Minimum interval between notifications.",
+            "type": "string"
+          }
+        },
+        "example": "book.BTC-PERPETUAL.none.all.1000ms"
       },
       "book.<instrument>.<grouping>.<nlevels>.<delay>_payload": {
         "type": "object",
@@ -3761,7 +3823,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "book.<instrument>.<grouping>.<nlevels>.<delay>"
+            "example": "book.BTC-PERPETUAL.none.all.1000ms"
           },
           "notification": {
             "type": "object",
@@ -3825,8 +3887,35 @@
               "time": 1683901254.785744
             },
             "description": "Channel-specific content"
+          },
+          "snapshot": {
+            "type": "boolean",
+            "description": "The snapshot flag is present only if true, and only for 'stateful' feeds that\ntransmit an initial state and subsequent updates.\n"
           }
         }
+      },
+      "ticker.<instrument>.<delay>_params": {
+        "type": "object",
+        "properties": {
+          "<instrument>": {
+            "description": "For single instrument tickers this is the instrument name, e.g. \"BTC-PERPETUAL\".\n\nFor combinations, this is a string that specifies combination legs in the following format: `[<instrument_name>:<quantity>,<instrument_name>:<quantity>,...]`.\n\nFor example, `[BTC-30MAY25-93000-C:-1,BTC-30MAY25-80000-C:1]`.\n\nYou can only subscribe to combinations that are allowed for combination orders.\n\nThere must be at least two and at most four legs specified. All leg instruments must be distinct. Other constraints apply, please check trading information page on combination orders.\n",
+            "type": "string"
+          },
+          "<delay>": {
+            "enum": [
+              "100ms",
+              "200ms",
+              "500ms",
+              "1000ms",
+              "5000ms",
+              "60000ms",
+              "raw"
+            ],
+            "description": "Minimum interval between notifications.",
+            "type": "string"
+          }
+        },
+        "example": "ticker.BTC-30MAY25.1000ms"
       },
       "ticker.<instrument>.<delay>_payload": {
         "type": "object",
@@ -3838,13 +3927,36 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "ticker.<instrument>.<delay>"
+            "example": "ticker.BTC-30MAY25.1000ms"
           },
           "notification": {
             "$ref": "#/components/schemas/Ticker",
             "description": "Channel-specific content"
           }
         }
+      },
+      "lwt.<instrument>.<delay>_params": {
+        "type": "object",
+        "properties": {
+          "<instrument>": {
+            "description": "For single instrument tickers this is the instrument name, e.g. \"BTC-PERPETUAL\".\n\nFor combinations, this is a string that specifies combination legs in the following format: `[<instrument_name>:<quantity>,<instrument_name>:<quantity>,...]`.\n\nFor example, `[BTC-30MAY25-93000-C:-1,BTC-30MAY25-80000-C:1]`.\n\nYou can only subscribe to combinations that are allowed for combination orders.\n\nThere must be at least two and at most four legs specified. All leg instruments must be distinct. Other constraints apply, please check trading information page on combination orders.\n",
+            "type": "string"
+          },
+          "<delay>": {
+            "enum": [
+              "100ms",
+              "200ms",
+              "500ms",
+              "1000ms",
+              "5000ms",
+              "60000ms",
+              "raw"
+            ],
+            "description": "Minimum interval between notifications.",
+            "type": "string"
+          }
+        },
+        "example": "lwt.BTC-PERPETUAL.1000ms"
       },
       "lwt.<instrument>.<delay>_payload": {
         "type": "object",
@@ -3856,10 +3968,13 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "lwt.<instrument>.<delay>"
+            "example": "lwt.BTC-PERPETUAL.1000ms"
           },
           "notification": {
             "type": "object",
+            "required": [
+              "m"
+            ],
             "properties": {
               "b": {
                 "type": "array",
@@ -3925,12 +4040,537 @@
                 1,
                 0.9
               ],
-              "l": 47252.64143906124,
+              "l": 47252,
               "m": 65536.16
             },
             "description": "Channel-specific content"
           }
         }
+      },
+      "lwt_options.<underlying>.<expiration>.<delay>_params": {
+        "type": "object",
+        "properties": {
+          "<underlying>": {
+            "description": "Underlying is e.g. `BTCUSD`.",
+            "type": "string"
+          },
+          "<expiration>": {
+            "description": "Specify `all` to subscribe to all expiration dates on this underlying. Specify expiration date in `YYYY-MM-DD` format to subscribe to a single expiration date.",
+            "type": "string"
+          },
+          "<delay>": {
+            "enum": [
+              "100ms",
+              "200ms",
+              "500ms",
+              "1000ms",
+              "5000ms",
+              "60000ms",
+              "raw"
+            ],
+            "description": "Minimum interval between notifications.",
+            "type": "string"
+          }
+        },
+        "example": "lwt_options.BTCUSD.all.1000ms"
+      },
+      "lwt_options.<underlying>.<expiration>.<delay>_payload": {
+        "type": "object",
+        "required": [
+          "channel_name",
+          "notification"
+        ],
+        "properties": {
+          "channel_name": {
+            "type": "string",
+            "description": "Channel name as in subscription.",
+            "example": "lwt_options.BTCUSD.all.1000ms"
+          },
+          "notification": {
+            "type": "object",
+            "required": [
+              "tickers"
+            ],
+            "properties": {
+              "tickers": {
+                "type": "object",
+                "description": "Ticker updates per instrument.",
+                "propertyNames": {
+                  "description": "Instrument name."
+                },
+                "additionalProperties": {
+                  "x-additionalPropertiesName": "\"INSTRUMENT-NAME\"",
+                  "type": "array",
+                  "description": "Option instrument ticker data.",
+                  "minItems": 8,
+                  "maxItems": 8,
+                  "prefixItems": [
+                    {
+                      "type": "number",
+                      "description": "The unix timestamp when the price was marked."
+                    },
+                    {
+                      "type": "number",
+                      "description": "Current mark price."
+                    },
+                    {
+                      "type": "number",
+                      "description": "Index price at time of marking."
+                    },
+                    {
+                      "type": "number",
+                      "description": "Forward price at time of marking."
+                    },
+                    {
+                      "type": "number",
+                      "description": "Implied volatility calculated at time of marking."
+                    },
+                    {
+                      "type": "array",
+                      "description": "Best bid. Empty array if no best bid is available.",
+                      "minItems": 0,
+                      "maxItems": 2,
+                      "prefixItems": [
+                        {
+                          "type": "number",
+                          "description": "Price"
+                        },
+                        {
+                          "type": "number",
+                          "description": "Amount"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "description": "Best ask. Empty array if no best ask is available.",
+                      "minItems": 0,
+                      "maxItems": 2,
+                      "prefixItems": [
+                        {
+                          "type": "number",
+                          "description": "Price"
+                        },
+                        {
+                          "type": "number",
+                          "description": "Amount"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "number",
+                      "description": "Price of last trade or `null` if no last trade is known."
+                    }
+                  ]
+                }
+              }
+            },
+            "example": {
+              "tickers": {
+                "BTC-25DEC26-120000-C": [
+                  1776176640.123457,
+                  8730.28,
+                  78000.28,
+                  79000.12,
+                  0.6069,
+                  [
+                    8725,
+                    1
+                  ],
+                  [
+                    8750,
+                    1
+                  ],
+                  8750
+                ],
+                "BTC-24APR26-72000-C": [
+                  1776176640.123457,
+                  3880.24,
+                  78000.28,
+                  78500.12,
+                  0.59156,
+                  [
+                    3870,
+                    1
+                  ],
+                  [],
+                  null
+                ]
+              }
+            },
+            "description": "Channel-specific content"
+          }
+        }
+      },
+      "lwt_futures.<underlying>.<delay>_params": {
+        "type": "object",
+        "properties": {
+          "<underlying>": {
+            "description": "Underlying is e.g. `BTCUSD`.",
+            "type": "string"
+          },
+          "<delay>": {
+            "enum": [
+              "100ms",
+              "200ms",
+              "500ms",
+              "1000ms",
+              "5000ms",
+              "60000ms",
+              "raw"
+            ],
+            "description": "Minimum interval between notifications.",
+            "type": "string"
+          }
+        },
+        "example": "lwt_futures.BTCUSD.1000ms"
+      },
+      "lwt_futures.<underlying>.<delay>_payload": {
+        "type": "object",
+        "required": [
+          "channel_name",
+          "notification"
+        ],
+        "properties": {
+          "channel_name": {
+            "type": "string",
+            "description": "Channel name as in subscription.",
+            "example": "lwt_futures.BTCUSD.1000ms"
+          },
+          "notification": {
+            "type": "object",
+            "required": [
+              "tickers"
+            ],
+            "properties": {
+              "tickers": {
+                "type": "object",
+                "description": "Ticker updates per instrument.",
+                "propertyNames": {
+                  "description": "Instrument name."
+                },
+                "additionalProperties": {
+                  "x-additionalPropertiesName": "\"INSTRUMENT-NAME\"",
+                  "description": "Instrument ticker data.\n\nData format depends on the instrument type.\n",
+                  "oneOf": [
+                    {
+                      "type": "array",
+                      "title": "Futures",
+                      "minItems": 6,
+                      "maxItems": 6,
+                      "prefixItems": [
+                        {
+                          "type": "number",
+                          "description": "The unix timestamp when the price was marked."
+                        },
+                        {
+                          "type": "number",
+                          "description": "Current mark price."
+                        },
+                        {
+                          "type": "number",
+                          "description": "Index price at time of marking."
+                        },
+                        {
+                          "type": "array",
+                          "description": "Best bid. Empty array if no best bid is available.",
+                          "minItems": 0,
+                          "maxItems": 2,
+                          "prefixItems": [
+                            {
+                              "type": "number",
+                              "description": "Price"
+                            },
+                            {
+                              "type": "number",
+                              "description": "Amount"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "array",
+                          "description": "Best ask. Empty array if no best ask is available.",
+                          "minItems": 0,
+                          "maxItems": 2,
+                          "prefixItems": [
+                            {
+                              "type": "number",
+                              "description": "Price"
+                            },
+                            {
+                              "type": "number",
+                              "description": "Amount"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "number",
+                          "description": "Price of last trade or `null` if no last trade is known."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "title": "Perpetual",
+                      "minItems": 8,
+                      "maxItems": 8,
+                      "prefixItems": [
+                        {
+                          "type": "number",
+                          "description": "The unix timestamp when the price was marked."
+                        },
+                        {
+                          "type": "number",
+                          "description": "Current mark price."
+                        },
+                        {
+                          "type": "number",
+                          "description": "Index price at time of marking."
+                        },
+                        {
+                          "type": "array",
+                          "description": "Best bid. Empty array if no best bid is available.",
+                          "minItems": 0,
+                          "maxItems": 2,
+                          "prefixItems": [
+                            {
+                              "type": "number",
+                              "description": "Price"
+                            },
+                            {
+                              "type": "number",
+                              "description": "Amount"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "array",
+                          "description": "Best ask. Empty array if no best ask is available.",
+                          "minItems": 0,
+                          "maxItems": 2,
+                          "prefixItems": [
+                            {
+                              "type": "number",
+                              "description": "Price"
+                            },
+                            {
+                              "type": "number",
+                              "description": "Amount"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "number",
+                          "description": "Price of last trade or `null` if no last trade is known."
+                        },
+                        {
+                          "type": "number",
+                          "description": "Funding value of a single contract long position since last settlement."
+                        },
+                        {
+                          "type": "number",
+                          "description": "Current rate at which long position pays and short position earns, in funding interval."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            "example": {
+              "tickers": {
+                "BTC-25DEC26": [
+                  1776176640.123457,
+                  87300.28,
+                  78000.28,
+                  [
+                    87250,
+                    1
+                  ],
+                  [
+                    87500,
+                    1
+                  ],
+                  87500
+                ],
+                "BTC-24APR26": [
+                  1776176640.123457,
+                  86400.24,
+                  78000.28,
+                  [
+                    86250,
+                    1
+                  ],
+                  [
+                    86500,
+                    1
+                  ],
+                  null
+                ]
+              }
+            },
+            "description": "Channel-specific content"
+          }
+        }
+      },
+      "lwt_future_rolls.<underlying>.<delay>_params": {
+        "type": "object",
+        "properties": {
+          "<underlying>": {
+            "description": "Underlying is e.g. `BTCUSD`.",
+            "type": "string"
+          },
+          "<delay>": {
+            "enum": [
+              "100ms",
+              "200ms",
+              "500ms",
+              "1000ms",
+              "5000ms",
+              "60000ms",
+              "raw"
+            ],
+            "description": "Minimum interval between notifications.",
+            "type": "string"
+          }
+        },
+        "example": "lwt_future_rolls.BTCUSD.1000ms"
+      },
+      "lwt_future_rolls.<underlying>.<delay>_payload": {
+        "type": "object",
+        "required": [
+          "channel_name",
+          "notification"
+        ],
+        "properties": {
+          "channel_name": {
+            "type": "string",
+            "description": "Channel name as in subscription.",
+            "example": "lwt_future_rolls.BTCUSD.1000ms"
+          },
+          "notification": {
+            "type": "object",
+            "required": [
+              "tickers"
+            ],
+            "properties": {
+              "tickers": {
+                "type": "object",
+                "description": "Ticker updates per instrument.",
+                "propertyNames": {
+                  "description": "Instrument name."
+                },
+                "additionalProperties": {
+                  "x-additionalPropertiesName": "\"INSTRUMENT-NAME\"",
+                  "type": "array",
+                  "description": "Futures roll instrument ticker data.",
+                  "minItems": 6,
+                  "maxItems": 6,
+                  "prefixItems": [
+                    {
+                      "type": "number",
+                      "description": "The unix timestamp when the price was marked."
+                    },
+                    {
+                      "type": "number",
+                      "description": "Current mark price."
+                    },
+                    {
+                      "type": "number",
+                      "description": "Index price at time of marking."
+                    },
+                    {
+                      "type": "array",
+                      "description": "Best bid. Empty array if no best bid is available.",
+                      "minItems": 0,
+                      "maxItems": 2,
+                      "prefixItems": [
+                        {
+                          "type": "number",
+                          "description": "Price"
+                        },
+                        {
+                          "type": "number",
+                          "description": "Amount"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "description": "Best ask. Empty array if no best ask is available.",
+                      "minItems": 0,
+                      "maxItems": 2,
+                      "prefixItems": [
+                        {
+                          "type": "number",
+                          "description": "Price"
+                        },
+                        {
+                          "type": "number",
+                          "description": "Amount"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "number",
+                      "description": "Price of last trade or `null` if no last trade is known."
+                    }
+                  ]
+                }
+              }
+            },
+            "example": {
+              "tickers": {
+                "BTC-03APR26-02APR26": [
+                  1776176640.123457,
+                  19.42,
+                  78000.28,
+                  [
+                    18.5,
+                    0.1
+                  ],
+                  [],
+                  null
+                ],
+                "BTC-25DEC26-25SEP26": [
+                  1776176640.123457,
+                  1806.57,
+                  78000.28,
+                  [
+                    1600.3,
+                    0.2
+                  ],
+                  [
+                    1800.4,
+                    0.3
+                  ],
+                  1750
+                ]
+              }
+            },
+            "description": "Channel-specific content"
+          }
+        }
+      },
+      "recent_trades.<target>.<category>_params": {
+        "type": "object",
+        "properties": {
+          "<target>": {
+            "description": "Either underlying (e.g. `BTCUSD`), or instrument name (e.g. `BTC-PERPETUAL`).",
+            "type": "string"
+          },
+          "<category>": {
+            "enum": [
+              "single",
+              "all",
+              "options",
+              "future_rolls"
+            ],
+            "description": "Category that serves as a filter for which instruments' trades to include in the feed. Can be one of the following values:\n  - `single`: single instrument. Only valid for instrument recent trades. I.e. `recent_trades.BTC-11MAY22-32400-C.single` is valid but `recent_trade.BTCUSD.single` is not valid.\n  - `all`: all instruments in underlying. Only valid for underlying recent trades. I.e. `recent_trades.BTCUSD.all` is valid but `recent_trade.BTC-11MAY22-32400-C.all` is not valid.\n  - `options`: all options in underlying. Only valid for underlying recent trades. I.e. `recent_trades.BTCUSD.options` is valid but `recent_trade.BTC-11MAY22-32400-C.options` is not valid.\n  - `future_rolls`: all combination instruments in underlying that represent rolls between two futures or a future and a perpetual. Only valid for underlying recent trades. I.e. `recent_trades.BTCUSD.future_rolls` is valid but `recent_trade.BTC-11MAY22-32400-C.future_rolls` is not valid.\n",
+            "type": "string"
+          }
+        },
+        "example": "recent_trades.BTCUSD.all"
       },
       "recent_trades.<target>.<category>_payload": {
         "type": "object",
@@ -3942,7 +4582,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "recent_trades.<target>.<category>"
+            "example": "recent_trades.BTCUSD.all"
           },
           "notification": {
             "type": "array",
@@ -3958,8 +4598,22 @@
                 false
               ]
             }
+          },
+          "snapshot": {
+            "type": "boolean",
+            "description": "The snapshot flag is present only if true, and only for 'stateful' feeds that\ntransmit an initial state and subsequent updates.\n"
           }
         }
+      },
+      "price_index.<underlying>_params": {
+        "type": "object",
+        "properties": {
+          "<underlying>": {
+            "description": "Underlying is e.g. `BTCUSD`.",
+            "type": "string"
+          }
+        },
+        "example": "price_index.BTCUSD"
       },
       "price_index.<underlying>_payload": {
         "type": "object",
@@ -3971,13 +4625,23 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "price_index.<underlying>"
+            "example": "price_index.BTCUSD"
           },
           "notification": {
             "$ref": "#/components/schemas/Index",
             "description": "Channel-specific content"
           }
         }
+      },
+      "underlying_statistics.<underlying>_params": {
+        "type": "object",
+        "properties": {
+          "<underlying>": {
+            "description": "Underlying is e.g. `BTCUSD`.",
+            "type": "string"
+          }
+        },
+        "example": "underlying_statistics.BTCUSD"
       },
       "underlying_statistics.<underlying>_payload": {
         "type": "object",
@@ -3989,7 +4653,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "underlying_statistics.<underlying>"
+            "example": "underlying_statistics.BTCUSD"
           },
           "notification": {
             "type": "object",
@@ -4129,6 +4793,20 @@
           }
         }
       },
+      "base_price.<underlying>.<expiration>_params": {
+        "type": "object",
+        "properties": {
+          "<underlying>": {
+            "description": "Underlying is e.g. `BTCUSD`.",
+            "type": "string"
+          },
+          "<expiration>": {
+            "description": "Expiration date in `YYYY-MM-DD` format.",
+            "type": "string"
+          }
+        },
+        "example": "base_price.BTCUSD.2021-09-24"
+      },
       "base_price.<underlying>.<expiration>_payload": {
         "type": "object",
         "required": [
@@ -4139,14 +4817,15 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "base_price.<underlying>.<expiration>"
+            "example": "base_price.BTCUSD.2021-09-24"
           },
           "notification": {
             "type": "object",
             "required": [
               "base_name",
               "price",
-              "index"
+              "index",
+              "index_delta"
             ],
             "properties": {
               "base_name": {
@@ -4186,7 +4865,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "instruments"
+            "example": "instruments"
           },
           "notification": {
             "type": "array",
@@ -4212,6 +4891,10 @@
               ]
             },
             "description": "Channel-specific content"
+          },
+          "snapshot": {
+            "type": "boolean",
+            "description": "The snapshot flag is present only if true, and only for 'stateful' feeds that\ntransmit an initial state and subsequent updates.\n"
           }
         }
       },
@@ -4225,7 +4908,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "system"
+            "example": "system"
           },
           "notification": {
             "$ref": "#/components/schemas/SystemEvent",
@@ -4243,7 +4926,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "banners"
+            "example": "banners"
           },
           "notification": {
             "type": "array",
@@ -4264,7 +4947,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "rfqs"
+            "example": "rfqs"
           },
           "notification": {
             "type": "array",
@@ -4272,6 +4955,10 @@
               "$ref": "#/components/schemas/Rfq"
             },
             "description": "Channel-specific content"
+          },
+          "snapshot": {
+            "type": "boolean",
+            "description": "The snapshot flag is present only if true, and only for 'stateful' feeds that\ntransmit an initial state and subsequent updates.\n"
           }
         }
       },
@@ -4285,7 +4972,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "account.rfqs"
+            "example": "account.rfqs"
           },
           "notification": {
             "type": "array",
@@ -4293,6 +4980,10 @@
               "$ref": "#/components/schemas/Rfq"
             },
             "description": "Channel-specific content"
+          },
+          "snapshot": {
+            "type": "boolean",
+            "description": "The snapshot flag is present only if true, and only for 'stateful' feeds that\ntransmit an initial state and subsequent updates.\n"
           }
         }
       },
@@ -4306,7 +4997,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "account.rfq_history"
+            "example": "account.rfq_history"
           },
           "notification": {
             "type": "array",
@@ -4327,7 +5018,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "mm.rfqs"
+            "example": "mm.rfqs"
           },
           "notification": {
             "type": "array",
@@ -4335,6 +5026,10 @@
               "$ref": "#/components/schemas/Rfq"
             },
             "description": "Channel-specific content"
+          },
+          "snapshot": {
+            "type": "boolean",
+            "description": "The snapshot flag is present only if true, and only for 'stateful' feeds that\ntransmit an initial state and subsequent updates.\n"
           }
         }
       },
@@ -4348,7 +5043,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "mm.rfq_quotes"
+            "example": "mm.rfq_quotes"
           },
           "notification": {
             "type": "array",
@@ -4356,8 +5051,22 @@
               "$ref": "#/components/schemas/RfqOrder"
             },
             "description": "Channel-specific content"
+          },
+          "snapshot": {
+            "type": "boolean",
+            "description": "The snapshot flag is present only if true, and only for 'stateful' feeds that\ntransmit an initial state and subsequent updates.\n"
           }
         }
+      },
+      "index_components.<underlying>_params": {
+        "type": "object",
+        "properties": {
+          "<underlying>": {
+            "description": "Underlying is e.g. `BTCUSD`.",
+            "type": "string"
+          }
+        },
+        "example": "index_components.BTCUSD"
       },
       "index_components.<underlying>_payload": {
         "type": "object",
@@ -4369,7 +5078,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "const": "index_components.<underlying>"
+            "example": "index_components.BTCUSD"
           },
           "notification": {
             "type": "object",
@@ -4386,7 +5095,7 @@
             "example": {
               "index_price": 20000,
               "components": {
-                "coinbase": "19998,",
+                "coinbase": 19998,
                 "bitstamp": 20002
               }
             },
@@ -8692,7 +9401,7 @@
                         "properties": {
                           "quotes": {
                             "type": "array",
-                            "description": "List of quotes (maximum 100).\n\nEach item is a double-sided quotes array on a single instrument. A quotes array atomically replaces a previous quotes array. Both\nbid and ask price may be specified. If either bid or ask is not specified, that side is *not* replaced or\nremoved. If a double-sided quotes array for an instrument that was specified in an earlier call is omitted from the next\ncall, these quotes are *not* removed or replaced.\n\nWhen a side quotes array is specified, any omitted previous quotes *will* be removed.\nTo remove all quotes on a side, send an empty quotes array.\n\nSending a quote with the exact same price and amount as in the previous call *will not* replace the quote, thus\npreserving the quote's priority.\n\nMass quoting allows for a maximum of 10 level quotes on each side on the instrument.\n\nNote that market maker protection must have been configured for the instrument's product group, and both bid\nand ask amount must not exceed the most recent protection configuration amount.\n",
+                            "description": "List of quotes (maximum 100).\n\nEach item is a double-sided quotes array on a single instrument. A quotes array atomically replaces a previous quotes array. Both\nbid and ask price may be specified. If either bid or ask is not specified, that side is *not* replaced or\nremoved. If a double-sided quotes array for an instrument that was specified in an earlier call is omitted from the next\ncall, these quotes are *not* removed or replaced.\n\nWhen a side quotes array is specified, any omitted previous quotes *will* be removed.\nTo remove all quotes on a side, send an empty quotes array.\n\nSending a quote with the exact same price and amount as in the previous call *will not* replace the quote, thus\npreserving the quote's priority.\n\nMass quoting allows for a maximum of 10 level quotes on each side per instrument.\n\nNote that market maker protection must have been configured for the instrument's product group, and both bid\nand ask amount must not exceed the most recent protection configuration amount.\n",
                             "items": {
                               "$ref": "#/components/schemas/DoubleSidedQuote"
                             }
@@ -10640,6 +11349,28 @@
               "description": "Set to bookmark from previous call to get next page."
             },
             "required": false
+          },
+          {
+            "name": "instrument_names",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "description": "Comma-separated list of instrument names to request daily marks for. If omitted, daily marks for all instruments is returned."
+            },
+            "required": false
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ascending",
+                "descending"
+              ],
+              "description": "Sort direction by bookmark. Defaults to `descending` (i.e. newest items first)."
+            },
+            "required": false
           }
         ]
       }
@@ -10701,6 +11432,18 @@
                           "bookmark": {
                             "type": "string",
                             "description": "Set to bookmark from previous call to get next page."
+                          },
+                          "instrument_names": {
+                            "type": "string",
+                            "description": "Comma-separated list of instrument names to request daily marks for. If omitted, daily marks for all instruments is returned."
+                          },
+                          "sort": {
+                            "type": "string",
+                            "enum": [
+                              "ascending",
+                              "descending"
+                            ],
+                            "description": "Sort direction by bookmark. Defaults to `descending` (i.e. newest items first)."
                           }
                         }
                       }
@@ -16526,6 +17269,10 @@
                                 "type": "number",
                                 "description": "Time when this withdrawal was requested (Unix timestamp)."
                               },
+                              "execute_time": {
+                                "type": "number",
+                                "description": "Time when this withdrawal was completed (Unix timestamp)."
+                              },
                               "label": {
                                 "type": "string",
                                 "description": "Optional label attached to the withdrawal request."
@@ -16562,6 +17309,7 @@
                                 "blockchain": "ethereum",
                                 "transaction_hash": "0x123415543674a854df02f4ef8f5dbc04ee01b744ac0bc4123456",
                                 "create_time": 1632732292.7792032,
+                                "execute_time": 1632732292.7792032,
                                 "label": "It's not much, but it's honest work",
                                 "state": "executed",
                                 "remark": "COMPLETED - CONFIRMED",
@@ -16685,6 +17433,10 @@
                                     "type": "number",
                                     "description": "Time when this withdrawal was requested (Unix timestamp)."
                                   },
+                                  "execute_time": {
+                                    "type": "number",
+                                    "description": "Time when this withdrawal was completed (Unix timestamp)."
+                                  },
                                   "label": {
                                     "type": "string",
                                     "description": "Optional label attached to the withdrawal request."
@@ -16721,6 +17473,7 @@
                                     "blockchain": "ethereum",
                                     "transaction_hash": "0x123415543674a854df02f4ef8f5dbc04ee01b744ac0bc4123456",
                                     "create_time": 1632732292.7792032,
+                                    "execute_time": 1632732292.7792032,
                                     "label": "It's not much, but it's honest work",
                                     "state": "executed",
                                     "remark": "COMPLETED - CONFIRMED",

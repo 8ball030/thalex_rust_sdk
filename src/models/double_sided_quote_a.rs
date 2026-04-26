@@ -11,16 +11,17 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
+/// DoubleSidedQuoteA : Ask quote(s)
+/// Ask quote(s)
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum MassQuoteSingleLevelQuote {
-    /// an array of ask quotes
-    Array(Vec<Vec<serde_json::Value>>),
-    SingleLevelQuote(models::SingleLevelQuote),
+pub enum DoubleSidedQuoteA {
+    SingleSidedMultiLevelQuote(models::SingleSidedMultiLevelQuote),
+    SingleSidedSingleLevelQuote(models::SingleSidedSingleLevelQuote),
 }
 
-impl Default for MassQuoteSingleLevelQuote {
+impl Default for DoubleSidedQuoteA {
     fn default() -> Self {
-        Self::Array(Default::default())
+        Self::SingleSidedMultiLevelQuote(Default::default())
     }
 }
