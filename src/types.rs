@@ -1,12 +1,10 @@
+use bytes::Bytes;
 use serde::Deserialize;
 use serde_json::Value;
-use yawc::MaybeTlsStream;
 use std::{fmt, str::FromStr};
 use thiserror::Error;
 use tokio::{net::TcpStream, sync::oneshot};
-use tokio_tungstenite::{
-    tungstenite::Bytes,
-};
+use yawc::MaybeTlsStream;
 
 use crate::models::{ErrorResponse, RpcErrorResponse};
 

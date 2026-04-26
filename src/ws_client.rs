@@ -8,19 +8,17 @@ use tokio::{
     time::{Duration, Instant, MissedTickBehavior, interval, sleep},
 };
 
+use bytes::Bytes;
 use futures_util::{SinkExt, StreamExt};
 use log::{debug, error, info, warn};
 use serde_json::Value;
-use yawc::{Frame, OpCode};
 use std::env::var;
 use std::sync::{
     Arc,
     atomic::{AtomicU64, Ordering},
 };
 use tokio::sync::{Mutex, mpsc, watch};
-use tokio_tungstenite::{
-    tungstenite::Bytes,
-};
+use yawc::{Frame, OpCode};
 
 use crate::{
     auth_utils::make_auth_token,
@@ -241,10 +239,7 @@ impl WsClient {
 
         let text = request.to_string();
 
-        if let Err(e) = self
-            .write_tx
-            .send(InternalCommand::Send(Frame::text(text)))
-        {
+        if let Err(e) = self.write_tx.send(InternalCommand::Send(Frame::text(text))) {
             self.pending_requests.remove(&id);
             return Err(ClientError::Transport(Box::new(e)));
         }

@@ -1,12 +1,12 @@
 use std::hint::black_box;
 
+use bytes::Bytes;
 use criterion::{BenchmarkId, Criterion, criterion_group, criterion_main};
 use serde_json::json;
 use thalex_rust_sdk::{
     models::{InstrumentsResponse, RpcResponse, Ticker},
     ws_client::deserialise_to_type,
 };
-use tokio_tungstenite::tungstenite::Bytes;
 
 /// Бенчмарк для измерения производительности JSON парсинга
 /// Тестирует различные размеры сообщений и типы данных
