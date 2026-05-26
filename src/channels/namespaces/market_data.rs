@@ -29,10 +29,7 @@ impl<'a> MarketDataSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Public,
                 channel.clone(),
-                move |msg: TickerNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: TickerNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
@@ -55,10 +52,7 @@ impl<'a> MarketDataSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Public,
                 channel.clone(),
-                move |msg: BookNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: BookNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
@@ -79,10 +73,7 @@ impl<'a> MarketDataSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Public,
                 channel.clone(),
-                move |msg: LwtNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: LwtNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
@@ -103,10 +94,7 @@ impl<'a> MarketDataSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Public,
                 channel.clone(),
-                move |msg: RecentTradesNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: RecentTradesNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
@@ -126,10 +114,7 @@ impl<'a> MarketDataSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Public,
                 channel.clone(),
-                move |msg: PriceIndexNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: PriceIndexNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
@@ -149,10 +134,7 @@ impl<'a> MarketDataSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Public,
                 channel.clone(),
-                move |msg: UnderlyingStatisticsNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: UnderlyingStatisticsNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
@@ -173,10 +155,7 @@ impl<'a> MarketDataSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Public,
                 channel.clone(),
-                move |msg: BasePriceNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: BasePriceNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
@@ -192,10 +171,7 @@ impl<'a> MarketDataSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Public,
                 channel.clone(),
-                move |msg: InstrumentsNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: InstrumentsNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
@@ -211,10 +187,7 @@ impl<'a> MarketDataSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Public,
                 channel.clone(),
-                move |msg: RfqsNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: RfqsNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
@@ -234,10 +207,7 @@ impl<'a> MarketDataSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Public,
                 channel.clone(),
-                move |msg: IndexComponentsNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: IndexComponentsNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)

@@ -18,10 +18,7 @@ impl<'a> MmProtSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Private,
                 channel.clone(),
-                move |msg: SessionMmProtectionNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: SessionMmProtectionNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)

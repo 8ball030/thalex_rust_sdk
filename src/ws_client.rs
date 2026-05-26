@@ -284,7 +284,7 @@ impl WsClient {
         Ok(())
     }
 
-    pub async fn subscribe_channel<P, F>(
+    pub async fn subscribe_channel<P, F, Fut>(
         &self,
         scope: RequestScope,
         channel: String,
@@ -292,7 +292,8 @@ impl WsClient {
     ) -> Result<String, ClientError>
     where
         P: DeserializeOwned + Send + 'static,
-        F: FnMut(P) + Send + 'static,
+        F: FnMut(P) -> Fut + Send + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
     {
         let (tx, mut rx) = mpsc::unbounded_channel::<Bytes>();
 
@@ -319,7 +320,7 @@ impl WsClient {
                     }
                 };
 
-                callback(parsed);
+                callback(parsed).await;
             }
         });
         let sub_result: SubscribeResponse = self

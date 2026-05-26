@@ -18,10 +18,7 @@ impl<'a> MmRfqSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Private,
                 channel.clone(),
-                move |msg: MmRfqsNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: MmRfqsNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
@@ -37,10 +34,7 @@ impl<'a> MmRfqSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Private,
                 channel.clone(),
-                move |msg: MmRfqQuotesNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: MmRfqQuotesNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)

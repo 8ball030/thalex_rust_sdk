@@ -11,8 +11,8 @@ func_template = Template("""
             RequestScope::$scope,
             channel.clone(),
             move |msg: $response_model| {
-                let fut = callback(msg.notification);
-                tokio::spawn(fut);
+                callback(msg.notification)
+                
 
             }
         ).await?;

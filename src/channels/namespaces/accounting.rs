@@ -25,10 +25,7 @@ impl<'a> AccountingSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Private,
                 channel.clone(),
-                move |msg: AccountOrdersNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: AccountOrdersNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
@@ -44,10 +41,7 @@ impl<'a> AccountingSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Private,
                 channel.clone(),
-                move |msg: AccountPersistentOrdersNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: AccountPersistentOrdersNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
@@ -63,10 +57,7 @@ impl<'a> AccountingSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Private,
                 channel.clone(),
-                move |msg: SessionOrdersNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: SessionOrdersNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
@@ -82,10 +73,7 @@ impl<'a> AccountingSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Private,
                 channel.clone(),
-                move |msg: AccountTradeHistoryNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: AccountTradeHistoryNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
@@ -101,10 +89,7 @@ impl<'a> AccountingSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Private,
                 channel.clone(),
-                move |msg: AccountOrderHistoryNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: AccountOrderHistoryNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
@@ -120,10 +105,7 @@ impl<'a> AccountingSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Private,
                 channel.clone(),
-                move |msg: AccountPortfolioNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: AccountPortfolioNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
@@ -139,10 +121,7 @@ impl<'a> AccountingSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Private,
                 channel.clone(),
-                move |msg: AccountSummaryNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: AccountSummaryNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
@@ -158,10 +137,7 @@ impl<'a> AccountingSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Private,
                 channel.clone(),
-                move |msg: AccountRfqsNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: AccountRfqsNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
@@ -177,10 +153,7 @@ impl<'a> AccountingSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Private,
                 channel.clone(),
-                move |msg: AccountRfqHistoryNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: AccountRfqHistoryNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)

@@ -18,10 +18,7 @@ impl<'a> ConditionalSubscriptions<'a> {
             .subscribe_channel(
                 RequestScope::Private,
                 channel.clone(),
-                move |msg: AccountConditionalOrdersNotification| {
-                    let fut = callback(msg.notification);
-                    tokio::spawn(fut);
-                },
+                move |msg: AccountConditionalOrdersNotification| callback(msg.notification),
             )
             .await?;
         Ok(channel)
