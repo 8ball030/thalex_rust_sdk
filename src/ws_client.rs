@@ -35,6 +35,7 @@ use crate::channels::subscriptions::Subscriptions;
 use crate::rpc::Rpc;
 use std::str::FromStr;
 
+const MAX_BACKOFF_SECS: u64 = 1 << 6;
 const PING_INTERVAL: Duration = Duration::from_secs(5);
 const READ_TIMEOUT: Duration = Duration::from_secs(7);
 
@@ -528,7 +529,7 @@ async fn connection_supervisor(
 ) {
     debug!("Connection supervisor started for {url}");
 
-    let mut attempts: u64 = 1;
+    let mut attempts = 0u32;
     loop {
         if *shutdown_rx.borrow() {
             info!("Supervisor sees shutdown for {url}");
@@ -580,9 +581,13 @@ async fn connection_supervisor(
                 }
 
                 connection_state_tx.send(ExternalEvent::Disconnected).ok();
-                let cooldown_secs = attempts * 3;
-                debug!("Reconnecting to {url} in {cooldown_secs} seconds (attempt {attempts})");
-                tokio::time::sleep(std::time::Duration::from_secs(cooldown_secs)).await;
+                let sleep_time = 2u64.saturating_pow(attempts).min(MAX_BACKOFF_SECS);
+                let backoff = std::time::Duration::from_secs(sleep_time);
+                debug!(
+                    "Connection lost to {url}, reconnecting in {sleep_time}s (attempt {attempts})"
+                );
+                tokio::time::sleep(backoff).await;
+                attempts += 1;
             }
             Err(e) => {
                 connection_state_tx.send(ExternalEvent::Disconnected).ok();
@@ -590,7 +595,10 @@ async fn connection_supervisor(
                 if *shutdown_rx.borrow() || cmd_rx.is_closed() {
                     break;
                 }
-                tokio::time::sleep(std::time::Duration::from_secs(attempts * 3)).await;
+                let sleep_time = 2u64.saturating_pow(attempts).min(MAX_BACKOFF_SECS);
+                let backoff = std::time::Duration::from_secs(sleep_time);
+                warn!("Connection attempt {attempts} to {url} failed, retrying in {sleep_time}s");
+                tokio::time::sleep(backoff).await;
                 attempts += 1;
             }
         }
