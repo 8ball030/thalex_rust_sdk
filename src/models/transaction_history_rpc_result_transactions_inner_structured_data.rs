@@ -19,6 +19,13 @@ pub enum TransactionHistoryRpcResultTransactionsInnerStructuredData {
     SessionSettlement(models::SessionSettlement),
     PerpetualFunding(models::PerpetualFunding),
     BalanceSweep(models::BalanceSweep),
+    Deposit1(models::Deposit1),
+    Withdrawal(models::Withdrawal),
+    WithdrawalFee(models::WithdrawalFee),
+    InternalTransfer(models::InternalTransfer),
+    MarketVelocityProgramPayment(models::MarketVelocityProgramPayment),
+    MarketQualityProgramPayment(models::MarketQualityProgramPayment),
+    ReferralProgram(models::ReferralProgram),
 }
 
 impl Default for TransactionHistoryRpcResultTransactionsInnerStructuredData {

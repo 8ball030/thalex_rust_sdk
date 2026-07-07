@@ -42,12 +42,6 @@ pub struct Sgsl1 {
     /// A label that the bot will add to all orders for easy identification.
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
-    /// Timestamp indicating when the bot was created.
-    #[serde(rename = "start_time")]
-    pub start_time: rust_decimal::Decimal,
-    /// Timestamp indicating when the bot stopped working due to specified `stop_reason`.
-    #[serde(rename = "stop_time", skip_serializing_if = "Option::is_none")]
-    pub stop_time: Option<rust_decimal::Decimal>,
 }
 
 impl Sgsl1 {
@@ -60,7 +54,6 @@ impl Sgsl1 {
         exit_price: rust_decimal::Decimal,
         exit_position: rust_decimal::Decimal,
         end_time: rust_decimal::Decimal,
-        start_time: rust_decimal::Decimal,
     ) -> Sgsl1 {
         Sgsl1 {
             strategy,
@@ -73,8 +66,6 @@ impl Sgsl1 {
             max_slippage: None,
             end_time,
             label: None,
-            start_time,
-            stop_time: None,
         }
     }
 }

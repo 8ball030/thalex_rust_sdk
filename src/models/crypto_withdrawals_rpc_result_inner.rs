@@ -22,7 +22,7 @@ pub struct CryptoWithdrawalsRpcResultInner {
     /// Target address, specific to blockchain used.
     #[serde(rename = "target_address")]
     pub target_address: String,
-    /// Blockchain used or this transaction.
+    /// Blockchain used for this transaction.
     #[serde(rename = "blockchain", skip_serializing_if = "Option::is_none")]
     pub blockchain: Option<String>,
     /// Transaction hash on the used blockchain.

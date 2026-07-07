@@ -25,7 +25,7 @@ pub struct TransactionHistoryRpcResultTransactionsInner {
     /// Instrument name this transaction relates to. For example, settlement transactions are per instrument.  Not included for transactions that don't relate to an instrument.
     #[serde(rename = "instrument_name", skip_serializing_if = "Option::is_none")]
     pub instrument_name: Option<String>,
-    /// Transaction type. Can be one of the following values: - `credit` - Asset credits or debits. - `deposit` - Deposits. - `withdrawal` - Withdrawals. - `withdrawal fee` - Withdrawal fees. - `session settlement` - Settled session PNL. - `perpetual funding` - Settled perpetual funding. - `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer. - `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap. - `referral program payment` - Referral program rewards. - `market velocity program payment` - MVP program rewards. - `market quality program payment` - MQP program rewards. - `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions. - `balance sweep` - Balance sweep between two accounts.
+    /// Transaction type. Can be one of the following values: - `credit` - Asset credits or debits. - `deposit` - Deposits. - `withdrawal` - Withdrawals. - `withdrawal fee` - Withdrawal fees. - `session settlement` - Settled session PNL. - `perpetual funding` - Settled perpetual funding. - `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer. - `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap. - `asset swap fee` - Asset swap fees. - `referral program payment` - Referral program rewards. - `market velocity program payment` - MVP program rewards. - `market quality program payment` - MQP program rewards. - `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions. - `balance sweep` - Balance sweep between two accounts.
     #[serde(rename = "transaction_type", skip_serializing_if = "Option::is_none")]
     pub transaction_type: Option<TransactionType>,
     /// Description of this transaction.  Note that this field is not supposed to be machine-readable and the the format is not guaranteed to remain unchanged.
@@ -57,7 +57,7 @@ impl TransactionHistoryRpcResultTransactionsInner {
         }
     }
 }
-/// Transaction type. Can be one of the following values: - `credit` - Asset credits or debits. - `deposit` - Deposits. - `withdrawal` - Withdrawals. - `withdrawal fee` - Withdrawal fees. - `session settlement` - Settled session PNL. - `perpetual funding` - Settled perpetual funding. - `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer. - `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap. - `referral program payment` - Referral program rewards. - `market velocity program payment` - MVP program rewards. - `market quality program payment` - MQP program rewards. - `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions. - `balance sweep` - Balance sweep between two accounts.
+/// Transaction type. Can be one of the following values: - `credit` - Asset credits or debits. - `deposit` - Deposits. - `withdrawal` - Withdrawals. - `withdrawal fee` - Withdrawal fees. - `session settlement` - Settled session PNL. - `perpetual funding` - Settled perpetual funding. - `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer. - `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap. - `asset swap fee` - Asset swap fees. - `referral program payment` - Referral program rewards. - `market velocity program payment` - MVP program rewards. - `market quality program payment` - MQP program rewards. - `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions. - `balance sweep` - Balance sweep between two accounts.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum TransactionType {
     #[serde(rename = "credit")]
@@ -76,6 +76,8 @@ pub enum TransactionType {
     InternalTransfer,
     #[serde(rename = "asset swap")]
     AssetSwap,
+    #[serde(rename = "asset swap fee")]
+    AssetSwapFee,
     #[serde(rename = "referral program payment")]
     ReferralProgramPayment,
     #[serde(rename = "market velocity program payment")]
