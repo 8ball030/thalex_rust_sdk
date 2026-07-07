@@ -30,6 +30,8 @@ pub enum TypesEnum {
     InternalTransfer,
     #[serde(rename = "asset_swap")]
     AssetSwap,
+    #[serde(rename = "asset_swap_fee")]
+    AssetSwapFee,
     #[serde(rename = "referral_program_payment")]
     ReferralProgramPayment,
     #[serde(rename = "market_quality_program_payment")]
@@ -51,6 +53,7 @@ impl std::fmt::Display for TypesEnum {
             Self::PerpetualFunding => write!(f, "perpetual_funding"),
             Self::InternalTransfer => write!(f, "internal_transfer"),
             Self::AssetSwap => write!(f, "asset_swap"),
+            Self::AssetSwapFee => write!(f, "asset_swap_fee"),
             Self::ReferralProgramPayment => write!(f, "referral_program_payment"),
             Self::MarketQualityProgramPayment => write!(f, "market_quality_program_payment"),
             Self::DailyInterest => write!(f, "daily_interest"),

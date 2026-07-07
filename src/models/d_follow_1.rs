@@ -43,12 +43,6 @@ pub struct DFollow1 {
     /// A label that the bot will add to all orders for easy identification.
     #[serde(rename = "label", skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
-    /// Timestamp indicating when the bot was created.
-    #[serde(rename = "start_time")]
-    pub start_time: rust_decimal::Decimal,
-    /// Timestamp indicating when the bot stopped working due to specified `stop_reason`.
-    #[serde(rename = "stop_time", skip_serializing_if = "Option::is_none")]
-    pub stop_time: Option<rust_decimal::Decimal>,
 }
 
 impl DFollow1 {
@@ -59,7 +53,6 @@ impl DFollow1 {
         target_amount: rust_decimal::Decimal,
         period: rust_decimal::Decimal,
         end_time: rust_decimal::Decimal,
-        start_time: rust_decimal::Decimal,
     ) -> DFollow1 {
         DFollow1 {
             strategy,
@@ -72,8 +65,6 @@ impl DFollow1 {
             max_slippage: None,
             end_time,
             label: None,
-            start_time,
-            stop_time: None,
         }
     }
 }

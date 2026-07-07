@@ -154,7 +154,7 @@
     {
       "name": "subs_market_data",
       "x-displayName": "Market data",
-      "description": "## Order book\n\nChannel name: `book.<instrument>.<grouping>.<nlevels>.<delay>`\n\nSubscribes to aggregated book updates and trade ticks on a single instrument or a combination.\n\nCombination order books _do not_ represent combination orders inserted by customers. Instead, each level in the virtual combination order book represents a possible proportional fill at a specific price for the whole combination that can be matched against orders in the outright books that correspond to the combination legs. Combination order books are updated in real time when outright order books they depend on change.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/book.<instrument>.<grouping>.<nlevels>.<delay>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/book.<instrument>.<grouping>.<nlevels>.<delay>_payload\" />\n\n## Ticker\n\nChannel name: `ticker.<instrument>.<delay>`\n\nSubscribes to a ticker feed for a single instrument or a combination.\n\nMark price of a combination is the quantity-weighted sum of mark prices of the leg instruments.\n\nBest bid and best ask for combinations represent top levels of a corresponding virtual combination order book. Combination order books _do not_ represent combination orders inserted by customers. Instead, each level in the virtual combination order book represents a possible proportional fill at a specific price for the whole combination that can be matched against orders in the outright books that correspond to the combination legs. Combination order books are updated in real time when outright order books they depend on change.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/ticker.<instrument>.<delay>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/ticker.<instrument>.<delay>_payload\" />\n\n## Ticker (lightweight payload)\n\nChannel name: `lwt.<instrument>.<delay>`\n\nSimilar to `ticker.<instrument>.<delay>`, but subscribes to a lightweight ticker consisting only of best bid and ask, mark price, volatility and last trade price. Other pricing elements can be derived from the base price feed.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt.<instrument>.<delay>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt.<instrument>.<delay>_payload\" />\n\n## Tickers for options\n\nChannel name: `lwt_options.<underlying>.<expiration>.<delay>`\n\nSubscribes to lightweight tickers of multiple option instruments on a given underlying.\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt_options.<underlying>.<expiration>.<delay>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt_options.<underlying>.<expiration>.<delay>_payload\" />\n\n## Tickers for futures and perpetuals\n\nChannel name: `lwt_futures.<underlying>.<delay>`\n\nSubscribes to lightweight tickers of all dated futures and perpetual instruments on a given underlying.\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt_futures.<underlying>.<delay>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt_futures.<underlying>.<delay>_payload\" />\n\n## Tickers for futures rolls\n\nChannel name: `lwt_future_rolls.<underlying>.<delay>`\n\nSubscribes to lightweight tickers of all futures roll instruments on a given underlying.\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt_future_rolls.<underlying>.<delay>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt_future_rolls.<underlying>.<delay>_payload\" />\n\n## Recent trades\n\nChannel name: `recent_trades.<target>.<category>`\n\nSubscribes to notifications about recent trades of a specific category. The first notification after subscription contains a\nsnapshot of a certain number of last known trades. Subsequent notifications contain new trades. Note that this subscription\nhas a slight delay compared to order book subscriptions (`book.*`), but the snapshot functionality is more reliable.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/recent_trades.<target>.<category>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/recent_trades.<target>.<category>_payload\" />\n\n## Index price\n\nChannel name: `price_index.<underlying>`\n\nSubscribes to index price stamps.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/price_index.<underlying>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/price_index.<underlying>_payload\" />\n\n## Underlying statistics\n\nChannel name: `underlying_statistics.<underlying>`\n\nSubscribes to statistics of a single underlying.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/underlying_statistics.<underlying>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/underlying_statistics.<underlying>_payload\" />\n\n## Forward price\n\nChannel name: `base_price.<underlying>.<expiration>`\n\nSubscribes to per-expiration forward prices. If a future exists with this\nexpiration date, the price equals the future's mark price. Otherwise, if one\nor more options exist with this expiration date, the price will be the\ninterpolated forward price as used in our marking process. If no instrument with\nthis expiration exists, the subscription will fail.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/base_price.<underlying>.<expiration>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/base_price.<underlying>.<expiration>_payload\" />\n\n## Instruments\n\nChannel name: `instruments`\n\nSubscribes to changes in active instruments.\n\nNew instruments may be added when others expire, or intraday when the index\nprice changes significantly. Instruments are removed when they expire.\n\nThis subscription immediately responds with a notification for all currently\nactive instruments.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/instruments_payload\" />\n\n## Traded RFQs\n\nChannel name: `rfqs`\n\nSubscribed to traded RFQs. When subscribing, a snapshot will be sent containing recently traded RFQs.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/rfqs_payload\" />\n\n## Index components\n\nChannel name: `index_components.<underlying>`\n\nSubscribes to the index price components channel.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/index_components.<underlying>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/index_components.<underlying>_payload\" />\n\n"
+      "description": "## Order book\n\nChannel name: `book.<instrument>.<grouping>.<nlevels>.<delay>`\n\nSubscribes to aggregated book updates and trade ticks on a single instrument or a combination.\n\nCombination order books _do not_ represent combination orders inserted by customers. Instead, each level in the virtual combination order book represents a possible proportional fill at a specific price for the whole combination that can be matched against orders in the outright books that correspond to the combination legs. Combination order books are updated in real time when outright order books they depend on change.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/book.<instrument>.<grouping>.<nlevels>.<delay>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/book.<instrument>.<grouping>.<nlevels>.<delay>_payload\" />\n\n## Ticker\n\nChannel name: `ticker.<instrument>.<delay>`\n\nSubscribes to a ticker feed for a single instrument or a combination.\n\nMark price of a combination is the quantity-weighted sum of mark prices of the leg instruments.\n\nBest bid and best ask for combinations represent top levels of a corresponding virtual combination order book. Combination order books _do not_ represent combination orders inserted by customers. Instead, each level in the virtual combination order book represents a possible proportional fill at a specific price for the whole combination that can be matched against orders in the outright books that correspond to the combination legs. Combination order books are updated in real time when outright order books they depend on change.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/ticker.<instrument>.<delay>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/ticker.<instrument>.<delay>_payload\" />\n\n## Ticker (lightweight payload)\n\nChannel name: `lwt.<instrument>.<delay>`\n\nSimilar to `ticker.<instrument>.<delay>`, but subscribes to a lightweight ticker consisting only of best bid and ask, mark price, volatility and last trade price. Other pricing elements can be derived from the base price feed.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt.<instrument>.<delay>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt.<instrument>.<delay>_payload\" />\n\n## Tickers for options\n\nChannel name: `lwt_options.<underlying>.<expiration>.<delay>`\n\nSubscribes to lightweight tickers of multiple option instruments on a given underlying.\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt_options.<underlying>.<expiration>.<delay>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt_options.<underlying>.<expiration>.<delay>_payload\" />\n\n## Tickers for futures and perpetuals\n\nChannel name: `lwt_futures.<underlying>.<delay>`\n\nSubscribes to lightweight tickers of all dated futures and perpetual instruments on a given underlying.\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt_futures.<underlying>.<delay>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt_futures.<underlying>.<delay>_payload\" />\n\n## Tickers for futures rolls\n\nChannel name: `lwt_future_rolls.<underlying>.<delay>`\n\nSubscribes to lightweight tickers of all futures roll instruments on a given underlying.\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt_future_rolls.<underlying>.<delay>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/lwt_future_rolls.<underlying>.<delay>_payload\" />\n\n## Recent trades\n\nChannel name: `recent_trades.<target>.<category>`\n\nSubscribes to notifications about recent trades of a specific category. The first notification after subscription contains a\nsnapshot of a certain number of last known trades. Subsequent notifications contain new trades. Note that this subscription\nhas a slight delay compared to order book subscriptions (`book.*`), but the snapshot functionality is more reliable.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/recent_trades.<target>.<category>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/recent_trades.<target>.<category>_payload\" />\n\n## Index price\n\nChannel name: `price_index.<underlying>`\n\nSubscribes to index price stamps.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/price_index.<underlying>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/price_index.<underlying>_payload\" />\n\n## Underlying statistics\n\nChannel name: `underlying_statistics.<underlying>`\n\nSubscribes to statistics of a single underlying.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/underlying_statistics.<underlying>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/underlying_statistics.<underlying>_payload\" />\n\n## Forward price\n\nChannel name: `base_price.<underlying>.<expiration>`\n\nSubscribes to per-expiration forward prices. If a future exists with this\nexpiration date, the price equals the future's mark price. Otherwise, if one\nor more options exist with this expiration date, the price will be the\ninterpolated forward price as used in our marking process. If no instrument with\nthis expiration exists, the subscription will fail.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/base_price.<underlying>.<expiration>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/base_price.<underlying>.<expiration>_payload\" />\n\n## Instruments\n\nChannel names: \n\n- `instruments`\n\n- `instruments.<instrument_type>.<underlying>.<expiration>`\n\nSubscribes to changes in active instruments.\n\nYou can specify filters in channel name parameters to select more specifically which\ninstruments are included in the feed. Using `instruments` channel name means no filters\nare applied.\n\nNew instruments may be added when others expire, or intraday when the index\nprice changes significantly. Instruments are removed when they expire.\n\nThis subscription immediately responds with a notification for all currently\nactive instruments matching filters.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/instruments_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/instruments_payload\" />\n\n## Traded RFQs\n\nChannel name: `rfqs`\n\nSubscribed to traded RFQs. When subscribing, a snapshot will be sent containing recently traded RFQs.\n\n\n\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/rfqs_payload\" />\n\n## Index components\n\nChannel name: `index_components.<underlying>`\n\nSubscribes to the index price components channel.\n\n\n<br/>\n\n#### Channel name parameters\n<SchemaDefinition schemaRef=\"#/components/schemas/index_components.<underlying>_params\"/>\n\n#### Notification payload\n<SchemaDefinition schemaRef=\"#/components/schemas/index_components.<underlying>_payload\" />\n\n"
     },
     {
       "name": "subs_system",
@@ -4855,6 +4855,30 @@
           }
         }
       },
+      "instruments_params": {
+        "type": "object",
+        "properties": {
+          "<instrument_type>": {
+            "enum": [
+              "all",
+              "futures",
+              "future_rolls",
+              "options"
+            ],
+            "description": "Filter on instrument type. Note that `futures` also includes perpetuals, unless `expiration` is specified.",
+            "type": "string"
+          },
+          "<underlying>": {
+            "description": "Underlying is e.g. `BTCUSD`.",
+            "type": "string"
+          },
+          "<expiration>": {
+            "description": "Expiration date in `YYYY-MM-DD` format.",
+            "type": "string"
+          }
+        },
+        "example": "instruments.options.BTCUSD.2021-09-24"
+      },
       "instruments_payload": {
         "type": "object",
         "required": [
@@ -4865,7 +4889,7 @@
           "channel_name": {
             "type": "string",
             "description": "Channel name as in subscription.",
-            "example": "instruments"
+            "example": "instruments.options.BTCUSD.2021-09-24"
           },
           "notification": {
             "type": "array",
@@ -8008,8 +8032,7 @@
                       "exit_price",
                       "exit_position",
                       "end_time",
-                      "signal",
-                      "start_time"
+                      "signal"
                     ],
                     "properties": {
                       "strategy": {
@@ -8055,14 +8078,6 @@
                       "label": {
                         "type": "string",
                         "description": "A label that the bot will add to all orders for easy identification."
-                      },
-                      "start_time": {
-                        "type": "number",
-                        "description": "Timestamp indicating when the bot was created."
-                      },
-                      "stop_time": {
-                        "type": "number",
-                        "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                       }
                     },
                     "example": {
@@ -8088,8 +8103,7 @@
                       "quote_size",
                       "min_position",
                       "max_position",
-                      "end_time",
-                      "start_time"
+                      "end_time"
                     ],
                     "properties": {
                       "strategy": {
@@ -8142,14 +8156,6 @@
                       "label": {
                         "type": "string",
                         "description": "A label that the bot will add to all orders for easy identification."
-                      },
-                      "start_time": {
-                        "type": "number",
-                        "description": "Timestamp indicating when the bot was created."
-                      },
-                      "stop_time": {
-                        "type": "number",
-                        "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                       }
                     },
                     "example": {
@@ -8173,8 +8179,7 @@
                       "bids",
                       "asks",
                       "step_size",
-                      "end_time",
-                      "start_time"
+                      "end_time"
                     ],
                     "properties": {
                       "strategy": {
@@ -8230,14 +8235,6 @@
                       "label": {
                         "type": "string",
                         "description": "A label that the bot will add to all orders for easy identification."
-                      },
-                      "start_time": {
-                        "type": "number",
-                        "description": "Timestamp indicating when the bot was created."
-                      },
-                      "stop_time": {
-                        "type": "number",
-                        "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                       }
                     },
                     "example": {
@@ -8264,8 +8261,7 @@
                       "instrument_name",
                       "grid",
                       "step_size",
-                      "end_time",
-                      "start_time"
+                      "end_time"
                     ],
                     "properties": {
                       "strategy": {
@@ -8314,14 +8310,6 @@
                       "label": {
                         "type": "string",
                         "description": "A label that the bot will add to all orders for easy identification."
-                      },
-                      "start_time": {
-                        "type": "number",
-                        "description": "Timestamp indicating when the bot was created."
-                      },
-                      "stop_time": {
-                        "type": "number",
-                        "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                       }
                     },
                     "example": {
@@ -8344,8 +8332,7 @@
                     "required": [
                       "strategy",
                       "instrument_name",
-                      "period",
-                      "start_time"
+                      "period"
                     ],
                     "properties": {
                       "strategy": {
@@ -8387,14 +8374,6 @@
                       "label": {
                         "type": "string",
                         "description": "A label that the bot will add to all orders for easy identification."
-                      },
-                      "start_time": {
-                        "type": "number",
-                        "description": "Timestamp indicating when the bot was created."
-                      },
-                      "stop_time": {
-                        "type": "number",
-                        "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                       }
                     },
                     "example": {
@@ -8412,8 +8391,7 @@
                       "target_instrument",
                       "target_amount",
                       "period",
-                      "end_time",
-                      "start_time"
+                      "end_time"
                     ],
                     "properties": {
                       "strategy": {
@@ -8455,14 +8433,6 @@
                       "label": {
                         "type": "string",
                         "description": "A label that the bot will add to all orders for easy identification."
-                      },
-                      "start_time": {
-                        "type": "number",
-                        "description": "Timestamp indicating when the bot was created."
-                      },
-                      "stop_time": {
-                        "type": "number",
-                        "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                       }
                     },
                     "example": {
@@ -8556,8 +8526,7 @@
                               "exit_price",
                               "exit_position",
                               "end_time",
-                              "signal",
-                              "start_time"
+                              "signal"
                             ],
                             "properties": {
                               "strategy": {
@@ -8603,14 +8572,6 @@
                               "label": {
                                 "type": "string",
                                 "description": "A label that the bot will add to all orders for easy identification."
-                              },
-                              "start_time": {
-                                "type": "number",
-                                "description": "Timestamp indicating when the bot was created."
-                              },
-                              "stop_time": {
-                                "type": "number",
-                                "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                               }
                             },
                             "example": {
@@ -8636,8 +8597,7 @@
                               "quote_size",
                               "min_position",
                               "max_position",
-                              "end_time",
-                              "start_time"
+                              "end_time"
                             ],
                             "properties": {
                               "strategy": {
@@ -8690,14 +8650,6 @@
                               "label": {
                                 "type": "string",
                                 "description": "A label that the bot will add to all orders for easy identification."
-                              },
-                              "start_time": {
-                                "type": "number",
-                                "description": "Timestamp indicating when the bot was created."
-                              },
-                              "stop_time": {
-                                "type": "number",
-                                "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                               }
                             },
                             "example": {
@@ -8721,8 +8673,7 @@
                               "bids",
                               "asks",
                               "step_size",
-                              "end_time",
-                              "start_time"
+                              "end_time"
                             ],
                             "properties": {
                               "strategy": {
@@ -8778,14 +8729,6 @@
                               "label": {
                                 "type": "string",
                                 "description": "A label that the bot will add to all orders for easy identification."
-                              },
-                              "start_time": {
-                                "type": "number",
-                                "description": "Timestamp indicating when the bot was created."
-                              },
-                              "stop_time": {
-                                "type": "number",
-                                "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                               }
                             },
                             "example": {
@@ -8812,8 +8755,7 @@
                               "instrument_name",
                               "grid",
                               "step_size",
-                              "end_time",
-                              "start_time"
+                              "end_time"
                             ],
                             "properties": {
                               "strategy": {
@@ -8862,14 +8804,6 @@
                               "label": {
                                 "type": "string",
                                 "description": "A label that the bot will add to all orders for easy identification."
-                              },
-                              "start_time": {
-                                "type": "number",
-                                "description": "Timestamp indicating when the bot was created."
-                              },
-                              "stop_time": {
-                                "type": "number",
-                                "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                               }
                             },
                             "example": {
@@ -8892,8 +8826,7 @@
                             "required": [
                               "strategy",
                               "instrument_name",
-                              "period",
-                              "start_time"
+                              "period"
                             ],
                             "properties": {
                               "strategy": {
@@ -8935,14 +8868,6 @@
                               "label": {
                                 "type": "string",
                                 "description": "A label that the bot will add to all orders for easy identification."
-                              },
-                              "start_time": {
-                                "type": "number",
-                                "description": "Timestamp indicating when the bot was created."
-                              },
-                              "stop_time": {
-                                "type": "number",
-                                "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                               }
                             },
                             "example": {
@@ -8960,8 +8885,7 @@
                               "target_instrument",
                               "target_amount",
                               "period",
-                              "end_time",
-                              "start_time"
+                              "end_time"
                             ],
                             "properties": {
                               "strategy": {
@@ -9003,14 +8927,6 @@
                               "label": {
                                 "type": "string",
                                 "description": "A label that the bot will add to all orders for easy identification."
-                              },
-                              "start_time": {
-                                "type": "number",
-                                "description": "Timestamp indicating when the bot was created."
-                              },
-                              "stop_time": {
-                                "type": "number",
-                                "description": "Timestamp indicating when the bot stopped working due to specified `stop_reason`."
                               }
                             },
                             "example": {
@@ -11768,13 +11684,14 @@
                                       "perpetual funding",
                                       "internal transfer",
                                       "asset swap",
+                                      "asset swap fee",
                                       "referral program payment",
                                       "market velocity program payment",
                                       "market quality program payment",
                                       "daily interest",
                                       "balance sweep"
                                     ],
-                                    "description": "Transaction type. Can be one of the following values:\n- `credit` - Asset credits or debits.\n- `deposit` - Deposits.\n- `withdrawal` - Withdrawals.\n- `withdrawal fee` - Withdrawal fees.\n- `session settlement` - Settled session PNL.\n- `perpetual funding` - Settled perpetual funding.\n- `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer.\n- `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap.\n- `referral program payment` - Referral program rewards.\n- `market velocity program payment` - MVP program rewards.\n- `market quality program payment` - MQP program rewards.\n- `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.\n- `balance sweep` - Balance sweep between two accounts.\n"
+                                    "description": "Transaction type. Can be one of the following values:\n- `credit` - Asset credits or debits.\n- `deposit` - Deposits.\n- `withdrawal` - Withdrawals.\n- `withdrawal fee` - Withdrawal fees.\n- `session settlement` - Settled session PNL.\n- `perpetual funding` - Settled perpetual funding.\n- `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer.\n- `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap.\n- `asset swap fee` - Asset swap fees.\n- `referral program payment` - Referral program rewards.\n- `market velocity program payment` - MVP program rewards.\n- `market quality program payment` - MQP program rewards.\n- `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.\n- `balance sweep` - Balance sweep between two accounts.\n"
                                   },
                                   "description": {
                                     "type": "string",
@@ -11850,6 +11767,114 @@
                                             "description": "The account ID to or from which the balance was swept."
                                           }
                                         }
+                                      },
+                                      {
+                                        "type": "object",
+                                        "title": "Deposit",
+                                        "required": [
+                                          "blockchain",
+                                          "transaction_hash"
+                                        ],
+                                        "properties": {
+                                          "blockchain": {
+                                            "type": "string",
+                                            "description": "The blockchain used for this transaction."
+                                          },
+                                          "transaction_hash": {
+                                            "type": "string",
+                                            "description": "The transaction hash."
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "object",
+                                        "title": "Withdrawal",
+                                        "required": [
+                                          "target_address"
+                                        ],
+                                        "properties": {
+                                          "target_address": {
+                                            "type": "string",
+                                            "description": "Target address."
+                                          },
+                                          "label": {
+                                            "type": "string",
+                                            "description": "Optional label attached to the withdrawal request."
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "object",
+                                        "title": "Withdrawal Fee",
+                                        "required": [
+                                          "target_address"
+                                        ],
+                                        "properties": {
+                                          "label": {
+                                            "type": "string",
+                                            "description": "Optional label attached to the withdrawal request."
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "object",
+                                        "title": "Internal Transfer",
+                                        "required": [
+                                          "to_account",
+                                          "from_account"
+                                        ],
+                                        "properties": {
+                                          "to_account": {
+                                            "type": "string",
+                                            "description": "Account number of the transfer destination."
+                                          },
+                                          "from_account": {
+                                            "type": "string",
+                                            "description": "Account number of the transfer source."
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "object",
+                                        "title": "Market Velocity Program Payment",
+                                        "required": [
+                                          "period_start",
+                                          "period_end"
+                                        ],
+                                        "properties": {
+                                          "period_start": {
+                                            "type": "number",
+                                            "description": "Period end time (Unix timestamp)"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "object",
+                                        "title": "Market Quality Program Payment",
+                                        "required": [
+                                          "period_start",
+                                          "period_end"
+                                        ],
+                                        "properties": {
+                                          "period_start": {
+                                            "type": "number",
+                                            "description": "Period end time (Unix timestamp)"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "object",
+                                        "title": "Referral Program",
+                                        "required": [
+                                          "period_start",
+                                          "period_end"
+                                        ],
+                                        "properties": {
+                                          "period_start": {
+                                            "type": "number",
+                                            "description": "Period end time"
+                                          }
+                                        }
                                       }
                                     ]
                                   }
@@ -11902,6 +11927,89 @@
                                 "structured_data": {
                                   "sweep_account_id": 123456789
                                 }
+                              },
+                              {
+                                "asset": "USDT",
+                                "time": 1629964800.012722,
+                                "amount": -643,
+                                "description": "chain=ethereum tx=0x123415543674a854df02f4ef8f5dbc04ee01b744ac0bc4123456",
+                                "transaction_type": "deposit",
+                                "balance_after": 1000000004483.9625,
+                                "structured_data": {
+                                  "blockchain": "ethereum",
+                                  "transaction_hash": 29251817071379546671579621162456630737281044630004856261850198
+                                }
+                              },
+                              {
+                                "asset": "USDT",
+                                "time": 1629964800.012722,
+                                "amount": -643,
+                                "description": "withdrawal 1234xy2kgdygjrsqtzq2n0yrf2493p83kkfjhx01234 transfer_1",
+                                "transaction_type": "withdrawal",
+                                "balance_after": 1000000004483.9625,
+                                "structured_data": {
+                                  "target_address": "1234xy2kgdygjrsqtzq2n0yrf2493p83kkfjhx01234",
+                                  "label": "transfer_1"
+                                }
+                              },
+                              {
+                                "asset": "USDT",
+                                "time": 1629964800.012722,
+                                "amount": -643,
+                                "description": "withdrawal fee transfer_1",
+                                "transaction_type": "withdrawal fee",
+                                "balance_after": 1000000004483.9625,
+                                "structured_data": {
+                                  "label": "transfer_1"
+                                }
+                              },
+                              {
+                                "asset": "USDT",
+                                "time": 1629964800.012722,
+                                "amount": -643,
+                                "description": "transfer itf-14509223623 src",
+                                "transaction_type": "internal transfer",
+                                "balance_after": 1000000004483.9625,
+                                "structured_data": {
+                                  "to_account": "A123456789",
+                                  "from_account": "A987654321"
+                                }
+                              },
+                              {
+                                "asset": "USDT",
+                                "time": 1629964800.012722,
+                                "amount": -643,
+                                "description": "MVP reward for 2026-04-03...2026-04-04 in BTCUSD options",
+                                "transaction_type": "map program",
+                                "balance_after": 1000000004483.9625,
+                                "structured_data": {
+                                  "period_start": 1775167200,
+                                  "period_end": 1775253600
+                                }
+                              },
+                              {
+                                "asset": "USDT",
+                                "time": 1629964800.012722,
+                                "amount": -643,
+                                "description": "MQP Volume Pool reward for 2026-04-03...2026-04-04 in BTCUSD options",
+                                "transaction_type": "mqp program",
+                                "balance_after": 1000000004483.9625,
+                                "structured_data": {
+                                  "period_start": 1775167200,
+                                  "period_end": 1775253600
+                                }
+                              },
+                              {
+                                "asset": "USDT",
+                                "time": 1629964800.012722,
+                                "amount": -643,
+                                "description": "fee share, relation id: 1314145r",
+                                "transaction_type": "referral program",
+                                "balance_after": 1000000004483.9625,
+                                "structured_data": {
+                                  "period_start": "2026-06-02 14:25:17.123456",
+                                  "period_end": "2026-06-03 14:25:17.123456"
+                                }
                               }
                             ]
                           }
@@ -11948,6 +12056,89 @@
                               "balance_after": 1000000004483.9625,
                               "structured_data": {
                                 "sweep_account_id": 123456789
+                              }
+                            },
+                            {
+                              "asset": "USDT",
+                              "time": 1629964800.012722,
+                              "amount": -643,
+                              "description": "chain=ethereum tx=0x123415543674a854df02f4ef8f5dbc04ee01b744ac0bc4123456",
+                              "transaction_type": "deposit",
+                              "balance_after": 1000000004483.9625,
+                              "structured_data": {
+                                "blockchain": "ethereum",
+                                "transaction_hash": 29251817071379546671579621162456630737281044630004856261850198
+                              }
+                            },
+                            {
+                              "asset": "USDT",
+                              "time": 1629964800.012722,
+                              "amount": -643,
+                              "description": "withdrawal 1234xy2kgdygjrsqtzq2n0yrf2493p83kkfjhx01234 transfer_1",
+                              "transaction_type": "withdrawal",
+                              "balance_after": 1000000004483.9625,
+                              "structured_data": {
+                                "target_address": "1234xy2kgdygjrsqtzq2n0yrf2493p83kkfjhx01234",
+                                "label": "transfer_1"
+                              }
+                            },
+                            {
+                              "asset": "USDT",
+                              "time": 1629964800.012722,
+                              "amount": -643,
+                              "description": "withdrawal fee transfer_1",
+                              "transaction_type": "withdrawal fee",
+                              "balance_after": 1000000004483.9625,
+                              "structured_data": {
+                                "label": "transfer_1"
+                              }
+                            },
+                            {
+                              "asset": "USDT",
+                              "time": 1629964800.012722,
+                              "amount": -643,
+                              "description": "transfer itf-14509223623 src",
+                              "transaction_type": "internal transfer",
+                              "balance_after": 1000000004483.9625,
+                              "structured_data": {
+                                "to_account": "A123456789",
+                                "from_account": "A987654321"
+                              }
+                            },
+                            {
+                              "asset": "USDT",
+                              "time": 1629964800.012722,
+                              "amount": -643,
+                              "description": "MVP reward for 2026-04-03...2026-04-04 in BTCUSD options",
+                              "transaction_type": "map program",
+                              "balance_after": 1000000004483.9625,
+                              "structured_data": {
+                                "period_start": 1775167200,
+                                "period_end": 1775253600
+                              }
+                            },
+                            {
+                              "asset": "USDT",
+                              "time": 1629964800.012722,
+                              "amount": -643,
+                              "description": "MQP Volume Pool reward for 2026-04-03...2026-04-04 in BTCUSD options",
+                              "transaction_type": "mqp program",
+                              "balance_after": 1000000004483.9625,
+                              "structured_data": {
+                                "period_start": 1775167200,
+                                "period_end": 1775253600
+                              }
+                            },
+                            {
+                              "asset": "USDT",
+                              "time": 1629964800.012722,
+                              "amount": -643,
+                              "description": "fee share, relation id: 1314145r",
+                              "transaction_type": "referral program",
+                              "balance_after": 1000000004483.9625,
+                              "structured_data": {
+                                "period_start": "2026-06-02 14:25:17.123456",
+                                "period_end": "2026-06-03 14:25:17.123456"
                               }
                             }
                           ]
@@ -12050,12 +12241,13 @@
                 "perpetual_funding",
                 "internal_transfer",
                 "asset_swap",
+                "asset_swap_fee",
                 "referral_program_payment",
                 "market_quality_program_payment",
                 "daily_interest",
                 "balance_sweep"
               ],
-              "description": "Optional comma-separated list of type names to request transaction history for. Each can be one of the following values:\n  - `credit` - Asset credits or debits.\n  - `deposit` - Deposits.\n  - `withdrawal` - Withdrawals.\n  - `withdrawal_fee` - Withdrawal fees.\n  - `session_settlement` - Settled session PNL.\n  - `perpetual_funding` - Settled perpetual funding.\n  - `internal_transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer.\n  - `asset_swap` - Swap between assets. One transaction for each side of the asset pair per swap.\n  - `referral_program_payment` - Referral program rewards.\n  - `market_quality_program_payment` - MQP program rewards.\n  - `daily_interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.\n  - `balance_sweep` - Balance sweep between two accounts.\n"
+              "description": "Optional comma-separated list of type names to request transaction history for. Each can be one of the following values:\n  - `credit` - Asset credits or debits.\n  - `deposit` - Deposits.\n  - `withdrawal` - Withdrawals.\n  - `withdrawal_fee` - Withdrawal fees.\n  - `session_settlement` - Settled session PNL.\n  - `perpetual_funding` - Settled perpetual funding.\n  - `internal_transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer.\n  - `asset_swap` - Swap between assets. One transaction for each side of the asset pair per swap.\n  - `asset_swap_fee` - Asset swap fees.\n  - `referral_program_payment` - Referral program rewards.\n  - `market_quality_program_payment` - MQP program rewards.\n  - `daily_interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.\n  - `balance_sweep` - Balance sweep between two accounts.\n"
             },
             "required": false
           }
@@ -12147,12 +12339,13 @@
                               "perpetual_funding",
                               "internal_transfer",
                               "asset_swap",
+                              "asset_swap_fee",
                               "referral_program_payment",
                               "market_quality_program_payment",
                               "daily_interest",
                               "balance_sweep"
                             ],
-                            "description": "Optional comma-separated list of type names to request transaction history for. Each can be one of the following values:\n  - `credit` - Asset credits or debits.\n  - `deposit` - Deposits.\n  - `withdrawal` - Withdrawals.\n  - `withdrawal_fee` - Withdrawal fees.\n  - `session_settlement` - Settled session PNL.\n  - `perpetual_funding` - Settled perpetual funding.\n  - `internal_transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer.\n  - `asset_swap` - Swap between assets. One transaction for each side of the asset pair per swap.\n  - `referral_program_payment` - Referral program rewards.\n  - `market_quality_program_payment` - MQP program rewards.\n  - `daily_interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.\n  - `balance_sweep` - Balance sweep between two accounts.\n"
+                            "description": "Optional comma-separated list of type names to request transaction history for. Each can be one of the following values:\n  - `credit` - Asset credits or debits.\n  - `deposit` - Deposits.\n  - `withdrawal` - Withdrawals.\n  - `withdrawal_fee` - Withdrawal fees.\n  - `session_settlement` - Settled session PNL.\n  - `perpetual_funding` - Settled perpetual funding.\n  - `internal_transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer.\n  - `asset_swap` - Swap between assets. One transaction for each side of the asset pair per swap.\n  - `asset_swap_fee` - Asset swap fees.\n  - `referral_program_payment` - Referral program rewards.\n  - `market_quality_program_payment` - MQP program rewards.\n  - `daily_interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.\n  - `balance_sweep` - Balance sweep between two accounts.\n"
                           }
                         }
                       }
@@ -12226,13 +12419,14 @@
                                           "perpetual funding",
                                           "internal transfer",
                                           "asset swap",
+                                          "asset swap fee",
                                           "referral program payment",
                                           "market velocity program payment",
                                           "market quality program payment",
                                           "daily interest",
                                           "balance sweep"
                                         ],
-                                        "description": "Transaction type. Can be one of the following values:\n- `credit` - Asset credits or debits.\n- `deposit` - Deposits.\n- `withdrawal` - Withdrawals.\n- `withdrawal fee` - Withdrawal fees.\n- `session settlement` - Settled session PNL.\n- `perpetual funding` - Settled perpetual funding.\n- `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer.\n- `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap.\n- `referral program payment` - Referral program rewards.\n- `market velocity program payment` - MVP program rewards.\n- `market quality program payment` - MQP program rewards.\n- `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.\n- `balance sweep` - Balance sweep between two accounts.\n"
+                                        "description": "Transaction type. Can be one of the following values:\n- `credit` - Asset credits or debits.\n- `deposit` - Deposits.\n- `withdrawal` - Withdrawals.\n- `withdrawal fee` - Withdrawal fees.\n- `session settlement` - Settled session PNL.\n- `perpetual funding` - Settled perpetual funding.\n- `internal transfer` - Transfer of assets between sub-accounts. One transaction in each sub-account per asset per transfer.\n- `asset swap` - Swap between assets. One transaction for each side of the asset pair per swap.\n- `asset swap fee` - Asset swap fees.\n- `referral program payment` - Referral program rewards.\n- `market velocity program payment` - MVP program rewards.\n- `market quality program payment` - MQP program rewards.\n- `daily interest` - Daily penalty charge for negative balance. Not applied anymore, but can be found in historical transactions.\n- `balance sweep` - Balance sweep between two accounts.\n"
                                       },
                                       "description": {
                                         "type": "string",
@@ -12308,6 +12502,114 @@
                                                 "description": "The account ID to or from which the balance was swept."
                                               }
                                             }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "title": "Deposit",
+                                            "required": [
+                                              "blockchain",
+                                              "transaction_hash"
+                                            ],
+                                            "properties": {
+                                              "blockchain": {
+                                                "type": "string",
+                                                "description": "The blockchain used for this transaction."
+                                              },
+                                              "transaction_hash": {
+                                                "type": "string",
+                                                "description": "The transaction hash."
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "title": "Withdrawal",
+                                            "required": [
+                                              "target_address"
+                                            ],
+                                            "properties": {
+                                              "target_address": {
+                                                "type": "string",
+                                                "description": "Target address."
+                                              },
+                                              "label": {
+                                                "type": "string",
+                                                "description": "Optional label attached to the withdrawal request."
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "title": "Withdrawal Fee",
+                                            "required": [
+                                              "target_address"
+                                            ],
+                                            "properties": {
+                                              "label": {
+                                                "type": "string",
+                                                "description": "Optional label attached to the withdrawal request."
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "title": "Internal Transfer",
+                                            "required": [
+                                              "to_account",
+                                              "from_account"
+                                            ],
+                                            "properties": {
+                                              "to_account": {
+                                                "type": "string",
+                                                "description": "Account number of the transfer destination."
+                                              },
+                                              "from_account": {
+                                                "type": "string",
+                                                "description": "Account number of the transfer source."
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "title": "Market Velocity Program Payment",
+                                            "required": [
+                                              "period_start",
+                                              "period_end"
+                                            ],
+                                            "properties": {
+                                              "period_start": {
+                                                "type": "number",
+                                                "description": "Period end time (Unix timestamp)"
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "title": "Market Quality Program Payment",
+                                            "required": [
+                                              "period_start",
+                                              "period_end"
+                                            ],
+                                            "properties": {
+                                              "period_start": {
+                                                "type": "number",
+                                                "description": "Period end time (Unix timestamp)"
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "title": "Referral Program",
+                                            "required": [
+                                              "period_start",
+                                              "period_end"
+                                            ],
+                                            "properties": {
+                                              "period_start": {
+                                                "type": "number",
+                                                "description": "Period end time"
+                                              }
+                                            }
                                           }
                                         ]
                                       }
@@ -12360,6 +12662,89 @@
                                     "structured_data": {
                                       "sweep_account_id": 123456789
                                     }
+                                  },
+                                  {
+                                    "asset": "USDT",
+                                    "time": 1629964800.012722,
+                                    "amount": -643,
+                                    "description": "chain=ethereum tx=0x123415543674a854df02f4ef8f5dbc04ee01b744ac0bc4123456",
+                                    "transaction_type": "deposit",
+                                    "balance_after": 1000000004483.9625,
+                                    "structured_data": {
+                                      "blockchain": "ethereum",
+                                      "transaction_hash": 29251817071379546671579621162456630737281044630004856261850198
+                                    }
+                                  },
+                                  {
+                                    "asset": "USDT",
+                                    "time": 1629964800.012722,
+                                    "amount": -643,
+                                    "description": "withdrawal 1234xy2kgdygjrsqtzq2n0yrf2493p83kkfjhx01234 transfer_1",
+                                    "transaction_type": "withdrawal",
+                                    "balance_after": 1000000004483.9625,
+                                    "structured_data": {
+                                      "target_address": "1234xy2kgdygjrsqtzq2n0yrf2493p83kkfjhx01234",
+                                      "label": "transfer_1"
+                                    }
+                                  },
+                                  {
+                                    "asset": "USDT",
+                                    "time": 1629964800.012722,
+                                    "amount": -643,
+                                    "description": "withdrawal fee transfer_1",
+                                    "transaction_type": "withdrawal fee",
+                                    "balance_after": 1000000004483.9625,
+                                    "structured_data": {
+                                      "label": "transfer_1"
+                                    }
+                                  },
+                                  {
+                                    "asset": "USDT",
+                                    "time": 1629964800.012722,
+                                    "amount": -643,
+                                    "description": "transfer itf-14509223623 src",
+                                    "transaction_type": "internal transfer",
+                                    "balance_after": 1000000004483.9625,
+                                    "structured_data": {
+                                      "to_account": "A123456789",
+                                      "from_account": "A987654321"
+                                    }
+                                  },
+                                  {
+                                    "asset": "USDT",
+                                    "time": 1629964800.012722,
+                                    "amount": -643,
+                                    "description": "MVP reward for 2026-04-03...2026-04-04 in BTCUSD options",
+                                    "transaction_type": "map program",
+                                    "balance_after": 1000000004483.9625,
+                                    "structured_data": {
+                                      "period_start": 1775167200,
+                                      "period_end": 1775253600
+                                    }
+                                  },
+                                  {
+                                    "asset": "USDT",
+                                    "time": 1629964800.012722,
+                                    "amount": -643,
+                                    "description": "MQP Volume Pool reward for 2026-04-03...2026-04-04 in BTCUSD options",
+                                    "transaction_type": "mqp program",
+                                    "balance_after": 1000000004483.9625,
+                                    "structured_data": {
+                                      "period_start": 1775167200,
+                                      "period_end": 1775253600
+                                    }
+                                  },
+                                  {
+                                    "asset": "USDT",
+                                    "time": 1629964800.012722,
+                                    "amount": -643,
+                                    "description": "fee share, relation id: 1314145r",
+                                    "transaction_type": "referral program",
+                                    "balance_after": 1000000004483.9625,
+                                    "structured_data": {
+                                      "period_start": "2026-06-02 14:25:17.123456",
+                                      "period_end": "2026-06-03 14:25:17.123456"
+                                    }
                                   }
                                 ]
                               }
@@ -12406,6 +12791,89 @@
                                   "balance_after": 1000000004483.9625,
                                   "structured_data": {
                                     "sweep_account_id": 123456789
+                                  }
+                                },
+                                {
+                                  "asset": "USDT",
+                                  "time": 1629964800.012722,
+                                  "amount": -643,
+                                  "description": "chain=ethereum tx=0x123415543674a854df02f4ef8f5dbc04ee01b744ac0bc4123456",
+                                  "transaction_type": "deposit",
+                                  "balance_after": 1000000004483.9625,
+                                  "structured_data": {
+                                    "blockchain": "ethereum",
+                                    "transaction_hash": 29251817071379546671579621162456630737281044630004856261850198
+                                  }
+                                },
+                                {
+                                  "asset": "USDT",
+                                  "time": 1629964800.012722,
+                                  "amount": -643,
+                                  "description": "withdrawal 1234xy2kgdygjrsqtzq2n0yrf2493p83kkfjhx01234 transfer_1",
+                                  "transaction_type": "withdrawal",
+                                  "balance_after": 1000000004483.9625,
+                                  "structured_data": {
+                                    "target_address": "1234xy2kgdygjrsqtzq2n0yrf2493p83kkfjhx01234",
+                                    "label": "transfer_1"
+                                  }
+                                },
+                                {
+                                  "asset": "USDT",
+                                  "time": 1629964800.012722,
+                                  "amount": -643,
+                                  "description": "withdrawal fee transfer_1",
+                                  "transaction_type": "withdrawal fee",
+                                  "balance_after": 1000000004483.9625,
+                                  "structured_data": {
+                                    "label": "transfer_1"
+                                  }
+                                },
+                                {
+                                  "asset": "USDT",
+                                  "time": 1629964800.012722,
+                                  "amount": -643,
+                                  "description": "transfer itf-14509223623 src",
+                                  "transaction_type": "internal transfer",
+                                  "balance_after": 1000000004483.9625,
+                                  "structured_data": {
+                                    "to_account": "A123456789",
+                                    "from_account": "A987654321"
+                                  }
+                                },
+                                {
+                                  "asset": "USDT",
+                                  "time": 1629964800.012722,
+                                  "amount": -643,
+                                  "description": "MVP reward for 2026-04-03...2026-04-04 in BTCUSD options",
+                                  "transaction_type": "map program",
+                                  "balance_after": 1000000004483.9625,
+                                  "structured_data": {
+                                    "period_start": 1775167200,
+                                    "period_end": 1775253600
+                                  }
+                                },
+                                {
+                                  "asset": "USDT",
+                                  "time": 1629964800.012722,
+                                  "amount": -643,
+                                  "description": "MQP Volume Pool reward for 2026-04-03...2026-04-04 in BTCUSD options",
+                                  "transaction_type": "mqp program",
+                                  "balance_after": 1000000004483.9625,
+                                  "structured_data": {
+                                    "period_start": 1775167200,
+                                    "period_end": 1775253600
+                                  }
+                                },
+                                {
+                                  "asset": "USDT",
+                                  "time": 1629964800.012722,
+                                  "amount": -643,
+                                  "description": "fee share, relation id: 1314145r",
+                                  "transaction_type": "referral program",
+                                  "balance_after": 1000000004483.9625,
+                                  "structured_data": {
+                                    "period_start": "2026-06-02 14:25:17.123456",
+                                    "period_end": "2026-06-03 14:25:17.123456"
                                   }
                                 }
                               ]
@@ -17568,7 +18036,7 @@
                               },
                               "blockchain": {
                                 "type": "string",
-                                "description": "Blockchain used or this transaction."
+                                "description": "Blockchain used for this transaction."
                               },
                               "transaction_hash": {
                                 "type": "string",
@@ -17732,7 +18200,7 @@
                                   },
                                   "blockchain": {
                                     "type": "string",
-                                    "description": "Blockchain used or this transaction."
+                                    "description": "Blockchain used for this transaction."
                                   },
                                   "transaction_hash": {
                                     "type": "string",
