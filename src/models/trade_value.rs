@@ -25,6 +25,7 @@ pub struct TradeValue {
     pub trade_value: rust_decimal::Decimal,
     #[serde(rename = "category")]
     pub category: models::CategoryEnum,
+    /// Start time of the aggregation interval (day, week, or month).
     #[serde(rename = "date_time_bucket", deserialize_with = "Option::deserialize")]
     pub date_time_bucket: Option<serde_json::Value>,
 }
