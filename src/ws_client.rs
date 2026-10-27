@@ -73,6 +73,20 @@ where
     }
 }
 
+pub const PRIVATE_KEY_PATH_VAR: &str = "THALEX_PRIVATE_KEY_PATH";
+pub const KEY_ID_VAR: &str = "THALEX_KEY_ID";
+pub const ACCOUNT_ID_VAR: &str = "THALEX_ACCOUNT_ID";
+pub const ENVIRONMENT_VAR: &str = "THALEX_ENVIRONMENT";
+
+/// Reads a variable the client cannot be built without; missing or blank is an error that
+/// names the variable.
+pub fn required_env(name: &str) -> Result<String, Error> {
+    match var(name) {
+        Ok(value) if !value.trim().is_empty() => Ok(value.trim().to_string()),
+        _ => Err(format!("{name} is not set").into()),
+    }
+}
+
 impl WsClient {
     pub fn subscriptions(&self) -> Subscriptions<'_> {
         Subscriptions { client: self }
@@ -82,20 +96,33 @@ impl WsClient {
         Rpc { client: self }
     }
 
+    /// Builds and logs in a client from `THALEX_PRIVATE_KEY_PATH`, `THALEX_KEY_ID`,
+    /// `THALEX_ENVIRONMENT` and the optional `THALEX_ACCOUNT_ID`.
+    ///
+    /// Every failure is returned as an error naming what was wrong: a missing variable, an
+    /// unreadable key file, or a login the venue refused. Nothing here panics, so a caller can
+    /// retry a transient login failure or report a configuration mistake and exit cleanly.
     pub async fn from_env() -> Result<Self, Error> {
-        let key_path = var("THALEX_PRIVATE_KEY_PATH").unwrap();
-        let key_id = var("THALEX_KEY_ID").unwrap();
-        let account_id = var("THALEX_ACCOUNT_ID").ok();
-        let env_str = var("THALEX_ENVIRONMENT")
-            .expect("THALEX_ENVIRONMENT not set. Must be 'Mainnet' or 'Testnet'");
-        let env = Environment::from_str(&env_str).expect("Invalid THALEX_ENVIRONMENT value");
+        let key_path = required_env(PRIVATE_KEY_PATH_VAR)?;
+        let key_id = required_env(KEY_ID_VAR)?;
+        let account_id = var(ACCOUNT_ID_VAR).ok();
+        let env_str = required_env(ENVIRONMENT_VAR)?;
+        let env = Environment::from_str(&env_str).map_err(|_| {
+            format!(
+                "{ENVIRONMENT_VAR} must be 'Mainnet', 'Testnet' or a websocket URL, got {env_str:?}"
+            )
+        })?;
 
-        let private_key_pem = std::fs::read_to_string(&key_path)
-            .expect("Failed to read private key file. Check THALEX_PRIVATE_KEY_PATH");
+        let private_key_pem = std::fs::read_to_string(&key_path).map_err(|e| {
+            format!("cannot read the private key file {key_path:?} ({PRIVATE_KEY_PATH_VAR}): {e}")
+        })?;
         let client = WsClient::new(env, key_id, account_id, private_key_pem).await?;
         client.wait_for_connection().await;
         info!("WsClient created from environment variables Logging in...");
-        client.login().await.expect("Login failed");
+        client
+            .login()
+            .await
+            .map_err(|e| -> Error { format!("login failed: {e}").into() })?;
         Ok(client)
     }
 
