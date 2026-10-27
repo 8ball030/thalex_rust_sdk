@@ -17,20 +17,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install deps
-        run: | 
-          sudo apt-get update && \
-          sudo apt-get install yq jq -y
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      
-      - name: Install openapi-generator-cli
-        run: npm i -g @openapitools/openapi-generator-cli @redocly/cli@1.34.2
-      
-      - name: Pin generator version
-        run: openapi-generator-cli version-manager set 7.13.0
+      # Codegen tools come from the pinned shell.nix, so CI generates with the same versions as local.
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
 
       - name: Install Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
@@ -55,7 +44,7 @@ jobs:
             ${{ runner.os }}-cargo-
 
       - name: Codegen
-        run: make codegen
+        run: nix-shell --run 'make codegen'
 
       - name: Format
         run: make fmt
