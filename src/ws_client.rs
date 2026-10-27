@@ -37,6 +37,10 @@ use std::str::FromStr;
 
 const PING_INTERVAL: Duration = Duration::from_secs(5);
 const READ_TIMEOUT: Duration = Duration::from_secs(7);
+/// How long an RPC waits for its response before it fails with `ClientError::Timeout`. A response
+/// that never arrives (a reconnect in between, a request the venue silently dropped) used to leave
+/// the caller waiting on the oneshot for ever; a bound turns that into an error the caller sees.
+pub const RPC_TIMEOUT: Duration = Duration::from_secs(10);
 
 pub struct WsClient {
     pub write_tx: mpsc::UnboundedSender<InternalCommand>,
@@ -158,7 +162,7 @@ impl WsClient {
     }
 
     async fn cache_instruments(&self) -> Result<(), Error> {
-        let instruments = self.get_instruments().await.unwrap();
+        let instruments = self.get_instruments().await?;
         self.instruments_cache.clear();
         for instrument in &instruments {
             self.instruments_cache.insert(
@@ -251,7 +255,16 @@ impl WsClient {
             return Err(ClientError::Transport(Box::new(e)));
         }
 
-        let response = rx.await?;
+        let response = match tokio::time::timeout(RPC_TIMEOUT, rx).await {
+            Ok(received) => received?,
+            Err(_elapsed) => {
+                self.pending_requests.remove(&id);
+                return Err(ClientError::Timeout {
+                    method: method.to_string(),
+                    timeout_secs: RPC_TIMEOUT.as_secs(),
+                });
+            }
+        };
 
         let envelope: T = deserialise_to_type(&response)?;
         Ok(envelope)

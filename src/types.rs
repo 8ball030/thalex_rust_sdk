@@ -75,6 +75,9 @@ pub enum ClientError {
 
     #[error("oneshot receive error")]
     Recv(#[from] oneshot::error::RecvError),
+
+    #[error("RPC {method} received no response within {timeout_secs} s")]
+    Timeout { method: String, timeout_secs: u64 },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
