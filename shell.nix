@@ -4,6 +4,7 @@ in
 pkgs.mkShell {
   packages = with pkgs; [
     rustup
+    cargo-audit
     cargo
     # node stuff
     # node stuff

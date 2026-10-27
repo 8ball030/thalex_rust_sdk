@@ -1,4 +1,4 @@
-mod auth_utils;
+pub mod auth_utils;
 pub mod channels;
 pub mod manual_models;
 pub mod models;

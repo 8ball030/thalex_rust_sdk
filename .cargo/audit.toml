@@ -1,0 +1,8 @@
+[advisories]
+ignore = [
+    # rkyv 0.7.46 is in Cargo.lock only: rust_decimal 1.x's default `std` feature names
+    # `rkyv?/std`, which keeps the optional dependency in the lockfile, but nothing enables it and
+    # `cargo tree --all-features --target all -i rkyv@0.7.46` prints nothing. Remove once rkyv 0.7
+    # leaves Cargo.lock.
+    "RUSTSEC-2026-0235",
+]
